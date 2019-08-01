@@ -1,0 +1,35 @@
+type Query {
+  contentById(id: ID): Content
+}
+
+type Content {
+  id: ID
+  created: String
+  updated: String
+  title: String
+  body: String
+  rank: Int
+  image: Image
+  category: Category
+  avatar: Avatar
+}
+
+type Image {
+  id: ID
+  name: String
+  url: String
+  alt: String
+  width: String
+  height: String
+}
+
+type Category {
+  id: ID
+  name: String
+}
+
+type Avatar {
+  id: ID
+  userName: String
+  image: Image
+}
