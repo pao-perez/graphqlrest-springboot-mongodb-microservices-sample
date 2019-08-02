@@ -52,6 +52,8 @@ public class GraphQLProvider {
   private RuntimeWiring buildWiring() {
       return RuntimeWiring.newRuntimeWiring()
               .type(newTypeWiring("Query")
+                      .dataFetcher("contents", graphQLDataFetchers.getAllContentsDataFetcher()))
+              .type(newTypeWiring("Query")
                       .dataFetcher("contentById", graphQLDataFetchers.getContentByIdDataFetcher()))
               .type(newTypeWiring("Content")
                       .dataFetcher("image", graphQLDataFetchers.getContentImageDataFetcher())

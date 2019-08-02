@@ -1,5 +1,7 @@
 package com.paoperez.graphql;
 
+import java.util.Collection;
+
 import com.paoperez.graphql.models.Avatar;
 import com.paoperez.graphql.models.Category;
 import com.paoperez.graphql.models.Content;
@@ -17,21 +19,27 @@ import graphql.schema.DataFetcher;
 @Component
 public class GraphQLDataFetchers {
   @Autowired
-  private ContentService contentClient;
+  private ContentService contentService;
 
   @Autowired
-  private ImageService imageClient;
+  private ImageService imageService;
 
   @Autowired
-  private CategoryService categoryClient;
+  private CategoryService categoryService;
 
   @Autowired
-  private AvatarService avatarClient;
+  private AvatarService avatarService;
+
+  public DataFetcher<Collection<Content>> getAllContentsDataFetcher() {
+    return dataFetchingEnvironment -> {
+      return this.contentService.getAllContents().collectList().block();
+    };
+  }
 
   public DataFetcher<Content> getContentByIdDataFetcher() {
     return dataFetchingEnvironment -> {
       String id = dataFetchingEnvironment.getArgument("id");
-      return this.contentClient.getContent(id).block();
+      return this.contentService.getContent(id).block();
     };
   }
 
@@ -39,7 +47,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getImageId();
-      return this.imageClient.getImage(id).block();
+      return this.imageService.getImage(id).block();
     };
   }
 
@@ -47,7 +55,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getCategoryId();
-      return this.categoryClient.getCategory(id).block();
+      return this.categoryService.getCategory(id).block();
     };
   }
 
@@ -55,7 +63,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getAvatarId();
-      return this.avatarClient.getAvatar(id).block();
+      return this.avatarService.getAvatar(id).block();
     };
   }
 
@@ -63,7 +71,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Avatar avatar = dataFetchingEnvironment.getSource();
       String id = avatar.getImageId();
-      return this.imageClient.getImage(id).block();
+      return this.imageService.getImage(id).block();
     };
   }
 
