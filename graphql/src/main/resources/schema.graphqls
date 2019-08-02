@@ -1,5 +1,5 @@
 type Query {
-  contentById(id: ID): Content
+  content(id: ID): Content
   contents: [Content]
 }
 

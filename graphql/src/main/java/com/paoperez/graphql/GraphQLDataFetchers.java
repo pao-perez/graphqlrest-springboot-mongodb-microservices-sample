@@ -32,14 +32,15 @@ public class GraphQLDataFetchers {
 
   public DataFetcher<Collection<Content>> getAllContentsDataFetcher() {
     return dataFetchingEnvironment -> {
-      return this.contentService.getAllContents().collectList().block();
+      return this.contentService.getAllContents();
     };
   }
 
-  public DataFetcher<Content> getContentByIdDataFetcher() {
+  public DataFetcher<Content> getContentDataFetcher() {
     return dataFetchingEnvironment -> {
-      String id = dataFetchingEnvironment.getArgument("id");
-      return this.contentService.getContent(id).block();
+      // String id = dataFetchingEnvironment.getArgument("id");
+      String id = "1a";
+      return this.contentService.getContent(id);
     };
   }
 
@@ -47,7 +48,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getImageId();
-      return this.imageService.getImage(id).block();
+      return this.imageService.getImage(id);
     };
   }
 
@@ -55,7 +56,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getCategoryId();
-      return this.categoryService.getCategory(id).block();
+      return this.categoryService.getCategory(id);
     };
   }
 
@@ -63,7 +64,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Content content = dataFetchingEnvironment.getSource();
       String id = content.getAvatarId();
-      return this.avatarService.getAvatar(id).block();
+      return this.avatarService.getAvatar(id);
     };
   }
 
@@ -71,7 +72,7 @@ public class GraphQLDataFetchers {
     return dataFetchingEnvironment -> {
       Avatar avatar = dataFetchingEnvironment.getSource();
       String id = avatar.getImageId();
-      return this.imageService.getImage(id).block();
+      return this.imageService.getImage(id);
     };
   }
 

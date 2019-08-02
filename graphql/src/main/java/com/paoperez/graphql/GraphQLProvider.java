@@ -24,44 +24,43 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @Component
 public class GraphQLProvider {
 
-  @Autowired
-  GraphQLDataFetchers graphQLDataFetchers;
-  private GraphQL graphQL;
+        @Autowired
+        GraphQLDataFetchers graphQLDataFetchers;
+        private GraphQL graphQL;
 
-  @Bean
-  public GraphQL graphQL() {
-    return graphQL;
-  }
+        @Bean
+        public GraphQL graphQL() {
+                return graphQL;
+        }
 
-  @PostConstruct
-  public void init() throws IOException {
-    URL url = Resources.getResource("schema.graphqls");
-    String sdl = Resources.toString(url, Charsets.UTF_8);
-    GraphQLSchema graphQLSchema = buildSchema(sdl);
-    this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
-  }
+        @PostConstruct
+        public void init() throws IOException {
+                URL url = Resources.getResource("schema.graphqls");
+                String sdl = Resources.toString(url, Charsets.UTF_8);
+                GraphQLSchema graphQLSchema = buildSchema(sdl);
+                this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
+        }
 
+        private GraphQLSchema buildSchema(String sdl) {
+                TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
+                RuntimeWiring runtimeWiring = buildWiring();
+                SchemaGenerator schemaGenerator = new SchemaGenerator();
+                return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+        }
 
-  private GraphQLSchema buildSchema(String sdl) {
-    TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
-    RuntimeWiring runtimeWiring = buildWiring();
-    SchemaGenerator schemaGenerator = new SchemaGenerator();
-    return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
-  }
-
-  private RuntimeWiring buildWiring() {
-      return RuntimeWiring.newRuntimeWiring()
-              .type(newTypeWiring("Query")
-                      .dataFetcher("contents", graphQLDataFetchers.getAllContentsDataFetcher()))
-              .type(newTypeWiring("Query")
-                      .dataFetcher("contentById", graphQLDataFetchers.getContentByIdDataFetcher()))
-              .type(newTypeWiring("Content")
-                      .dataFetcher("image", graphQLDataFetchers.getContentImageDataFetcher())
-                      .dataFetcher("category", graphQLDataFetchers.getCategoryDataFetcher())
-                      .dataFetcher("avatar", graphQLDataFetchers.getAvatarDataFetcher()))
-              .type(newTypeWiring("Avatar")
-                      .dataFetcher("image", graphQLDataFetchers.getAvatarImageDataFetcher()))
-              .build();
-  }
+        private RuntimeWiring buildWiring() {
+                return RuntimeWiring.newRuntimeWiring()
+                                .type(newTypeWiring("Query").dataFetcher("contents",
+                                                graphQLDataFetchers.getAllContentsDataFetcher()))
+                                .type(newTypeWiring("Query").dataFetcher("content",
+                                                graphQLDataFetchers.getContentDataFetcher()))
+                                .type(newTypeWiring("Content")
+                                                .dataFetcher("image", graphQLDataFetchers.getContentImageDataFetcher())
+                                                .dataFetcher("category", graphQLDataFetchers.getCategoryDataFetcher())
+                                                .dataFetcher("avatar", graphQLDataFetchers.getAvatarDataFetcher()))
+                                .type(newTypeWiring("Avatar").dataFetcher("image",
+                                                graphQLDataFetchers.getAvatarImageDataFetcher()))
+                                .build();
+        }
 
 }
