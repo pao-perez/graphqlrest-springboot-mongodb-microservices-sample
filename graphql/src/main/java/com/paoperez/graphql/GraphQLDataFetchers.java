@@ -38,8 +38,7 @@ public class GraphQLDataFetchers {
 
   public DataFetcher<Content> getContentDataFetcher() {
     return dataFetchingEnvironment -> {
-      // String id = dataFetchingEnvironment.getArgument("id");
-      String id = "1a";
+      String id = dataFetchingEnvironment.getArgument("id");
       return this.contentService.getContent(id);
     };
   }
