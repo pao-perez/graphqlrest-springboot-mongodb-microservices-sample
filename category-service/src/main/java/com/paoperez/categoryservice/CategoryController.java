@@ -1,9 +1,14 @@
 package com.paoperez.categoryservice;
 
 import java.util.List;
-import java.util.Optional;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,35 +18,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// TODO: Replace return values with Resource
+@Validated
 @RestController
 @RequestMapping("/categories")
-public class CategoryController {
+class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping()
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    ResponseEntity<List<Category>> getAllCategories() {
+        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Optional<Category> getCategory(@PathVariable String id) {
-        return categoryService.getCategory(id);
+    ResponseEntity<Category> getCategory(@PathVariable @NotBlank String id) {
+        return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    ResponseEntity<Category> createCategory(@RequestBody @Valid Category category) {
+        return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public Category updateCategory(@RequestBody Category category) {
-        return categoryService.updateCategory(category);
+    ResponseEntity<Category> updateCategory(@RequestBody @Valid Category category) {
+        return new ResponseEntity<>(categoryService.updateCategory(category), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable String id) {
+    void deleteCategory(@PathVariable @NotBlank String id) {
         categoryService.deleteCategory(id);
     }
 

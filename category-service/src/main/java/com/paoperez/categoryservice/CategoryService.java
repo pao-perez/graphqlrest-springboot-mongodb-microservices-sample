@@ -1,33 +1,36 @@
 package com.paoperez.categoryservice;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategoryService {
+class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public List<Category> getAllCategories() {
+    List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> getCategory(String id) {
-        return categoryRepository.findById(id);
+    Category getCategory(String id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
-    public Category createCategory(Category category) {
+    Category createCategory(Category category) {
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(Category category) {
+    Category updateCategory(Category category) {
+        if (!categoryRepository.existsById(category.getId()))
+            throw new CategoryNotFoundException(category.getId());
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(String id) {
+    void deleteCategory(String id) {
+        if (!categoryRepository.existsById(id))
+            throw new CategoryNotFoundException(id);
         categoryRepository.deleteById(id);
     }
 
