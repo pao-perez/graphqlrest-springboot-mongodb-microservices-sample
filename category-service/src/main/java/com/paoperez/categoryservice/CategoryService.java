@@ -28,10 +28,11 @@ class CategoryService {
         return categoryRepository.save(category);
     }
 
-    void deleteCategory(String id) {
+    Boolean deleteCategory(String id) {
         if (!categoryRepository.existsById(id))
             throw new CategoryNotFoundException(id);
         categoryRepository.deleteById(id);
+        return true;
     }
 
 }
