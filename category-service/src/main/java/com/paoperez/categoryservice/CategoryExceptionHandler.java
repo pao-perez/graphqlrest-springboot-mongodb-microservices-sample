@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class CategoryExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(CategoryNotFoundException.class)
-        final ResponseEntity<CategoryErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException ex,
+        final ResponseEntity<CategoryErrorResponse> handleNotFoundException(CategoryNotFoundException ex,
                         WebRequest request) {
                 CategoryErrorResponse response = CategoryErrorResponse.builder().message(ex.getLocalizedMessage())
                                 .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();

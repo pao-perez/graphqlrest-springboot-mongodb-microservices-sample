@@ -17,45 +17,45 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 class ImageExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(ImageNotFoundException.class)
-    final ResponseEntity<ImageErrorResponse> handleCategoryNotFoundException(ImageNotFoundException ex,
-            WebRequest request) {
-        ImageErrorResponse response = ImageErrorResponse.builder().message(ex.getLocalizedMessage())
-                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
+        @ExceptionHandler(ImageNotFoundException.class)
+        final ResponseEntity<ImageErrorResponse> handleNotFoundException(ImageNotFoundException ex,
+                        WebRequest request) {
+                ImageErrorResponse response = ImageErrorResponse.builder().message(ex.getLocalizedMessage())
+                                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
 
-        return new ResponseEntity<>(response, response.getStatus());
-    }
+                return new ResponseEntity<>(response, response.getStatus());
+        }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    final ResponseEntity<ImageErrorResponse> handleConstraintViolation(ConstraintViolationException ex,
-            WebRequest request) {
-        List<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
-                .collect(Collectors.toList());
+        @ExceptionHandler(ConstraintViolationException.class)
+        final ResponseEntity<ImageErrorResponse> handleConstraintViolation(ConstraintViolationException ex,
+                        WebRequest request) {
+                List<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
+                                .collect(Collectors.toList());
 
-        ImageErrorResponse response = ImageErrorResponse.builder().message(message.toString())
-                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+                ImageErrorResponse response = ImageErrorResponse.builder().message(message.toString())
+                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
-        return new ResponseEntity<>(response, response.getStatus());
-    }
+                return new ResponseEntity<>(response, response.getStatus());
+        }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-            HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
-                .collect(Collectors.toList());
+        @Override
+        protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                        HttpHeaders headers, HttpStatus status, WebRequest request) {
+                List<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
+                                .collect(Collectors.toList());
 
-        ImageErrorResponse response = ImageErrorResponse.builder().message(message.toString())
-                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+                ImageErrorResponse response = ImageErrorResponse.builder().message(message.toString())
+                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
-        return new ResponseEntity<>(response, response.getStatus());
-    }
+                return new ResponseEntity<>(response, response.getStatus());
+        }
 
-    @ExceptionHandler(Exception.class)
-    final ResponseEntity<ImageErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
-        ImageErrorResponse response = ImageErrorResponse.builder().message(ex.getLocalizedMessage())
-                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        @ExceptionHandler(Exception.class)
+        final ResponseEntity<ImageErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
+                ImageErrorResponse response = ImageErrorResponse.builder().message(ex.getLocalizedMessage())
+                                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
-        return new ResponseEntity<>(response, response.getStatus());
-    }
+                return new ResponseEntity<>(response, response.getStatus());
+        }
 
 }
