@@ -1,9 +1,14 @@
 package com.paoperez.avatarservice;
 
 import java.util.List;
-import java.util.Optional;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,36 +18,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// TODO: Replace return values with Resource
+@Validated
 @RestController
 @RequestMapping("/avatars")
-public class AvatarController {
+class AvatarController {
     @Autowired
     private AvatarService avatarService;
 
     @GetMapping()
-    public List<Avatar> getAllAvatars() {
-        return avatarService.getAllAvatars();
+    ResponseEntity<List<Avatar>> getAllAvatars() {
+        return new ResponseEntity<>(avatarService.getAllAvatars(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Optional<Avatar> getAvatar(@PathVariable String id) {
-        return avatarService.getAvatar(id);
+    ResponseEntity<Avatar> getAvatar(@PathVariable @NotBlank String id) {
+        return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public Avatar createAvatar(@RequestBody Avatar avatar) {
-        return avatarService.createAvatar(avatar);
+    ResponseEntity<Avatar> createAvatar(@RequestBody @Valid Avatar avatar) {
+        return new ResponseEntity<>(avatarService.createAvatar(avatar), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public Avatar updateAvatar(@RequestBody Avatar avatar) {
-        return avatarService.updateAvatar(avatar);
+    ResponseEntity<Avatar> updateAvatar(@RequestBody @Valid Avatar avatar) {
+        return new ResponseEntity<>(avatarService.updateAvatar(avatar), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAvatar(@PathVariable String id) {
-        avatarService.deleteAvatar(id);
+    ResponseEntity<Boolean> deleteAvatar(@PathVariable @NotBlank String id) {
+        return new ResponseEntity<>(avatarService.deleteAvatar(id), HttpStatus.OK);
     }
 
 }
