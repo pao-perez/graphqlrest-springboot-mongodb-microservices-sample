@@ -1,34 +1,38 @@
 package com.paoperez.contentservice;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ContentService {
+class ContentService {
     @Autowired
     private ContentRepository contentRepository;
 
-    public List<Content> getAllContents() {
+    List<Content> getAllContents() {
         return contentRepository.findAll();
     }
 
-    public Optional<Content> getContent(String id) {
-        return contentRepository.findById(id);
+    Content getContent(String id) {
+        return contentRepository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
     }
 
-    public Content createContent(Content content) {
+    Content createContent(Content content) {
         return contentRepository.save(content);
     }
 
-    public Content updateContent(Content content) {
+    Content updateContent(Content content) {
+        if (!contentRepository.existsById(content.getId()))
+            throw new ContentNotFoundException(content.getId());
         return contentRepository.save(content);
     }
 
-    public void deleteContent(String id) {
+    Boolean deleteContent(String id) {
+        if (!contentRepository.existsById(id))
+            throw new ContentNotFoundException(id);
         contentRepository.deleteById(id);
+        return true;
     }
 
 }
