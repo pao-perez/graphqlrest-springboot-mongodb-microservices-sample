@@ -2,19 +2,21 @@ package com.paoperez.categoryservice;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 class CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    Category getCategory(String id) {
+    Category getCategory(String id) throws CategoryNotFoundException {
         return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
@@ -22,13 +24,14 @@ class CategoryService {
         return categoryRepository.save(category);
     }
 
-    Category updateCategory(Category category) {
+    Boolean updateCategory(Category category) throws CategoryNotFoundException {
         if (!categoryRepository.existsById(category.getId()))
             throw new CategoryNotFoundException(category.getId());
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+        return true;
     }
 
-    Boolean deleteCategory(String id) {
+    Boolean deleteCategory(String id) throws CategoryNotFoundException {
         if (!categoryRepository.existsById(id))
             throw new CategoryNotFoundException(id);
         categoryRepository.deleteById(id);
