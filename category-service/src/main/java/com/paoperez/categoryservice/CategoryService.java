@@ -1,6 +1,6 @@
 package com.paoperez.categoryservice;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    List<Category> getAllCategories() {
+    Collection<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
@@ -24,18 +24,18 @@ class CategoryService {
         return categoryRepository.save(category);
     }
 
-    Boolean updateCategory(Category category) throws CategoryNotFoundException {
-        if (!categoryRepository.existsById(category.getId()))
-            throw new CategoryNotFoundException(category.getId());
+    void updateCategory(Category category) throws CategoryNotFoundException {
+        final String id = category.getId();
+
+        if (!categoryRepository.existsById(id))
+            throw new CategoryNotFoundException(id);
         categoryRepository.save(category);
-        return true;
     }
 
-    Boolean deleteCategory(String id) throws CategoryNotFoundException {
+    void deleteCategory(String id) throws CategoryNotFoundException {
         if (!categoryRepository.existsById(id))
             throw new CategoryNotFoundException(id);
         categoryRepository.deleteById(id);
-        return true;
     }
 
 }
