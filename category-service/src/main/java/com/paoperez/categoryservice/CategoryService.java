@@ -2,40 +2,15 @@ package com.paoperez.categoryservice;
 
 import java.util.Collection;
 
-import org.springframework.stereotype.Service;
+interface CategoryService {
+    Collection<Category> getAllCategories();
 
-@Service
-class CategoryService {
-    private final CategoryRepository categoryRepository;
+    Category getCategory(final String id) throws CategoryNotFoundException;
 
-    CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
+    Category createCategory(final Category category) throws CategoryAlreadyExistsException;
 
-    Collection<Category> getAllCategories() {
-        return categoryRepository.findAll();
-    }
+    void updateCategory(final String id, final Category category)
+            throws CategoryNotFoundException, CategoryAlreadyExistsException;
 
-    Category getCategory(String id) throws CategoryNotFoundException {
-        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
-    }
-
-    Category createCategory(Category category) {
-        return categoryRepository.save(category);
-    }
-
-    void updateCategory(Category category) throws CategoryNotFoundException {
-        final String id = category.getId();
-
-        if (!categoryRepository.existsById(id))
-            throw new CategoryNotFoundException(id);
-        categoryRepository.save(category);
-    }
-
-    void deleteCategory(String id) throws CategoryNotFoundException {
-        if (!categoryRepository.existsById(id))
-            throw new CategoryNotFoundException(id);
-        categoryRepository.deleteById(id);
-    }
-
+    void deleteCategory(final String id) throws CategoryNotFoundException;
 }

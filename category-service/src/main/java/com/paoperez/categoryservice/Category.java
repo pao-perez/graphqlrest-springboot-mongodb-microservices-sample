@@ -2,10 +2,11 @@ package com.paoperez.categoryservice;
 
 import javax.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
-import lombok.Builder;
-import lombok.Value;
 
-@Value
+import lombok.Builder;
+import lombok.Data;
+
+@Data
 @Builder
 class Category {
     @Id

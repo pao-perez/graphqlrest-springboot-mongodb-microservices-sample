@@ -29,7 +29,7 @@ class CategoryController {
     private final CategoryService categoryService;
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
-    CategoryController(CategoryService categoryService) {
+    CategoryController(final CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
@@ -39,12 +39,12 @@ class CategoryController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Category> getCategory(@PathVariable @NotBlank String id) throws CategoryNotFoundException {
+    ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id) {
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
 
     @PostMapping()
-    ResponseEntity<Category> createCategory(@RequestBody @Valid Category category) {
+    ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category) {
         Category createdCategory = categoryService.createCategory(category);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdCategory.getId()).toUri();
@@ -54,14 +54,15 @@ class CategoryController {
         return new ResponseEntity<>(createdCategory, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping()
-    ResponseEntity<Void> updateCategory(@RequestBody @Valid Category category) throws CategoryNotFoundException {
-        categoryService.updateCategory(category);
+    @PutMapping("/{id}")
+    ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
+            final @RequestBody @Valid Category category) {
+        categoryService.updateCategory(id, category);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteCategory(@PathVariable @NotBlank String id) throws CategoryNotFoundException {
+    ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) {
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
