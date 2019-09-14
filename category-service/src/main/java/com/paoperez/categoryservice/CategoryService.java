@@ -5,12 +5,11 @@ import java.util.Collection;
 interface CategoryService {
     Collection<Category> getAllCategories();
 
-    Category getCategory(final String id) throws CategoryNotFoundException;
+    Category getCategory(String id) throws CategoryNotFoundException;
 
-    Category createCategory(final Category category) throws CategoryAlreadyExistsException;
+    Category createCategory(Category category) throws CategoryAlreadyExistsException;
 
-    void updateCategory(final String id, final Category category)
-            throws CategoryNotFoundException, CategoryAlreadyExistsException;
+    void updateCategory(String id, Category category) throws CategoryNotFoundException, CategoryAlreadyExistsException;
 
-    void deleteCategory(final String id) throws CategoryNotFoundException;
+    void deleteCategory(String id) throws CategoryNotFoundException;
 }
