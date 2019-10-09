@@ -31,8 +31,7 @@ final class CategoryServiceImpl implements CategoryService {
 
     public void updateCategory(final String id, final Category category)
             throws CategoryNotFoundException, CategoryAlreadyExistsException {
-        if (!categoryRepository.existsById(id))
-            throw new CategoryNotFoundException(id);
+        categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
 
         final String categoryName = category.getName();
         final Category foundCategory = categoryRepository.findByName(categoryName);
@@ -44,8 +43,7 @@ final class CategoryServiceImpl implements CategoryService {
     }
 
     public void deleteCategory(final String id) throws CategoryNotFoundException {
-        if (!categoryRepository.existsById(id))
-            throw new CategoryNotFoundException(id);
+        categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
         categoryRepository.deleteById(id);
     }
 

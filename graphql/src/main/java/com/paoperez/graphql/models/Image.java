@@ -1,16 +1,10 @@
 package com.paoperez.graphql.models;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Value;
 
-@EqualsAndHashCode
+@Value
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@ToString
 public class Image {
     private String id;
     private String name;
