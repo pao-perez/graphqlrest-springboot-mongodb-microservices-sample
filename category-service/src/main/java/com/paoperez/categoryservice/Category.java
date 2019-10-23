@@ -11,6 +11,6 @@ import lombok.Data;
 class Category {
     @Id
     private String id;
-    @NotBlank(message = "name must not be empty")
+    @NotBlank(message = "name must not be blank")
     private String name;
 }
