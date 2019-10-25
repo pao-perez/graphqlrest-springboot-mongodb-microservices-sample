@@ -6,8 +6,6 @@ import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/categories")
 class CategoryController {
     private final CategoryService categoryService;
-    private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     CategoryController(final CategoryService categoryService) {
         this.categoryService = categoryService;
