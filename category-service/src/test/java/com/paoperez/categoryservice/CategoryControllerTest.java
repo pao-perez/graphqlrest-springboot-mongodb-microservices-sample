@@ -17,18 +17,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-@ExtendWith(SpringExtension.class)
 @WebMvcTest
-public class CategoryControllerTest {
+class CategoryControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -39,10 +36,10 @@ public class CategoryControllerTest {
     private CategoryService service;
 
     @Test
-    public void getAllCategoriesShouldReturnOk() throws Exception {
-        final Category validCategory = Category.builder().id("A").name("Blog").build();
-        final Category otherCategory = Category.builder().id("B").name("Tutorial").build();
-        final Collection<Category> categories = ImmutableList.of(validCategory, otherCategory);
+    void getAllCategories_shouldReturnOk() throws Exception {
+        final Category categoryA = Category.builder().id("A").name("Blog").build();
+        final Category categoryB = Category.builder().id("B").name("Tutorial").build();
+        final Collection<Category> categories = ImmutableList.of(categoryA, categoryB);
         when(service.getAllCategories()).thenReturn(categories);
 
         this.mockMvc.perform(get("/categories").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
@@ -52,19 +49,20 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void getValidCategoryShouldReturnOk() throws Exception {
-        final String validId = "A";
-        final Category validCategory = Category.builder().id(validId).name("Blog").build();
-        when(service.getCategory(validId)).thenReturn(validCategory);
+    void getCategory_whenExistingId_shouldReturnOk() throws Exception {
+        final String existingId = "A";
+        final Category existingCategory = Category.builder().id(existingId).name("Blog").build();
+        when(service.getCategory(existingId)).thenReturn(existingCategory);
 
-        this.mockMvc.perform(get("/categories/{id}", validId).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(content().string(objectMapper.writeValueAsString(validCategory)));
+        this.mockMvc.perform(get("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(existingCategory)));
 
-        verify(service, times(1)).getCategory(validId);
+        verify(service, times(1)).getCategory(existingId);
     }
 
     @Test
-    public void getNonexistingCategoryIdShouldReturnNotFound() throws Exception {
+    void getCategory_whenNonexistingId_shouldReturnNotFound() throws Exception {
         final String nonExistingId = "Z";
         when(service.getCategory(nonExistingId)).thenThrow(new CategoryNotFoundException(nonExistingId));
 
@@ -76,7 +74,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void getBlankCategoryIdShouldReturnBadRequest() throws Exception {
+    void getCategory_whenBlankId_shouldReturnBadRequest() throws Exception {
         final String blankId = " ";
 
         this.mockMvc.perform(get("/categories/{id}", blankId).contentType(MediaType.APPLICATION_JSON))
@@ -87,7 +85,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createValidCategoryShouldReturnCreated() throws Exception {
+    void createCategory_whenValidCategory_shouldReturnCreated() throws Exception {
         final String validId = "A";
         final String validName = "Blog";
         final Category newCategory = Category.builder().name(validName).build();
@@ -106,7 +104,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createExistingCategoryShouldReturnConflict() throws Exception {
+    void createCategory_whenExistingName_shouldReturnConflict() throws Exception {
         final String existingName = "Blog";
         final Category newCategory = Category.builder().name(existingName).build();
         when(service.createCategory(newCategory)).thenThrow(new CategoryAlreadyExistsException(existingName));
@@ -122,7 +120,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createBlankCategoryShouldReturnBadRequest() throws Exception {
+    void createCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
         final Category blankCategory = Category.builder().name(" ").build();
 
         this.mockMvc
@@ -135,32 +133,50 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateValidCategoryShouldReturnNoContent() throws Exception {
-        final String validId = "A";
-        final Category validCategory = Category.builder().id(validId).name("Blog").build();
+    void updateCategory_whenExistingId_shouldReturnNoContent() throws Exception {
+        final String existingId = "A";
+        final Category existingCategory = Category.builder().id(existingId).name("Blog").build();
 
-        this.mockMvc.perform(put("/categories/{id}", validId).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validCategory))).andExpect(status().isNoContent());
+        this.mockMvc.perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(existingCategory))).andExpect(status().isNoContent());
 
-        verify(service, times(1)).updateCategory(validId, validCategory);
+        verify(service, times(1)).updateCategory(existingId, existingCategory);
     }
 
     @Test
-    public void updateBlankCategoryShouldReturnBadRequest() throws Exception {
-        final String validId = "A";
-        final Category blankCategory = Category.builder().name(" ").build();
+    void updateCategory_whenExistingName_shouldReturnConflict() throws Exception {
+        final String existingId = "A";
+        final String existingName = "Blog";
+        final Category existingCategory = Category.builder().id(existingId).name(existingName).build();
+        doThrow(new CategoryAlreadyExistsException(existingName)).when(service).updateCategory(existingId,
+                existingCategory);
 
         this.mockMvc
-                .perform(put("/categories/{id}", validId).contentType(MediaType.APPLICATION_JSON)
+                .perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(existingCategory)))
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
+                .andExpect(jsonPath("$.message")
+                        .value(String.format("Category with name %s already exists.", existingName)));
+
+        verify(service, times(1)).updateCategory(existingId, existingCategory);
+    }
+
+    @Test
+    void updateCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
+        final String existingId = "A";
+        final Category blankCategory = Category.builder().id(existingId).name(" ").build();
+
+        this.mockMvc
+                .perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankCategory)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
                 .andExpect(jsonPath("$.message").value(containsString("name must not be blank")));
 
-        verify(service, times(0)).updateCategory(validId, blankCategory);
+        verify(service, times(0)).updateCategory(existingId, blankCategory);
     }
 
     @Test
-    public void updateNonexistingCategoryShouldReturnNotFound() throws Exception {
+    void updateCategory_whenNonexistingId_shouldReturnNotFound() throws Exception {
         final String nonExistingId = "Z";
         final Category nonExistingCategory = Category.builder().id(nonExistingId).name("Blog").build();
         doThrow(new CategoryNotFoundException(nonExistingId)).when(service).updateCategory(nonExistingId,
@@ -176,17 +192,28 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteValidCategoryShouldReturnNoContent() throws Exception {
-        final String validId = "A";
+    void deleteCategory_whenExistingId_shouldReturnNoContent() throws Exception {
+        final String existingId = "A";
 
-        this.mockMvc.perform(delete("/categories/{id}", validId).contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(service, times(1)).deleteCategory(validId);
+        verify(service, times(1)).deleteCategory(existingId);
     }
 
     @Test
-    public void deleteNonexistingCategoryShouldReturnNotFound() throws Exception {
+    void deleteCategory_whenBlankId_shouldReturnBadRequest() throws Exception {
+        final String blankId = " ";
+
+        this.mockMvc.perform(delete("/categories/{id}", blankId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
+                .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
+
+        verify(service, times(0)).deleteCategory(blankId);
+    }
+
+    @Test
+    void deleteCategory_whenNonexistingId_shouldReturnNotFound() throws Exception {
         final String nonExistingId = "Z";
         doThrow(new CategoryNotFoundException(nonExistingId)).when(service).deleteCategory(nonExistingId);
 
@@ -197,14 +224,4 @@ public class CategoryControllerTest {
         verify(service, times(1)).deleteCategory(nonExistingId);
     }
 
-    @Test
-    public void deleteBlankCategoryShouldReturnBadRequest() throws Exception {
-        final String blankId = " ";
-
-        this.mockMvc.perform(delete("/categories/{id}", blankId).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
-
-        verify(service, times(0)).deleteCategory(blankId);
-    }
 }
