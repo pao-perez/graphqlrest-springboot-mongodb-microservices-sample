@@ -135,12 +135,12 @@ class CategoryControllerTest {
     @Test
     void updateCategory_whenExistingId_shouldReturnNoContent() throws Exception {
         final String existingId = "A";
-        final Category existingCategory = Category.builder().id(existingId).name("Blog").build();
+        final Category updatedCategory = Category.builder().id(existingId).name("Blog").build();
 
         this.mockMvc.perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(existingCategory))).andExpect(status().isNoContent());
+                .content(objectMapper.writeValueAsString(updatedCategory))).andExpect(status().isNoContent());
 
-        verify(service, times(1)).updateCategory(existingId, existingCategory);
+        verify(service, times(1)).updateCategory(existingId, updatedCategory);
     }
 
     @Test
