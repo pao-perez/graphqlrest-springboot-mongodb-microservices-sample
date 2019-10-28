@@ -85,12 +85,12 @@ class CategoryControllerTest {
     }
 
     @Test
-    void createCategory_whenValidCategory_shouldReturnCreated() throws Exception {
-        final String validId = "A";
-        final String validName = "Blog";
-        final Category newCategory = Category.builder().name(validName).build();
-        final Category createdCategory = Category.builder().id(validId).name(validName).build();
-        final String createdLocation = "http://localhost/categories/" + validId;
+    void createCategory_whenNonexistingName_shouldReturnCreated() throws Exception {
+        final String nonExistingName = "Blog";
+        final Category newCategory = Category.builder().name(nonExistingName).build();
+        final String createdId = "A";
+        final Category createdCategory = Category.builder().id(createdId).name(nonExistingName).build();
+        final String createdLocation = "http://localhost/categories/" + createdId;
         when(service.createCategory(newCategory)).thenReturn(createdCategory);
 
         this.mockMvc
