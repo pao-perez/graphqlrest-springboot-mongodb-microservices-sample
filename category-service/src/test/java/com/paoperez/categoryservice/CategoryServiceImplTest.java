@@ -39,8 +39,8 @@ class CategoryServiceImplTest {
 
         Collection<Category> actual = service.getAllCategories();
 
-        verify(repository, times(1)).findAll();
         assertEquals(expected, actual);
+        verify(repository, times(1)).findAll();
     }
 
     @Test
@@ -58,8 +58,8 @@ class CategoryServiceImplTest {
     @Test
     void getCategory_whenNonexistingId_shouldThrowNotFoundException() {
         final String nonExistingId = "Z";
-        // final Optional<Category> nonExistingCategory = Optional.empty();
-        // when(repository.findById(nonExistingId)).thenReturn(nonExistingCategory);
+        final Optional<Category> nonExistingCategory = Optional.empty();
+        when(repository.findById(nonExistingId)).thenReturn(nonExistingCategory);
 
         Exception actual = assertThrows(CategoryNotFoundException.class, () -> service.getCategory(nonExistingId));
 
@@ -69,17 +69,17 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void createCategory_whenValidCategory_shouldReturnCategory() {
-        final String validName = "Blog";
-        when(repository.findByName(validName)).thenReturn(null);
-        final Category newCategory = Category.builder().name(validName).build();
-        final Category expected = Category.builder().id("A").name(validName).build();
+    void createCategory_whenNonexistingName_shouldReturnCreatedCategory() {
+        final String nonExistingName = "Blog";
+        when(repository.findByName(nonExistingName)).thenReturn(null);
+        final Category newCategory = Category.builder().name(nonExistingName).build();
+        final Category expected = Category.builder().id("A").name(nonExistingName).build();
         when(repository.save(newCategory)).thenReturn(expected);
 
         Category actual = service.createCategory(newCategory);
 
         assertEquals(expected, actual);
-        verify(repository, times(1)).findByName(validName);
+        verify(repository, times(1)).findByName(nonExistingName);
         verify(repository, times(1)).save(newCategory);
     }
 
@@ -100,19 +100,19 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void updateCategory_whenValidIdAndCategory_shouldNotThrowException() {
+    void updateCategory_whenExistingIdAndNonexistingName_shouldNotThrowException() {
         final String existingId = "A";
-        final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
-        when(repository.findById(existingId)).thenReturn(existingCategory);
-        final String updatedName = "New";
-        when(repository.findByName(updatedName)).thenReturn(null);
+        final Optional<Category> retrievedCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
+        when(repository.findById(existingId)).thenReturn(retrievedCategory);
+        final String nonExistingName = "New";
+        when(repository.findByName(nonExistingName)).thenReturn(null);
 
-        final Category updatedCategory = Category.builder().id(existingId).name(updatedName).build();
-        service.updateCategory(existingId, updatedCategory);
+        final Category updateCategory = Category.builder().id(existingId).name(nonExistingName).build();
+        service.updateCategory(existingId, updateCategory);
 
         verify(repository, times(1)).findById(existingId);
-        verify(repository, times(1)).findByName(updatedName);
-        verify(repository, times(1)).save(updatedCategory);
+        verify(repository, times(1)).findByName(nonExistingName);
+        verify(repository, times(1)).save(updateCategory);
     }
 
     @Test
@@ -121,36 +121,63 @@ class CategoryServiceImplTest {
         final Optional<Category> nonExistingCategory = Optional.empty();
         when(repository.findById(nonExistingId)).thenReturn(nonExistingCategory);
 
-        final String updatedName = "New";
-        final Category updatedCategory = Category.builder().id(nonExistingId).name(updatedName).build();
+        final String updateName = "New";
+        final Category updateCategory = Category.builder().id(nonExistingId).name(updateName).build();
         Exception actual = assertThrows(CategoryNotFoundException.class,
-                () -> service.updateCategory(nonExistingId, updatedCategory));
+                () -> service.updateCategory(nonExistingId, updateCategory));
 
         String expected = String.format("Category with id %s not found.", nonExistingId);
         assertEquals(expected, actual.getMessage());
         verify(repository, times(1)).findById(nonExistingId);
-        verify(repository, times(0)).findByName(updatedName);
-        verify(repository, times(0)).save(updatedCategory);
+        verify(repository, times(0)).findByName(updateName);
+        verify(repository, times(0)).save(updateCategory);
     }
 
     @Test
     void updateCategory_whenExistingName_shouldThrowAlreadyExistsException() {
         final String existingId = "A";
-        final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
-        when(repository.findById(existingId)).thenReturn(existingCategory);
+        final Optional<Category> retrievedCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
+        when(repository.findById(existingId)).thenReturn(retrievedCategory);
         final String existingName = "New";
-        final Category foundCategory = Category.builder().id("B").name(existingName).build();
-        when(repository.findByName(existingName)).thenReturn(foundCategory);
+        final Category existingCategory = Category.builder().id("B").name(existingName).build();
+        when(repository.findByName(existingName)).thenReturn(existingCategory);
 
-        final Category updatedCategory = Category.builder().id(existingId).name(existingName).build();
+        final Category updateCategory = Category.builder().id(existingId).name(existingName).build();
         Exception actual = assertThrows(CategoryAlreadyExistsException.class,
-                () -> service.updateCategory(existingId, updatedCategory));
+                () -> service.updateCategory(existingId, updateCategory));
 
         String expected = String.format("Category with name %s already exists.", existingName);
         assertEquals(expected, actual.getMessage());
         verify(repository, times(1)).findById(existingId);
         verify(repository, times(1)).findByName(existingName);
-        verify(repository, times(0)).save(updatedCategory);
+        verify(repository, times(0)).save(updateCategory);
+    }
+
+    @Test
+    void deleteCategory_whenExistingId_shouldNotThrowException() {
+        final String existingId = "A";
+        final Optional<Category> retrievedCategory = Optional
+                .of(Category.builder().id(existingId).name("Blog").build());
+        when(repository.findById(existingId)).thenReturn(retrievedCategory);
+
+        service.deleteCategory(existingId);
+
+        verify(repository, times(1)).findById(existingId);
+        verify(repository, times(1)).deleteById(existingId);
+    }
+
+    @Test
+    void deleteCategory_whenNonexistingId_shouldThrowNotFoundException() {
+        final String nonExistingId = "Z";
+        final Optional<Category> nonExistingCategory = Optional.empty();
+        when(repository.findById(nonExistingId)).thenReturn(nonExistingCategory);
+
+        Exception actual = assertThrows(CategoryNotFoundException.class, () -> service.deleteCategory(nonExistingId));
+
+        String expected = String.format("Category with id %s not found.", nonExistingId);
+        assertEquals(expected, actual.getMessage());
+        verify(repository, times(1)).findById(nonExistingId);
+        verify(repository, times(0)).deleteById(nonExistingId);
     }
 
 }
