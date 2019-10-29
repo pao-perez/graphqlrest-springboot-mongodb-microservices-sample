@@ -36,7 +36,7 @@ class CategoryController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Category> getCategory(final @PathVariable("id") @NotBlank String id) {
+    ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id) {
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
 
