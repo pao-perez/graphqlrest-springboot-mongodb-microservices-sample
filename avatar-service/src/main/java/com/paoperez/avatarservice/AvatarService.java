@@ -1,38 +1,15 @@
 package com.paoperez.avatarservice;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+interface AvatarService {
+    Collection<Avatar> getAllAvatars();
 
-@Service
-class AvatarService {
-    @Autowired
-    private AvatarRepository avatarRepository;
+    Avatar getAvatar(String id) throws AvatarNotFoundException;
 
-    List<Avatar> getAllAvatars() {
-        return avatarRepository.findAll();
-    }
+    Avatar createAvatar(Avatar avatar) throws AvatarAlreadyExistsException;
 
-    Avatar getAvatar(String id) {
-        return avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
-    }
+    void updateAvatar(String id, Avatar avatar) throws AvatarNotFoundException, AvatarAlreadyExistsException;
 
-    Avatar createAvatar(Avatar avatar) {
-        return avatarRepository.save(avatar);
-    }
-
-    Avatar updateAvatar(Avatar avatar) {
-        if (!avatarRepository.existsById(avatar.getId()))
-            throw new AvatarNotFoundException(avatar.getId());
-        return avatarRepository.save(avatar);
-    }
-
-    Boolean deleteAvatar(String id) {
-        if (!avatarRepository.existsById(id))
-            throw new AvatarNotFoundException(id);
-        avatarRepository.deleteById(id);
-        return true;
-    }
-
+    void deleteAvatar(String id) throws AvatarNotFoundException;
 }

@@ -4,16 +4,15 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.annotation.Id;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
-@AllArgsConstructor
+@Data
+@Builder
 class Avatar {
     @Id
     private String id;
-    @NotBlank
+    @NotBlank(message = "userName must not be blank")
     private String userName;
-    @NotBlank
     private String imageId;
 }

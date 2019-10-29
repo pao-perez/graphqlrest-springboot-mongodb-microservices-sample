@@ -1,11 +1,12 @@
 package com.paoperez.avatarservice;
 
-import java.util.List;
+import java.net.URI;
+import java.util.Collection;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,37 +18,50 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Validated
 @RestController
 @RequestMapping("/avatars")
 class AvatarController {
-    @Autowired
-    private AvatarService avatarService;
+    private final AvatarServiceImpl avatarService;
+
+    AvatarController(final AvatarServiceImpl avatarService) {
+        this.avatarService = avatarService;
+    }
 
     @GetMapping()
-    ResponseEntity<List<Avatar>> getAllAvatars() {
+    ResponseEntity<Collection<Avatar>> getAllAvatars() {
         return new ResponseEntity<>(avatarService.getAllAvatars(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Avatar> getAvatar(@PathVariable @NotBlank String id) {
+    ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id) {
         return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    ResponseEntity<Avatar> createAvatar(@RequestBody @Valid Avatar avatar) {
-        return new ResponseEntity<>(avatarService.createAvatar(avatar), HttpStatus.CREATED);
+    @PostMapping()
+    ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar) {
+        Avatar createdAvatar = avatarService.createAvatar(avatar);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdAvatar.getId()).toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
+
+        return new ResponseEntity<>(createdAvatar, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
-    ResponseEntity<Avatar> updateAvatar(@RequestBody @Valid Avatar avatar) {
-        return new ResponseEntity<>(avatarService.updateAvatar(avatar), HttpStatus.OK);
+    @PutMapping("/{id}")
+    ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id,
+            final @RequestBody @Valid Avatar avatar) {
+        avatarService.updateAvatar(id, avatar);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Boolean> deleteAvatar(@PathVariable @NotBlank String id) {
-        return new ResponseEntity<>(avatarService.deleteAvatar(id), HttpStatus.OK);
+    ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id) {
+        avatarService.deleteAvatar(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

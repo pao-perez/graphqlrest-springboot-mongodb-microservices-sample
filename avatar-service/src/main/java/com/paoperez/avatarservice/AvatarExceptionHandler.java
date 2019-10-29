@@ -1,7 +1,7 @@
 package com.paoperez.avatarservice;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
@@ -16,46 +16,56 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
-        @ExceptionHandler(AvatarNotFoundException.class)
-        final ResponseEntity<AvatarErrorResponse> handleNotFoundException(AvatarNotFoundException ex,
-                        WebRequest request) {
-                AvatarErrorResponse response = AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
+final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+    @ExceptionHandler(AvatarNotFoundException.class)
+    final ResponseEntity<AvatarErrorResponse> handleNotFoundException(final AvatarNotFoundException ex,
+            final WebRequest request) {
+        AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
 
-        @ExceptionHandler(ConstraintViolationException.class)
-        final ResponseEntity<AvatarErrorResponse> handleConstraintViolation(ConstraintViolationException ex,
-                        WebRequest request) {
-                List<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
-                                .collect(Collectors.toList());
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-                AvatarErrorResponse response = AvatarErrorResponse.builder().message(message.toString())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+    @ExceptionHandler(AvatarAlreadyExistsException.class)
+    final ResponseEntity<AvatarErrorResponse> handleAlreadyExistsException(final AvatarAlreadyExistsException ex,
+            final WebRequest request) {
+        AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.CONFLICT).build();
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-        @Override
-        protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                        HttpHeaders headers, HttpStatus status, WebRequest request) {
-                List<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
-                                .collect(Collectors.toList());
+    @ExceptionHandler(ConstraintViolationException.class)
+    final ResponseEntity<AvatarErrorResponse> handleConstraintViolation(final ConstraintViolationException ex,
+            final WebRequest request) {
+        Collection<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
+                .collect(Collectors.toList());
 
-                AvatarErrorResponse response = AvatarErrorResponse.builder().message(message.toString())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+        AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-        @ExceptionHandler(Exception.class)
-        final ResponseEntity<AvatarErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
-                AvatarErrorResponse response = AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
+            final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
+        Collection<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
+                .collect(Collectors.toList());
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+        AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    final ResponseEntity<AvatarErrorResponse> handleAllExceptions(final Exception ex, final WebRequest request) {
+        AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
 }
