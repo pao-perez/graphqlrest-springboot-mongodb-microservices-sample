@@ -102,8 +102,8 @@ class CategoryServiceImplTest {
     @Test
     void updateCategory_whenExistingIdAndNonexistingName_shouldNotThrowException() {
         final String existingId = "A";
-        final Optional<Category> retrievedCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
-        when(repository.findById(existingId)).thenReturn(retrievedCategory);
+        final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
+        when(repository.findById(existingId)).thenReturn(existingCategory);
         final String nonExistingName = "New";
         when(repository.findByName(nonExistingName)).thenReturn(null);
 
@@ -136,8 +136,8 @@ class CategoryServiceImplTest {
     @Test
     void updateCategory_whenExistingName_shouldThrowAlreadyExistsException() {
         final String existingId = "A";
-        final Optional<Category> retrievedCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
-        when(repository.findById(existingId)).thenReturn(retrievedCategory);
+        final Optional<Category> currentCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
+        when(repository.findById(existingId)).thenReturn(currentCategory);
         final String existingName = "New";
         final Category existingCategory = Category.builder().id("B").name(existingName).build();
         when(repository.findByName(existingName)).thenReturn(existingCategory);
@@ -156,9 +156,8 @@ class CategoryServiceImplTest {
     @Test
     void deleteCategory_whenExistingId_shouldNotThrowException() {
         final String existingId = "A";
-        final Optional<Category> retrievedCategory = Optional
-                .of(Category.builder().id(existingId).name("Blog").build());
-        when(repository.findById(existingId)).thenReturn(retrievedCategory);
+        final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Blog").build());
+        when(repository.findById(existingId)).thenReturn(existingCategory);
 
         service.deleteCategory(existingId);
 

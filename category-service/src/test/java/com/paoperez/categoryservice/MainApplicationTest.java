@@ -13,7 +13,7 @@ class MainApplicationTest {
     private CategoryController controller;
 
     @Test
-    void contextLoads() throws Exception {
+    void contextLoads() {
         assertNotNull(controller);
     }
 }
