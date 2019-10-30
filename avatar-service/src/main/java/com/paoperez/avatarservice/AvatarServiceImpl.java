@@ -34,11 +34,11 @@ final class AvatarServiceImpl implements AvatarService {
         avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
 
         final String avatarUserName = avatar.getUserName();
-        final Avatar retrievedAvatar = avatarRepository.findByUserName(avatarUserName);
-        if (retrievedAvatar != null && !retrievedAvatar.getId().equals(id))
+        final Avatar currentAvatar = avatarRepository.findByUserName(avatarUserName);
+        if (currentAvatar != null && !currentAvatar.getId().equals(id))
             throw new AvatarAlreadyExistsException(avatarUserName);
 
-        Avatar updateAvatar = Avatar.builder().userName(avatarUserName).id(id).build();
+        Avatar updateAvatar = Avatar.builder().userName(avatarUserName).imageId(avatar.getImageId()).id(id).build();
         avatarRepository.save(updateAvatar);
     }
 

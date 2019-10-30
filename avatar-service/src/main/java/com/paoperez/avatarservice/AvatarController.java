@@ -24,9 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/avatars")
 class AvatarController {
-    private final AvatarServiceImpl avatarService;
+    private final AvatarService avatarService;
 
-    AvatarController(final AvatarServiceImpl avatarService) {
+    AvatarController(final AvatarService avatarService) {
         this.avatarService = avatarService;
     }
 
