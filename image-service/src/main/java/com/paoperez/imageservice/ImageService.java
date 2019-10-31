@@ -1,38 +1,15 @@
 package com.paoperez.imageservice;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+interface ImageService {
+    Collection<Image> getAllImages();
 
-@Service
-class ImageService {
-    @Autowired
-    private ImageRepository imageRepository;
+    Image getImage(String id) throws ImageNotFoundException;
 
-    List<Image> getAllImages() {
-        return imageRepository.findAll();
-    }
+    Image createImage(Image image) throws ImageAlreadyExistsException;
 
-    Image getImage(String id) {
-        return imageRepository.findById(id).orElseThrow(() -> new ImageNotFoundException(id));
-    }
+    void updateImage(String id, Image image) throws ImageNotFoundException;
 
-    Image createImage(Image image) {
-        return imageRepository.save(image);
-    }
-
-    Image updateImage(Image image) {
-        if (!imageRepository.existsById(image.getId()))
-            throw new ImageNotFoundException(image.getId());
-        return imageRepository.save(image);
-    }
-
-    Boolean deleteImage(String id) {
-        if (!imageRepository.existsById(id))
-            throw new ImageNotFoundException(id);
-        imageRepository.deleteById(id);
-        return true;
-    }
-
+    void deleteImage(String id) throws ImageNotFoundException;
 }

@@ -6,11 +6,11 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.data.annotation.Id;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
-@AllArgsConstructor
+@Data
+@Builder
 class Image {
     @Id
     private String id;

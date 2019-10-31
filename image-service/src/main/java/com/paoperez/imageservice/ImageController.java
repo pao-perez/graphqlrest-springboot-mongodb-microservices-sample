@@ -1,11 +1,12 @@
 package com.paoperez.imageservice;
 
-import java.util.List;
+import java.net.URI;
+import java.util.Collection;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,37 +18,49 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Validated
 @RestController
 @RequestMapping("/images")
 class ImageController {
-    @Autowired
-    private ImageService imageService;
+    private final ImageService imageService;
+
+    ImageController(final ImageService imageService) {
+        this.imageService = imageService;
+    }
 
     @GetMapping()
-    ResponseEntity<List<Image>> getAllImages() {
+    ResponseEntity<Collection<Image>> getAllImages() {
         return new ResponseEntity<>(imageService.getAllImages(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Image> getImage(@PathVariable @NotBlank String id) {
+    ResponseEntity<Image> getImage(final @PathVariable @NotBlank String id) {
         return new ResponseEntity<>(imageService.getImage(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    ResponseEntity<Image> createImage(@RequestBody @Valid Image image) {
-        return new ResponseEntity<>(imageService.createImage(image), HttpStatus.CREATED);
+    @PostMapping()
+    ResponseEntity<Image> createImage(final @RequestBody @Valid Image image) {
+        Image createdImage = imageService.createImage(image);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdImage.getId()).toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
+
+        return new ResponseEntity<>(createdImage, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
-    ResponseEntity<Image> updateImage(@RequestBody @Valid Image image) {
-        return new ResponseEntity<>(imageService.updateImage(image), HttpStatus.OK);
+    @PutMapping("/{id}")
+    ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id, final @RequestBody @Valid Image image) {
+        imageService.updateImage(id, image);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Boolean> deleteImage(@PathVariable @NotBlank String id) {
-        return new ResponseEntity<>(imageService.deleteImage(id), HttpStatus.OK);
+    ResponseEntity<Void> deleteImage(final @PathVariable @NotBlank String id) {
+        imageService.deleteImage(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
