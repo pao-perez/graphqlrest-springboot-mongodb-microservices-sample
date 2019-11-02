@@ -46,13 +46,12 @@ class AvatarServiceImplTest {
     @Test
     void getAvatar_whenExistingId_shouldReturnAvatar() {
         final String existingId = "A";
-        final Optional<Avatar> expected = Optional
-                .of(Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build());
-        when(repository.findById(existingId)).thenReturn(expected);
+        final Avatar expected = Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build();
+        when(repository.findById(existingId)).thenReturn(Optional.ofNullable(expected));
 
         Avatar actual = service.getAvatar(existingId);
 
-        assertEquals(expected.get(), actual);
+        assertEquals(expected, actual);
         verify(repository, times(1)).findById(existingId);
     }
 
@@ -102,8 +101,8 @@ class AvatarServiceImplTest {
     @Test
     void updateAvatar_whenExistingIdAndNonexistingUserName_shouldNotThrowException() {
         final String existingId = "A";
-        final Optional<Avatar> existingAvatar = Optional.of(Avatar.builder().id(existingId).userName("Old").build());
-        when(repository.findById(existingId)).thenReturn(existingAvatar);
+        final Optional<Avatar> currentAvatar = Optional.of(Avatar.builder().id(existingId).userName("Old").build());
+        when(repository.findById(existingId)).thenReturn(currentAvatar);
         final String nonExistingUserName = "New";
         when(repository.findByUserName(nonExistingUserName)).thenReturn(null);
 

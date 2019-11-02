@@ -148,35 +148,35 @@ class AvatarControllerTest {
 
     @Test
     void updateAvatar_whenExistingUserName_shouldReturnConflict() throws Exception {
-        final String existingId = "A";
+        final String currentId = "A";
         final String existingUserName = "userA";
-        final Avatar existingAvatar = Avatar.builder().id(existingId).userName(existingUserName).imageId("imageIdA")
+        final Avatar currentAvatar = Avatar.builder().id(currentId).userName(existingUserName).imageId("imageIdA")
                 .build();
-        doThrow(new AvatarAlreadyExistsException(existingUserName)).when(service).updateAvatar(existingId,
-                existingAvatar);
+        doThrow(new AvatarAlreadyExistsException(existingUserName)).when(service).updateAvatar(currentId,
+                currentAvatar);
 
         this.mockMvc
-                .perform(put("/avatars/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(existingAvatar)))
+                .perform(put("/avatars/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(currentAvatar)))
                 .andExpect(status().isConflict()).andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
                 .andExpect(jsonPath("$.message")
                         .value(String.format("Avatar with userName %s already exists.", existingUserName)));
 
-        verify(service, times(1)).updateAvatar(existingId, existingAvatar);
+        verify(service, times(1)).updateAvatar(currentId, currentAvatar);
     }
 
     @Test
     void updateAvatar_whenBlankUserName_shouldReturnBadRequest() throws Exception {
-        final String existingId = "A";
-        final Avatar blankAvatar = Avatar.builder().id(existingId).userName(" ").imageId("imageIdA").build();
+        final String currentId = "A";
+        final Avatar blankAvatar = Avatar.builder().id(currentId).userName(" ").imageId("imageIdA").build();
 
         this.mockMvc
-                .perform(put("/avatars/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                .perform(put("/avatars/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankAvatar)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
                 .andExpect(jsonPath("$.message").value(containsString("userName must not be blank")));
 
-        verify(service, times(0)).updateAvatar(existingId, blankAvatar);
+        verify(service, times(0)).updateAvatar(currentId, blankAvatar);
     }
 
     @Test

@@ -117,9 +117,9 @@ class ImageServiceImplTest {
         final String currentAlt = "Image A";
         final Integer currentWidth = 150;
         final Integer currentHeight = 150;
-        final Optional<Image> existingImage = Optional.of(Image.builder().id(existingId).name(currentName)
+        final Optional<Image> currentImage = Optional.of(Image.builder().id(existingId).name(currentName)
                 .url("/path/to/old/image").alt(currentAlt).width(currentWidth).height(currentHeight).build());
-        when(repository.findById(existingId)).thenReturn(existingImage);
+        when(repository.findById(existingId)).thenReturn(currentImage);
         final String nonExistingUrl = "/path/to/new/image";
         when(repository.findByUrl(nonExistingUrl)).thenReturn(null);
 
