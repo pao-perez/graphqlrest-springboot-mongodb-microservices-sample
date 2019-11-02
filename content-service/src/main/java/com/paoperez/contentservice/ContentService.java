@@ -1,38 +1,15 @@
 package com.paoperez.contentservice;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+interface ContentService {
+    Collection<Content> getAllContents();
 
-@Service
-class ContentService {
-    @Autowired
-    private ContentRepository contentRepository;
+    Content getContent(String id) throws ContentNotFoundException;
 
-    List<Content> getAllContents() {
-        return contentRepository.findAll();
-    }
+    Content createContent(Content content);
 
-    Content getContent(String id) {
-        return contentRepository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
-    }
+    void updateContent(String id, Content content) throws ContentNotFoundException;
 
-    Content createContent(Content content) {
-        return contentRepository.save(content);
-    }
-
-    Content updateContent(Content content) {
-        if (!contentRepository.existsById(content.getId()))
-            throw new ContentNotFoundException(content.getId());
-        return contentRepository.save(content);
-    }
-
-    Boolean deleteContent(String id) {
-        if (!contentRepository.existsById(id))
-            throw new ContentNotFoundException(id);
-        contentRepository.deleteById(id);
-        return true;
-    }
-
+    void deleteContent(String id) throws ContentNotFoundException;
 }

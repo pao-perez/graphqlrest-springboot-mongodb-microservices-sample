@@ -1,11 +1,12 @@
 package com.paoperez.contentservice;
 
-import java.util.List;
+import java.net.URI;
+import java.util.Collection;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,37 +18,50 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Validated
 @RestController
 @RequestMapping("/contents")
 class ContentController {
-    @Autowired
-    private ContentService contentService;
+    private final ContentService contentService;
+
+    ContentController(final ContentService contentService) {
+        this.contentService = contentService;
+    }
 
     @GetMapping()
-    ResponseEntity<List<Content>> getAllContents() {
+    ResponseEntity<Collection<Content>> getAllContents() {
         return new ResponseEntity<>(contentService.getAllContents(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Content> getContent(@PathVariable @NotBlank String id) {
+    ResponseEntity<Content> getContent(final @PathVariable @NotBlank String id) {
         return new ResponseEntity<>(contentService.getContent(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    ResponseEntity<Content> createContent(@RequestBody @Valid Content content) {
-        return new ResponseEntity<>(contentService.createContent(content), HttpStatus.CREATED);
+    @PostMapping()
+    ResponseEntity<Content> createContent(final @RequestBody @Valid Content content) {
+        Content createdContent = contentService.createContent(content);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdContent.getId()).toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
+
+        return new ResponseEntity<>(createdContent, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
-    ResponseEntity<Content> updateContent(@RequestBody @Valid Content content) {
-        return new ResponseEntity<>(contentService.updateContent(content), HttpStatus.OK);
+    @PutMapping("/{id}")
+    ResponseEntity<Void> updateContent(final @PathVariable @NotBlank String id,
+            final @RequestBody @Valid Content content) {
+        contentService.updateContent(id, content);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Boolean> deleteContent(@PathVariable @NotBlank String id) {
-        return new ResponseEntity<>(contentService.deleteContent(id), HttpStatus.OK);
+    ResponseEntity<Void> deleteContent(final @PathVariable @NotBlank String id) {
+        contentService.deleteContent(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

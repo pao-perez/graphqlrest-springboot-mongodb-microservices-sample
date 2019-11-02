@@ -6,15 +6,14 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.data.annotation.Id;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
-@AllArgsConstructor
+@Data
+@Builder
 class Content {
     @Id
     private String id;
-    @NotBlank
     private String created;
     private String updated;
     @NotBlank

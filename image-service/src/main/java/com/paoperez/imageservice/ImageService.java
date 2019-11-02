@@ -9,7 +9,7 @@ interface ImageService {
 
     Image createImage(Image image) throws ImageAlreadyExistsException;
 
-    void updateImage(String id, Image image) throws ImageNotFoundException;
+    void updateImage(String id, Image image) throws ImageNotFoundException, ImageAlreadyExistsException;
 
     void deleteImage(String id) throws ImageNotFoundException;
 }

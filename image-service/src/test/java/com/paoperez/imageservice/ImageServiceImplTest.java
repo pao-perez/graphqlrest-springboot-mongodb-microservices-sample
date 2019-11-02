@@ -50,7 +50,7 @@ class ImageServiceImplTest {
         final String existingId = "A";
         final Image expected = Image.builder().id(existingId).name("imageA").url("/path/to/imageA").alt("Image A")
                 .width(150).height(150).build();
-        when(repository.findById(existingId)).thenReturn(Optional.ofNullable(expected));
+        when(repository.findById(existingId)).thenReturn(Optional.of(expected));
 
         Image actual = service.getImage(existingId);
 

@@ -1,7 +1,7 @@
 package com.paoperez.contentservice;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
@@ -16,46 +16,47 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-class ContentExceptionHandler extends ResponseEntityExceptionHandler {
-        @ExceptionHandler(ContentNotFoundException.class)
-        final ResponseEntity<ContentErrorResponse> handleNotFoundException(ContentNotFoundException ex,
-                        WebRequest request) {
-                ContentErrorResponse response = ContentErrorResponse.builder().message(ex.getLocalizedMessage())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
+final class ContentExceptionHandler extends ResponseEntityExceptionHandler {
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+    @ExceptionHandler(ContentNotFoundException.class)
+    final ResponseEntity<ContentErrorResponse> handleNotFoundException(final ContentNotFoundException ex,
+            final WebRequest request) {
+        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(ex.getLocalizedMessage())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
 
-        @ExceptionHandler(ConstraintViolationException.class)
-        final ResponseEntity<ContentErrorResponse> handleConstraintViolation(ConstraintViolationException ex,
-                        WebRequest request) {
-                List<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
-                                .collect(Collectors.toList());
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-                ContentErrorResponse response = ContentErrorResponse.builder().message(message.toString())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+    @ExceptionHandler(ConstraintViolationException.class)
+    final ResponseEntity<ContentErrorResponse> handleConstraintViolation(final ConstraintViolationException ex,
+            final WebRequest request) {
+        Collection<String> message = ex.getConstraintViolations().stream().map(x -> x.getMessage())
+                .collect(Collectors.toList());
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(message.toString())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
-        @Override
-        protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                        HttpHeaders headers, HttpStatus status, WebRequest request) {
-                List<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
-                                .collect(Collectors.toList());
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-                ContentErrorResponse response = ContentErrorResponse.builder().message(message.toString())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
+            final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
+        Collection<String> message = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
+                .collect(Collectors.toList());
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(message.toString())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
-        @ExceptionHandler(Exception.class)
-        final ResponseEntity<ContentErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
-                ContentErrorResponse response = ContentErrorResponse.builder().message(ex.getLocalizedMessage())
-                                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
-                return new ResponseEntity<>(response, response.getStatus());
-        }
+    @ExceptionHandler(Exception.class)
+    final ResponseEntity<ContentErrorResponse> handleAllExceptions(final Exception ex, final WebRequest request) {
+        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(ex.getLocalizedMessage())
+                .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        return new ResponseEntity<>(responseBody, responseBody.getStatus());
+    }
 
 }
