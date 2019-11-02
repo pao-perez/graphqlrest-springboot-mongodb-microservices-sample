@@ -145,34 +145,34 @@ class CategoryControllerTest {
 
     @Test
     void updateCategory_whenExistingName_shouldReturnConflict() throws Exception {
-        final String existingId = "A";
+        final String currentId = "A";
         final String existingName = "Blog";
-        final Category existingCategory = Category.builder().id(existingId).name(existingName).build();
-        doThrow(new CategoryAlreadyExistsException(existingName)).when(service).updateCategory(existingId,
-                existingCategory);
+        final Category currentCategory = Category.builder().id(currentId).name(existingName).build();
+        doThrow(new CategoryAlreadyExistsException(existingName)).when(service).updateCategory(currentId,
+                currentCategory);
 
         this.mockMvc
-                .perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(existingCategory)))
+                .perform(put("/categories/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(currentCategory)))
                 .andExpect(status().isConflict()).andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
                 .andExpect(jsonPath("$.message")
                         .value(String.format("Category with name %s already exists.", existingName)));
 
-        verify(service, times(1)).updateCategory(existingId, existingCategory);
+        verify(service, times(1)).updateCategory(currentId, currentCategory);
     }
 
     @Test
     void updateCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
-        final String existingId = "A";
-        final Category blankCategory = Category.builder().id(existingId).name(" ").build();
+        final String currentId = "A";
+        final Category blankCategory = Category.builder().id(currentId).name(" ").build();
 
         this.mockMvc
-                .perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                .perform(put("/categories/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankCategory)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
                 .andExpect(jsonPath("$.message").value(containsString("name must not be blank")));
 
-        verify(service, times(0)).updateCategory(existingId, blankCategory);
+        verify(service, times(0)).updateCategory(currentId, blankCategory);
     }
 
     @Test

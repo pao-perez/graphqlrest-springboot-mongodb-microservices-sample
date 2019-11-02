@@ -46,12 +46,12 @@ class CategoryServiceImplTest {
     @Test
     void getCategory_whenExistingId_shouldReturnCategory() {
         final String existingId = "A";
-        final Optional<Category> expected = Optional.of(Category.builder().id(existingId).name("Blog").build());
-        when(repository.findById(existingId)).thenReturn(expected);
+        final Category expected = Category.builder().id(existingId).name("Blog").build();
+        when(repository.findById(existingId)).thenReturn(Optional.of(expected));
 
         Category actual = service.getCategory(existingId);
 
-        assertEquals(expected.get(), actual);
+        assertEquals(expected, actual);
         verify(repository, times(1)).findById(existingId);
     }
 
@@ -102,8 +102,8 @@ class CategoryServiceImplTest {
     @Test
     void updateCategory_whenExistingIdAndNonexistingName_shouldNotThrowException() {
         final String existingId = "A";
-        final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
-        when(repository.findById(existingId)).thenReturn(existingCategory);
+        final Optional<Category> currentCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
+        when(repository.findById(existingId)).thenReturn(currentCategory);
         final String nonExistingName = "New";
         when(repository.findByName(nonExistingName)).thenReturn(null);
 
