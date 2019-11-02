@@ -48,13 +48,13 @@ class ImageServiceImplTest {
     @Test
     void getImage_whenExistingId_shouldReturnImage() {
         final String existingId = "A";
-        final Optional<Image> expected = Optional.of(Image.builder().id(existingId).name("imageA")
-                .url("/path/to/imageA").alt("Image A").width(150).height(150).build());
-        when(repository.findById(existingId)).thenReturn(expected);
+        final Image expected = Image.builder().id(existingId).name("imageA").url("/path/to/imageA").alt("Image A")
+                .width(150).height(150).build();
+        when(repository.findById(existingId)).thenReturn(Optional.ofNullable(expected));
 
         Image actual = service.getImage(existingId);
 
-        assertEquals(expected.get(), actual);
+        assertEquals(expected, actual);
         verify(repository, times(1)).findById(existingId);
     }
 

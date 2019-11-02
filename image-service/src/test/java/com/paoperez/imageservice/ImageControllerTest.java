@@ -159,35 +159,34 @@ class ImageControllerTest {
 
     @Test
     void updateImage_whenExistingUrl_shouldReturnConflict() throws Exception {
-        final String existingId = "A";
+        final String currentId = "A";
         final String existingUrl = "/path/to/existing/image";
-        final Image existingImage = Image.builder().id(existingId).name("imageA").url(existingUrl).alt("Image A")
+        final Image currentImage = Image.builder().id(currentId).name("imageA").url(existingUrl).alt("Image A")
                 .height(150).width(150).build();
-        doThrow(new ImageAlreadyExistsException(existingUrl)).when(service).updateImage(existingId, existingImage);
+        doThrow(new ImageAlreadyExistsException(existingUrl)).when(service).updateImage(currentId, currentImage);
 
         this.mockMvc
-                .perform(put("/images/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(existingImage)))
+                .perform(put("/images/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(currentImage)))
                 .andExpect(status().isConflict()).andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
                 .andExpect(
                         jsonPath("$.message").value(String.format("Image with url %s already exists.", existingUrl)));
 
-        verify(service, times(1)).updateImage(existingId, existingImage);
+        verify(service, times(1)).updateImage(currentId, currentImage);
     }
 
     @Test
     void updateImage_whenBlankUrl_shouldReturnBadRequest() throws Exception {
-        final String existingId = "A";
-        final Image blankImage = Image.builder().id(existingId).name("imageA").url(" ").alt("Image A").height(150)
-                .width(150).build();
+        final String currentId = "A";
+        final Image blankImage = Image.builder().id(currentId).url(" ").build();
 
         this.mockMvc
-                .perform(put("/images/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                .perform(put("/images/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankImage)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
                 .andExpect(jsonPath("$.message").value(containsString("url must not be blank")));
 
-        verify(service, times(0)).updateImage(existingId, blankImage);
+        verify(service, times(0)).updateImage(currentId, blankImage);
     }
 
     @Test

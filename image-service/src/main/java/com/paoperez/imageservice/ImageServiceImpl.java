@@ -38,8 +38,8 @@ final class ImageServiceImpl implements ImageService {
         if (currentImage != null && !currentImage.getId().equals(id))
             throw new ImageAlreadyExistsException(imageUrl);
 
-        Image updateImage = Image.builder().url(imageUrl).alt(image.getAlt()).height(image.getHeight())
-                .width(image.getWidth()).id(id).build();
+        Image updateImage = Image.builder().url(imageUrl).name(image.getName()).alt(image.getAlt())
+                .height(image.getHeight()).width(image.getWidth()).id(id).build();
         imageRepository.save(updateImage);
     }
 
