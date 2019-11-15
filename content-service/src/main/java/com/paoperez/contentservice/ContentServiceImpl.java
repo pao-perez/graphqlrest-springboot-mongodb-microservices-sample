@@ -1,48 +1,50 @@
 package com.paoperez.contentservice;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 
 @Service
 final class ContentServiceImpl implements ContentService {
-    private final ContentRepository contentRepository;
+    private final ContentRepository repository;
+    private final Content.Builder builder;
 
-    ContentServiceImpl(final ContentRepository contentRepository) {
-        this.contentRepository = contentRepository;
+    ContentServiceImpl(final ContentRepository repository, final Content.Builder builder) {
+        this.repository = repository;
+        this.builder = builder;
     }
 
     public Collection<Content> getAllContents() {
-        return contentRepository.findAll();
+        return repository.findAll();
     }
 
     public Content getContent(final String id) throws ContentNotFoundException {
-        return contentRepository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
+        return repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
     }
 
     public Content createContent(final Content content) {
-        final Content createContent = Content.builder().avatarId(content.getAvatarId())
-                .categoryId(content.getCategoryId()).imageId(content.getImageId()).title(content.getTitle())
-                .body(content.getBody()).rank(content.getRank()).created(LocalDateTime.now().toString()).build();
+        // TODO : Create builder constructor with existing obj then map
+        final Content createContent = builder.avatarId(content.getAvatarId()).categoryId(content.getCategoryId())
+                .imageId(content.getImageId()).title(content.getTitle()).body(content.getBody()).rank(content.getRank())
+                .withCreated().build();
 
-        return contentRepository.save(createContent);
+        return repository.save(createContent);
     }
 
     public void updateContent(final String id, final Content content) throws ContentNotFoundException {
-        contentRepository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
-        final Content updateContent = Content.builder().id(id).avatarId(content.getAvatarId())
-                .categoryId(content.getCategoryId()).imageId(content.getImageId()).title(content.getTitle())
-                .body(content.getBody()).rank(content.getRank()).created(content.getCreated())
-                .updated(LocalDateTime.now().toString()).build();
+        // TODO : Create builder constructor with existing obj then map
+        repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
+        final Content updateContent = builder.id(id).avatarId(content.getAvatarId()).categoryId(content.getCategoryId())
+                .imageId(content.getImageId()).title(content.getTitle()).body(content.getBody()).rank(content.getRank())
+                .created(content.getCreated()).withUpdated().build();
 
-        contentRepository.save(updateContent);
+        repository.save(updateContent);
     }
 
     public void deleteContent(final String id) throws ContentNotFoundException {
-        contentRepository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
+        repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
 
-        contentRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
 }

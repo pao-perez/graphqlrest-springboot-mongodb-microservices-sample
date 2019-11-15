@@ -42,12 +42,12 @@ class ContentControllerTest {
 
     @Test
     void getAllContents_shouldReturnOk() throws Exception {
-        final Content contentA = Content.builder().avatarId("avatarIdA").categoryId("categoryIdA").imageId("imageIdA")
-                .title("Blog A").body("Lorem ipsum dolor").rank(1).id("A").created(LocalDateTime.now().toString())
-                .build();
-        final Content contentB = Content.builder().avatarId("avatarIdB").categoryId("categoryIdB").imageId("imageIdB")
-                .title("Blog B").body("Ut enim ad minim veniam").rank(2).id("B").created(LocalDateTime.now().toString())
-                .build();
+        final Content contentA = new Content.Builder().avatarId("avatarIdA").categoryId("categoryIdA")
+                .imageId("imageIdA").title("Blog A").body("Lorem ipsum dolor").rank(1).id("A")
+                .created(LocalDateTime.now().toString()).build();
+        final Content contentB = new Content.Builder().avatarId("avatarIdB").categoryId("categoryIdB")
+                .imageId("imageIdB").title("Blog B").body("Ut enim ad minim veniam").rank(2).id("B")
+                .created(LocalDateTime.now().toString()).build();
 
         final Collection<Content> contents = ImmutableList.of(contentA, contentB);
         when(service.getAllContents()).thenReturn(contents);
@@ -61,7 +61,7 @@ class ContentControllerTest {
     @Test
     void getContent_whenExistingId_shouldReturnOk() throws Exception {
         final String existingId = "A";
-        final Content existingContent = Content.builder().avatarId("avatarIdA").categoryId("categoryIdA")
+        final Content existingContent = new Content.Builder().avatarId("avatarIdA").categoryId("categoryIdA")
                 .imageId("imageIdA").title("Blog A").body("Lorem ipsum dolor").rank(1).id(existingId)
                 .created(LocalDateTime.now().toString()).build();
         when(service.getContent(existingId)).thenReturn(existingContent);
@@ -98,17 +98,22 @@ class ContentControllerTest {
 
     @Test
     void createContent_shouldReturnCreated() throws Exception {
-        final Content newContent = Content.builder().avatarId("avatarIdA").categoryId("categoryIdA").imageId("imageIdA")
-                .title("Blog A").body("Lorem ipsum dolor").rank(1).build();
+        final String avatarId = "avatarIdA";
+        final String categoryId = "categoryIdA";
+        final String imageId = "imageIdA";
+        final String title = "Blog A";
+        final String body = "Lorem ipsum dolor";
+        final Integer rank = 1;
+        final Content newContent = new Content.Builder().avatarId(avatarId).categoryId(categoryId).imageId(imageId)
+                .title(title).body(body).rank(rank).build();
         final String createdId = "A";
-        final Content createdContent = Content.builder().avatarId("avatarIdA").categoryId("categoryIdA")
-                .imageId("imageIdA").title("Blog A").body("Lorem ipsum dolor").rank(1)
-                .created(LocalDateTime.now().toString()).id(createdId).build();
-        final String createdLocation = "http://localhost/contents/" + createdId;
+        final Content createdContent = new Content.Builder().avatarId(avatarId).categoryId(categoryId).imageId(imageId)
+                .title(title).body(body).rank(rank).created(LocalDateTime.now().toString()).id(createdId).build();
         when(service.createContent(newContent)).thenReturn(createdContent);
 
+        final String createdLocation = "http://localhost/contents/" + createdId;
         this.mockMvc
-                .perform(post("/Contents").contentType(MediaType.APPLICATION_JSON)
+                .perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newContent)))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(objectMapper.writeValueAsString(createdContent)))
@@ -118,14 +123,21 @@ class ContentControllerTest {
     }
 
     @Test
-    void createContent_whenBlankTitle_shouldReturnBadRequest() throws Exception {
-        final Content blankContent = Content.builder().title(" ").build();
+    void createContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
+        final String blank = " ";
+        final Content blankContent = new Content.Builder().title(blank).body(blank).avatarId(blank).categoryId(blank)
+                .imageId(blank).build();
 
         this.mockMvc
                 .perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankContent)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("title must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("imageId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("avatarId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("categoryId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("title must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("body must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("rank must not be empty")));
 
         verify(service, times(0)).createContent(blankContent);
     }
@@ -133,7 +145,7 @@ class ContentControllerTest {
     @Test
     void updateContent_whenExistingId_shouldReturnNoContent() throws Exception {
         final String existingId = "A";
-        final Content updateContent = Content.builder().id(existingId).avatarId("avatarId").categoryId("categoryId")
+        final Content updateContent = new Content.Builder().id(existingId).avatarId("avatarId").categoryId("categoryId")
                 .imageId("imageId").title("Blog A").body("Lorem ipsum dolor").rank(1)
                 .created(LocalDateTime.now().toString()).build();
 
@@ -144,15 +156,22 @@ class ContentControllerTest {
     }
 
     @Test
-    void updateContent_whenBlankTitle_shouldReturnBadRequest() throws Exception {
+    void updateContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
+        final String blank = " ";
         final String currentId = "A";
-        final Content blankContent = Content.builder().id(currentId).title(" ").build();
+        final Content blankContent = new Content.Builder().id(currentId).title(blank).body(blank).avatarId(blank)
+                .categoryId(blank).imageId(blank).rank(0).build();
 
         this.mockMvc
                 .perform(put("/contents/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankContent)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("title must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("imageId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("avatarId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("categoryId must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("title must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("body must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("rank must be a positive number")));
 
         verify(service, times(0)).updateContent(currentId, blankContent);
     }
@@ -160,7 +179,7 @@ class ContentControllerTest {
     @Test
     void updateContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
         final String nonExistingId = "Z";
-        final Content nonExistingContent = Content.builder().id(nonExistingId).avatarId("avatarId")
+        final Content nonExistingContent = new Content.Builder().id(nonExistingId).avatarId("avatarId")
                 .categoryId("categoryId").imageId("imageId").title("Blog A").body("Lorem ipsum dolor").rank(1)
                 .created(LocalDateTime.now().toString()).build();
         doThrow(new ContentNotFoundException(nonExistingId)).when(service).updateContent(nonExistingId,
