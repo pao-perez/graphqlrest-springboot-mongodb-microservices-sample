@@ -44,7 +44,7 @@ class AvatarServiceImplTest {
     }
 
     @Test
-    void getAvatar_whenExistingId_shouldReturnAvatar() {
+    void getAvatar_whenExistingId_shouldReturnAvatar() throws Exception {
         final String existingId = "A";
         final Avatar expected = Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build();
         when(repository.findById(existingId)).thenReturn(Optional.ofNullable(expected));
@@ -69,7 +69,7 @@ class AvatarServiceImplTest {
     }
 
     @Test
-    void createAvatar_whenNonexistingUserName_shouldReturnCreatedAvatar() {
+    void createAvatar_whenNonexistingUserName_shouldReturnCreatedAvatar() throws Exception {
         final String nonExistingUserName = "userA";
         when(repository.findByUserName(nonExistingUserName)).thenReturn(null);
         final Avatar newAvatar = Avatar.builder().userName(nonExistingUserName).build();
@@ -99,7 +99,8 @@ class AvatarServiceImplTest {
     }
 
     @Test
-    void updateAvatar_whenExistingIdAndNonexistingUserName_shouldNotThrowException() {
+    void updateAvatar_whenExistingIdAndNonexistingUserName_shouldNotThrowException()
+            throws AvatarNotFoundException, AvatarAlreadyExistsException {
         final String existingId = "A";
         final Optional<Avatar> currentAvatar = Optional.of(Avatar.builder().id(existingId).userName("Old").build());
         when(repository.findById(existingId)).thenReturn(currentAvatar);
@@ -156,7 +157,7 @@ class AvatarServiceImplTest {
     }
 
     @Test
-    void deleteAvatar_whenExistingId_shouldNotThrowException() {
+    void deleteAvatar_whenExistingId_shouldNotThrowException() throws Exception {
         final String existingId = "A";
         final Optional<Avatar> existingAvatar = Optional
                 .of(Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build());

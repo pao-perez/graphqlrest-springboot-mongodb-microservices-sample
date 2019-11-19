@@ -36,12 +36,13 @@ class CategoryController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id) throws CategoryNotFoundException {
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
 
     @PostMapping()
-    ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category) {
+    ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category)
+            throws CategoryAlreadyExistsException {
         Category createdCategory = categoryService.createCategory(category);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdCategory.getId()).toUri();
@@ -53,13 +54,14 @@ class CategoryController {
 
     @PutMapping("/{id}")
     ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
-            final @RequestBody @Valid Category category) {
+            final @RequestBody @Valid Category category)
+            throws CategoryNotFoundException, CategoryAlreadyExistsException {
         categoryService.updateCategory(id, category);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) throws CategoryNotFoundException {
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

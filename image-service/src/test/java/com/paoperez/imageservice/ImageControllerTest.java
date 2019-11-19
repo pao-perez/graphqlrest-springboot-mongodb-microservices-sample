@@ -133,14 +133,18 @@ class ImageControllerTest {
     }
 
     @Test
-    void createImage_whenBlankUrl_shouldReturnBadRequest() throws Exception {
-        final Image blankImage = Image.builder().url(" ").build();
+    void createImage_whenBlankFields_shouldReturnBadRequest() throws Exception {
+        final Image blankImage = Image.builder().build();
 
         this.mockMvc
                 .perform(post("/images").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankImage)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("url must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("name must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("alt must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("url must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("height must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("width must not be blank")));
 
         verify(service, times(0)).createImage(blankImage);
     }
@@ -176,15 +180,19 @@ class ImageControllerTest {
     }
 
     @Test
-    void updateImage_whenBlankUrl_shouldReturnBadRequest() throws Exception {
+    void updateImage_whenBlankFields_shouldReturnBadRequest() throws Exception {
         final String currentId = "A";
-        final Image blankImage = Image.builder().id(currentId).url(" ").build();
+        final Image blankImage = Image.builder().id(currentId).width(0).height(0).build();
 
         this.mockMvc
                 .perform(put("/images/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankImage)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("url must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("name must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("alt must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("url must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("width must be a positive number")))
+                .andExpect(jsonPath("$.message").value(containsString("height must be a positive number")));
 
         verify(service, times(0)).updateImage(currentId, blankImage);
     }

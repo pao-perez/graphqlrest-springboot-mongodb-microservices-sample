@@ -1,6 +1,6 @@
 package com.paoperez.avatarservice;
 
-class AvatarAlreadyExistsException extends RuntimeException {
+class AvatarAlreadyExistsException extends Exception {
     private static final long serialVersionUID = 1L;
 
     AvatarAlreadyExistsException(final String userName) {

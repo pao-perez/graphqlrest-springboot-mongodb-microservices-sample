@@ -36,12 +36,12 @@ class ImageController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Image> getImage(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Image> getImage(final @PathVariable @NotBlank String id) throws ImageNotFoundException {
         return new ResponseEntity<>(imageService.getImage(id), HttpStatus.OK);
     }
 
     @PostMapping()
-    ResponseEntity<Image> createImage(final @RequestBody @Valid Image image) {
+    ResponseEntity<Image> createImage(final @RequestBody @Valid Image image) throws ImageAlreadyExistsException {
         Image createdImage = imageService.createImage(image);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdImage.getId()).toUri();
@@ -52,13 +52,14 @@ class ImageController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id, final @RequestBody @Valid Image image) {
+    ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id, final @RequestBody @Valid Image image)
+            throws ImageNotFoundException, ImageAlreadyExistsException {
         imageService.updateImage(id, image);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteImage(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Void> deleteImage(final @PathVariable @NotBlank String id) throws ImageNotFoundException {
         imageService.deleteImage(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

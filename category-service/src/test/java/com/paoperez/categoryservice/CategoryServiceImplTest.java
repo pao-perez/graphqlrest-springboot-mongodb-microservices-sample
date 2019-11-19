@@ -44,7 +44,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void getCategory_whenExistingId_shouldReturnCategory() {
+    void getCategory_whenExistingId_shouldReturnCategory() throws CategoryNotFoundException {
         final String existingId = "A";
         final Category expected = Category.builder().id(existingId).name("Blog").build();
         when(repository.findById(existingId)).thenReturn(Optional.of(expected));
@@ -69,7 +69,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void createCategory_whenNonexistingName_shouldReturnCreatedCategory() {
+    void createCategory_whenNonexistingName_shouldReturnCreatedCategory() throws CategoryAlreadyExistsException {
         final String nonExistingName = "Blog";
         when(repository.findByName(nonExistingName)).thenReturn(null);
         final Category newCategory = Category.builder().name(nonExistingName).build();
@@ -100,7 +100,8 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void updateCategory_whenExistingIdAndNonexistingName_shouldNotThrowException() {
+    void updateCategory_whenExistingIdAndNonexistingName_shouldNotThrowException()
+            throws CategoryNotFoundException, CategoryAlreadyExistsException {
         final String existingId = "A";
         final Optional<Category> currentCategory = Optional.of(Category.builder().id(existingId).name("Old").build());
         when(repository.findById(existingId)).thenReturn(currentCategory);
@@ -154,7 +155,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void deleteCategory_whenExistingId_shouldNotThrowException() {
+    void deleteCategory_whenExistingId_shouldNotThrowException() throws CategoryNotFoundException {
         final String existingId = "A";
         final Optional<Category> existingCategory = Optional.of(Category.builder().id(existingId).name("Blog").build());
         when(repository.findById(existingId)).thenReturn(existingCategory);

@@ -36,12 +36,12 @@ class AvatarController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id) throws AvatarNotFoundException {
         return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
     }
 
     @PostMapping()
-    ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar) {
+    ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar) throws AvatarAlreadyExistsException {
         Avatar createdAvatar = avatarService.createAvatar(avatar);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdAvatar.getId()).toUri();
@@ -52,14 +52,14 @@ class AvatarController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id,
-            final @RequestBody @Valid Avatar avatar) {
+    ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id, final @RequestBody @Valid Avatar avatar)
+            throws AvatarNotFoundException, AvatarAlreadyExistsException {
         avatarService.updateAvatar(id, avatar);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id) throws AvatarNotFoundException {
         avatarService.deleteAvatar(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

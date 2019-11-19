@@ -46,7 +46,7 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void getImage_whenExistingId_shouldReturnImage() {
+    void getImage_whenExistingId_shouldReturnImage() throws ImageNotFoundException {
         final String existingId = "A";
         final Image expected = Image.builder().id(existingId).name("imageA").url("/path/to/imageA").alt("Image A")
                 .width(150).height(150).build();
@@ -72,7 +72,7 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void createImage_whenNonexistingUrl_shouldReturnCreatedImage() {
+    void createImage_whenNonexistingUrl_shouldReturnCreatedImage() throws ImageAlreadyExistsException {
         final String nonExistingUrl = "/path/to/new/url";
         when(repository.findByUrl(nonExistingUrl)).thenReturn(null);
         final String name = "imageA";
@@ -111,7 +111,8 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void updateImage_whenExistingIdAndNonexistingUrl_shouldNotThrowException() {
+    void updateImage_whenExistingIdAndNonexistingUrl_shouldNotThrowException()
+            throws ImageNotFoundException, ImageAlreadyExistsException {
         final String existingId = "A";
         final String currentName = "imageA";
         final String currentAlt = "Image A";
@@ -179,7 +180,7 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void deleteImage_whenExistingId_shouldNotThrowException() {
+    void deleteImage_whenExistingId_shouldNotThrowException() throws ImageNotFoundException {
         final String existingId = "A";
         final Optional<Image> existingImage = Optional.of(Image.builder().id(existingId).url("/path/to/image")
                 .name("imageA").alt("Image A").width(150).height(150).build());

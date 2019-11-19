@@ -90,9 +90,11 @@ class AvatarControllerTest {
     @Test
     void createAvatar_whenNonexistingUserName_shouldReturnCreated() throws Exception {
         final String nonExistingUserName = "userA";
-        final Avatar newAvatar = Avatar.builder().userName(nonExistingUserName).build();
+        final String imageId = "imageIdA";
+        final Avatar newAvatar = Avatar.builder().userName(nonExistingUserName).imageId(imageId).build();
         final String createdId = "A";
-        final Avatar createdAvatar = Avatar.builder().id(createdId).userName(nonExistingUserName).build();
+        final Avatar createdAvatar = Avatar.builder().id(createdId).userName(nonExistingUserName).imageId(imageId)
+                .build();
         final String createdLocation = "http://localhost/avatars/" + createdId;
         when(service.createAvatar(newAvatar)).thenReturn(createdAvatar);
 
@@ -109,7 +111,7 @@ class AvatarControllerTest {
     @Test
     void createAvatar_whenExistingUserName_shouldReturnConflict() throws Exception {
         final String existingUserName = "userA";
-        final Avatar newAvatar = Avatar.builder().userName(existingUserName).build();
+        final Avatar newAvatar = Avatar.builder().userName(existingUserName).imageId("imageIdA").build();
         when(service.createAvatar(newAvatar)).thenThrow(new AvatarAlreadyExistsException(existingUserName));
 
         this.mockMvc
@@ -123,14 +125,15 @@ class AvatarControllerTest {
     }
 
     @Test
-    void createAvatar_whenBlankUserName_shouldReturnBadRequest() throws Exception {
-        final Avatar blankAvatar = Avatar.builder().userName(" ").build();
+    void createAvatar_whenBlankFields_shouldReturnBadRequest() throws Exception {
+        final Avatar blankAvatar = Avatar.builder().build();
 
         this.mockMvc
                 .perform(post("/avatars").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankAvatar)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("userName must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("userName must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("imageId must not be blank")));
 
         verify(service, times(0)).createAvatar(blankAvatar);
     }
@@ -166,15 +169,16 @@ class AvatarControllerTest {
     }
 
     @Test
-    void updateAvatar_whenBlankUserName_shouldReturnBadRequest() throws Exception {
+    void updateAvatar_whenBlankFields_shouldReturnBadRequest() throws Exception {
         final String currentId = "A";
-        final Avatar blankAvatar = Avatar.builder().id(currentId).userName(" ").imageId("imageIdA").build();
+        final Avatar blankAvatar = Avatar.builder().id(currentId).build();
 
         this.mockMvc
                 .perform(put("/avatars/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blankAvatar)))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
-                .andExpect(jsonPath("$.message").value(containsString("userName must not be blank")));
+                .andExpect(jsonPath("$.message").value(containsString("userName must not be blank")))
+                .andExpect(jsonPath("$.message").value(containsString("imageId must not be blank")));
 
         verify(service, times(0)).updateAvatar(currentId, blankAvatar);
     }

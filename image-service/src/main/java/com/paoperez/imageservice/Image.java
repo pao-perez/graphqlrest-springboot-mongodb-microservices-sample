@@ -20,10 +20,10 @@ class Image {
     private String url;
     @NotBlank(message = "alt must not be blank")
     private String alt;
-    @NotNull
+    @NotNull(message = "width must not be blank")
     @Positive(message = "width must be a positive number")
     private Integer width;
-    @NotNull
-    @Positive(message = "heigth must be a positive number")
+    @NotNull(message = "height must not be blank")
+    @Positive(message = "height must be a positive number")
     private Integer height;
 }

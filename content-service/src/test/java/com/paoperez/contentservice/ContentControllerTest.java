@@ -118,9 +118,7 @@ class ContentControllerTest {
 
     @Test
     void createContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
-        final String blank = " ";
-        final Content blankContent = new Content.Builder().title(blank).body(blank).avatarId(blank).categoryId(blank)
-                .imageId(blank).build();
+        final Content blankContent = new Content.Builder().build();
 
         this.mockMvc
                 .perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
@@ -169,10 +167,8 @@ class ContentControllerTest {
 
     @Test
     void updateContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
-        final String blank = " ";
         final String currentId = "A";
-        final Content blankContent = new Content.Builder().id(currentId).title(blank).body(blank).avatarId(blank)
-                .categoryId(blank).imageId(blank).rank(0).build();
+        final Content blankContent = new Content.Builder().id(currentId).rank(0).build();
 
         this.mockMvc
                 .perform(put("/contents/{id}", currentId).contentType(MediaType.APPLICATION_JSON)

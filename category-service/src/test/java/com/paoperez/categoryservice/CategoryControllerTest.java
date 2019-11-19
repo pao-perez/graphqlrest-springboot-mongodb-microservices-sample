@@ -121,7 +121,7 @@ class CategoryControllerTest {
 
     @Test
     void createCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
-        final Category blankCategory = Category.builder().name(" ").build();
+        final Category blankCategory = Category.builder().build();
 
         this.mockMvc
                 .perform(post("/categories").contentType(MediaType.APPLICATION_JSON)
@@ -164,7 +164,7 @@ class CategoryControllerTest {
     @Test
     void updateCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
         final String currentId = "A";
-        final Category blankCategory = Category.builder().id(currentId).name(" ").build();
+        final Category blankCategory = Category.builder().id(currentId).build();
 
         this.mockMvc
                 .perform(put("/categories/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
