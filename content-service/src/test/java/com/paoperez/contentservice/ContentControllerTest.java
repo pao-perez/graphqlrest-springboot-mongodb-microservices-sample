@@ -98,28 +98,22 @@ class ContentControllerTest {
 
     @Test
     void createContent_shouldReturnCreated() throws Exception {
-        final String avatarId = "avatarIdA";
-        final String categoryId = "categoryIdA";
-        final String imageId = "imageIdA";
-        final String title = "Blog A";
-        final String body = "Lorem ipsum dolor";
-        final Integer rank = 1;
-        final Content newContent = new Content.Builder().avatarId(avatarId).categoryId(categoryId).imageId(imageId)
-                .title(title).body(body).rank(rank).build();
+        final Content paramContent = new Content.Builder().avatarId("avatarIdA").categoryId("categoryIdA")
+                .imageId("imageIdA").title("Blog A").body("Lorem ipsum dolor").rank(1).build();
         final String createdId = "A";
-        final Content createdContent = new Content.Builder().avatarId(avatarId).categoryId(categoryId).imageId(imageId)
-                .title(title).body(body).rank(rank).created(LocalDateTime.now().toString()).id(createdId).build();
-        when(service.createContent(newContent)).thenReturn(createdContent);
+        final Content createdContent = new Content.Builder().from(paramContent).created(LocalDateTime.now().toString())
+                .id(createdId).build();
+        when(service.createContent(paramContent)).thenReturn(createdContent);
 
         final String createdLocation = "http://localhost/contents/" + createdId;
         this.mockMvc
                 .perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newContent)))
+                        .content(objectMapper.writeValueAsString(paramContent)))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(objectMapper.writeValueAsString(createdContent)))
                 .andExpect(header().string(LOCATION, createdLocation));
 
-        verify(service, times(1)).createContent(newContent);
+        verify(service, times(1)).createContent(paramContent);
     }
 
     @Test
@@ -143,16 +137,34 @@ class ContentControllerTest {
     }
 
     @Test
+    void createContent_whenServiceThrowsIllegalStateException_shouldReturnInternalServerError() throws Exception {
+        final Content paramContent = new Content.Builder().avatarId("avatarIdA").categoryId("categoryIdA")
+                .imageId("imageIdA").title("Blog A").body("Lorem ipsum dolor").rank(1).build();
+        doThrow(new IllegalStateException("Failed to create DateTime instance, DateTimeFactory in Builder is null."))
+                .when(service).createContent(paramContent);
+
+        this.mockMvc
+                .perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(paramContent)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
+                .andExpect(jsonPath("$.message").value(
+                        "Sucky, an internal error occurred. We will fix this along with our dignity. Please try again later."));
+
+        verify(service, times(1)).createContent(paramContent);
+    }
+
+    @Test
     void updateContent_whenExistingId_shouldReturnNoContent() throws Exception {
         final String existingId = "A";
-        final Content updateContent = new Content.Builder().id(existingId).avatarId("avatarId").categoryId("categoryId")
+        final Content paramContent = new Content.Builder().id(existingId).avatarId("avatarId").categoryId("categoryId")
                 .imageId("imageId").title("Blog A").body("Lorem ipsum dolor").rank(1)
                 .created(LocalDateTime.now().toString()).build();
 
         this.mockMvc.perform(put("/contents/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateContent))).andExpect(status().isNoContent());
+                .content(objectMapper.writeValueAsString(paramContent))).andExpect(status().isNoContent());
 
-        verify(service, times(1)).updateContent(existingId, updateContent);
+        verify(service, times(1)).updateContent(existingId, paramContent);
     }
 
     @Test
@@ -179,19 +191,38 @@ class ContentControllerTest {
     @Test
     void updateContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
         final String nonExistingId = "Z";
-        final Content nonExistingContent = new Content.Builder().id(nonExistingId).avatarId("avatarId")
+        final Content paramContent = new Content.Builder().id(nonExistingId).avatarId("avatarId")
                 .categoryId("categoryId").imageId("imageId").title("Blog A").body("Lorem ipsum dolor").rank(1)
                 .created(LocalDateTime.now().toString()).build();
-        doThrow(new ContentNotFoundException(nonExistingId)).when(service).updateContent(nonExistingId,
-                nonExistingContent);
+        doThrow(new ContentNotFoundException(nonExistingId)).when(service).updateContent(nonExistingId, paramContent);
 
         this.mockMvc
                 .perform(put("/contents/{id}", nonExistingId).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nonExistingContent)))
+                        .content(objectMapper.writeValueAsString(paramContent)))
                 .andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.name()))
                 .andExpect(jsonPath("$.message").value(String.format("Content with id %s not found.", nonExistingId)));
 
-        verify(service, times(1)).updateContent(nonExistingId, nonExistingContent);
+        verify(service, times(1)).updateContent(nonExistingId, paramContent);
+    }
+
+    @Test
+    void updateContent_whenServiceThrowsIllegalStateException_shouldReturnInternalServerError() throws Exception {
+        final String existingId = "Z";
+        final Content paramContent = new Content.Builder().id(existingId).avatarId("avatarId").categoryId("categoryId")
+                .imageId("imageId").title("Blog A").body("Lorem ipsum dolor").rank(1)
+                .created(LocalDateTime.now().toString()).build();
+        doThrow(new IllegalStateException("Failed to update DateTime instance, DateTimeFactory in Builder is null."))
+                .when(service).updateContent(existingId, paramContent);
+
+        this.mockMvc
+                .perform(put("/contents/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(paramContent)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
+                .andExpect(jsonPath("$.message").value(
+                        "Sucky, an internal error occurred. We will fix this along with our dignity. Please try again later."));
+
+        verify(service, times(1)).updateContent(existingId, paramContent);
     }
 
     @Test

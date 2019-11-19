@@ -53,7 +53,8 @@ final class ContentExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     final ResponseEntity<ContentErrorResponse> handleAllExceptions(final Exception ex, final WebRequest request) {
-        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(ex.getLocalizedMessage())
+        ContentErrorResponse responseBody = ContentErrorResponse.builder().message(
+                "Sucky, an internal error occurred. We will fix this along with our dignity. Please try again later.")
                 .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         return new ResponseEntity<>(responseBody, responseBody.getStatus());

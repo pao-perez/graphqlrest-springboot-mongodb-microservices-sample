@@ -23,27 +23,16 @@ final class ContentServiceImpl implements ContentService {
     }
 
     public Content createContent(final Content content) {
-        // TODO : Create builder constructor with existing obj then map
-        final Content createContent = builder.avatarId(content.getAvatarId()).categoryId(content.getCategoryId())
-                .imageId(content.getImageId()).title(content.getTitle()).body(content.getBody()).rank(content.getRank())
-                .withCreated().build();
-
-        return repository.save(createContent);
+        return repository.save(builder.from(content).withCreated().build());
     }
 
     public void updateContent(final String id, final Content content) throws ContentNotFoundException {
-        // TODO : Create builder constructor with existing obj then map
         repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
-        final Content updateContent = builder.id(id).avatarId(content.getAvatarId()).categoryId(content.getCategoryId())
-                .imageId(content.getImageId()).title(content.getTitle()).body(content.getBody()).rank(content.getRank())
-                .created(content.getCreated()).withUpdated().build();
-
-        repository.save(updateContent);
+        repository.save(builder.from(content).id(id).withUpdated().build());
     }
 
     public void deleteContent(final String id) throws ContentNotFoundException {
         repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
-
         repository.deleteById(id);
     }
 

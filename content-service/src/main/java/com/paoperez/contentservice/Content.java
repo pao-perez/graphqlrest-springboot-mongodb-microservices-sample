@@ -51,6 +51,20 @@ class Content {
             this.dateTimeFactory = dateTimeFactory;
         }
 
+        Builder from(final Content content) {
+            this.id = content.getId();
+            this.created = content.getCreated();
+            this.updated = content.getUpdated();
+            this.title = content.getTitle();
+            this.body = content.getBody();
+            this.rank = content.getRank();
+            this.categoryId = content.getCategoryId();
+            this.avatarId = content.getAvatarId();
+            this.imageId = content.getImageId();
+
+            return this;
+        }
+
         Builder id(String id) {
             this.id = id;
             return this;
@@ -96,16 +110,22 @@ class Content {
             return this;
         }
 
-        Builder withCreated() {
-            // TODO: Add check here if dateTimeFactory is null / when builder with no args
-            // constructor is called
+        Builder withCreated() throws IllegalStateException {
+            if (dateTimeFactory == null) {
+                throw new IllegalStateException(
+                        "Failed to create DateTime instance, DateTimeFactory in Builder is null.");
+            }
+
             this.created = dateTimeFactory.dateTime();
             return this;
         }
 
-        Builder withUpdated() {
-            // TODO: Add check here if dateTimeFactory is null / when builder with no args
-            // constructor is called
+        Builder withUpdated() throws IllegalStateException {
+            if (dateTimeFactory == null) {
+                throw new IllegalStateException(
+                        "Failed to update DateTime instance, DateTimeFactory in Builder is null.");
+            }
+
             this.updated = dateTimeFactory.dateTime();
             return this;
         }

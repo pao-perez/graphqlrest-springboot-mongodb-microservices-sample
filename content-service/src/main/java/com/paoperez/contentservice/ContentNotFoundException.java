@@ -1,6 +1,6 @@
 package com.paoperez.contentservice;
 
-class ContentNotFoundException extends RuntimeException {
+class ContentNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 
     ContentNotFoundException(String id) {

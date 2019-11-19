@@ -36,7 +36,7 @@ class ContentController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Content> getContent(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Content> getContent(final @PathVariable @NotBlank String id) throws ContentNotFoundException {
         return new ResponseEntity<>(contentService.getContent(id), HttpStatus.OK);
     }
 
@@ -53,13 +53,13 @@ class ContentController {
 
     @PutMapping("/{id}")
     ResponseEntity<Void> updateContent(final @PathVariable @NotBlank String id,
-            final @RequestBody @Valid Content content) {
+            final @RequestBody @Valid Content content) throws ContentNotFoundException {
         contentService.updateContent(id, content);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteContent(final @PathVariable @NotBlank String id) {
+    ResponseEntity<Void> deleteContent(final @PathVariable @NotBlank String id) throws ContentNotFoundException {
         contentService.deleteContent(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
