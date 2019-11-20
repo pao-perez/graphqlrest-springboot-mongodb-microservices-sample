@@ -5,8 +5,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import graphql.GraphQL;
+
 @Configuration
 class GraphQLConfig {
+    private final GraphQLProvider graphQLProvider;
+
+    GraphQLConfig(final GraphQLProvider graphQLProvider) {
+        this.graphQLProvider = graphQLProvider;
+    }
+
+    @Bean
+    GraphQL graphql() {
+        return graphQLProvider.graphQL();
+    }
+
     @Bean
     WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

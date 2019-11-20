@@ -1,10 +1,8 @@
-package com.paoperez.graphql.models;
+package com.paoperez.graphql.image;
 
-import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
 public class Image {
     private String id;
     private String name;

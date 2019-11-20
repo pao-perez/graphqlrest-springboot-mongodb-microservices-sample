@@ -2,77 +2,77 @@ package com.paoperez.graphql;
 
 import java.util.Collection;
 
-import com.paoperez.graphql.models.Avatar;
-import com.paoperez.graphql.models.Category;
-import com.paoperez.graphql.models.Content;
-import com.paoperez.graphql.models.Image;
-import com.paoperez.graphql.services.AvatarService;
-import com.paoperez.graphql.services.CategoryService;
-import com.paoperez.graphql.services.ContentService;
-import com.paoperez.graphql.services.ImageService;
+import com.paoperez.graphql.avatar.Avatar;
+import com.paoperez.graphql.avatar.AvatarService;
+import com.paoperez.graphql.category.Category;
+import com.paoperez.graphql.category.CategoryService;
+import com.paoperez.graphql.content.Content;
+import com.paoperez.graphql.content.ContentService;
+import com.paoperez.graphql.image.Image;
+import com.paoperez.graphql.image.ImageService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetcher;
 
 @Component
-public class GraphQLDataFetchers {
-  @Autowired
-  private ContentService contentService;
+class GraphQLDataFetchers {
+    private final ContentService contentService;
+    private final ImageService imageService;
+    private final CategoryService categoryService;
+    private final AvatarService avatarService;
 
-  @Autowired
-  private ImageService imageService;
+    GraphQLDataFetchers(final ContentService contentService, final ImageService imageService,
+            final CategoryService categoryService, final AvatarService avatarService) {
+        this.contentService = contentService;
+        this.imageService = imageService;
+        this.categoryService = categoryService;
+        this.avatarService = avatarService;
+    }
 
-  @Autowired
-  private CategoryService categoryService;
+    DataFetcher<Collection<Content>> getAllContentsDataFetcher() {
+        return dataFetchingEnvironment -> {
+            return this.contentService.getAllContents();
+        };
+    }
 
-  @Autowired
-  private AvatarService avatarService;
+    DataFetcher<Content> getContentDataFetcher() {
+        return dataFetchingEnvironment -> {
+            String id = dataFetchingEnvironment.getArgument("id");
+            return this.contentService.getContent(id);
+        };
+    }
 
-  public DataFetcher<Collection<Content>> getAllContentsDataFetcher() {
-    return dataFetchingEnvironment -> {
-      return this.contentService.getAllContents();
-    };
-  }
+    DataFetcher<Image> getContentImageDataFetcher() {
+        return dataFetchingEnvironment -> {
+            Content content = dataFetchingEnvironment.getSource();
+            String id = content.getImageId();
+            return this.imageService.getImage(id);
+        };
+    }
 
-  public DataFetcher<Content> getContentDataFetcher() {
-    return dataFetchingEnvironment -> {
-      String id = dataFetchingEnvironment.getArgument("id");
-      return this.contentService.getContent(id);
-    };
-  }
+    DataFetcher<Category> getCategoryDataFetcher() {
+        return dataFetchingEnvironment -> {
+            Content content = dataFetchingEnvironment.getSource();
+            String id = content.getCategoryId();
+            return this.categoryService.getCategory(id);
+        };
+    }
 
-  public DataFetcher<Image> getContentImageDataFetcher() {
-    return dataFetchingEnvironment -> {
-      Content content = dataFetchingEnvironment.getSource();
-      String id = content.getImageId();
-      return this.imageService.getImage(id);
-    };
-  }
+    DataFetcher<Avatar> getAvatarDataFetcher() {
+        return dataFetchingEnvironment -> {
+            Content content = dataFetchingEnvironment.getSource();
+            String id = content.getAvatarId();
+            return this.avatarService.getAvatar(id);
+        };
+    }
 
-  public DataFetcher<Category> getCategoryDataFetcher() {
-    return dataFetchingEnvironment -> {
-      Content content = dataFetchingEnvironment.getSource();
-      String id = content.getCategoryId();
-      return this.categoryService.getCategory(id);
-    };
-  }
-
-  public DataFetcher<Avatar> getAvatarDataFetcher() {
-    return dataFetchingEnvironment -> {
-      Content content = dataFetchingEnvironment.getSource();
-      String id = content.getAvatarId();
-      return this.avatarService.getAvatar(id);
-    };
-  }
-
-  public DataFetcher<Image> getAvatarImageDataFetcher() {
-    return dataFetchingEnvironment -> {
-      Avatar avatar = dataFetchingEnvironment.getSource();
-      String id = avatar.getImageId();
-      return this.imageService.getImage(id);
-    };
-  }
+    DataFetcher<Image> getAvatarImageDataFetcher() {
+        return dataFetchingEnvironment -> {
+            Avatar avatar = dataFetchingEnvironment.getSource();
+            String id = avatar.getImageId();
+            return this.imageService.getImage(id);
+        };
+    }
 
 }

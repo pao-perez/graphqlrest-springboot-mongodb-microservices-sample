@@ -1,10 +1,12 @@
-package com.paoperez.graphql.models;
+package com.paoperez.graphql.content;
 
-import lombok.AllArgsConstructor;
+import com.paoperez.graphql.avatar.Avatar;
+import com.paoperez.graphql.category.Category;
+import com.paoperez.graphql.image.Image;
+
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
 public class Content {
     private String id;
     private String created;

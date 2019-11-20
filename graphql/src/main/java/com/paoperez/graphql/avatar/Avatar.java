@@ -1,10 +1,10 @@
-package com.paoperez.graphql.models;
+package com.paoperez.graphql.avatar;
 
-import lombok.AllArgsConstructor;
+import com.paoperez.graphql.image.Image;
+
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
 public class Avatar {
     private String id;
     private String userName;

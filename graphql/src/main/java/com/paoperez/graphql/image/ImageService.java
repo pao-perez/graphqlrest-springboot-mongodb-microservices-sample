@@ -1,17 +1,16 @@
-package com.paoperez.graphql.services;
+package com.paoperez.graphql.image;
 
-import com.paoperez.graphql.models.Image;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ImageService {
     private static final String IMAGE_URL = "http://localhost:8082/images";
+    private final WebClient.Builder webClientBuilder;
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
+    public ImageService(final WebClient.Builder webClientBuilder) {
+        this.webClientBuilder = webClientBuilder;
+    }
 
     public Image getImage(String id) {
         return this.webClientBuilder.baseUrl(IMAGE_URL).build().get().uri("/{id}", id).retrieve()

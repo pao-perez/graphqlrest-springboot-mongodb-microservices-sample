@@ -1,17 +1,16 @@
-package com.paoperez.graphql.services;
+package com.paoperez.graphql.avatar;
 
-import com.paoperez.graphql.models.Avatar;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class AvatarService {
     private static final String AVATAR_URL = "http://localhost:8083/avatars";
+    private final WebClient.Builder webClientBuilder;
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
+    public AvatarService(final WebClient.Builder webClientBuilder) {
+        this.webClientBuilder = webClientBuilder;
+    }
 
     public Avatar getAvatar(String id) {
         return this.webClientBuilder.baseUrl(AVATAR_URL).build().get().uri("/{id}", id).retrieve()

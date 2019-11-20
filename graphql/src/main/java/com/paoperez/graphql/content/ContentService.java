@@ -1,10 +1,7 @@
-package com.paoperez.graphql.services;
+package com.paoperez.graphql.content;
 
 import java.util.Collection;
 
-import com.paoperez.graphql.models.Content;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,9 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class ContentService {
     private static final String CONTENT_URL = "http://localhost:8081/contents";
+    private final WebClient.Builder webClientBuilder;
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
+    public ContentService(final WebClient.Builder webClientBuilder) {
+        this.webClientBuilder = webClientBuilder;
+    }
 
     public Content getContent(String id) {
         return this.webClientBuilder.baseUrl(CONTENT_URL).build().get().uri("/{id}", id).retrieve()
