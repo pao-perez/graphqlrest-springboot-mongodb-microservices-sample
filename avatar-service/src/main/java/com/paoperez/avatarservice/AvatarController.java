@@ -24,44 +24,50 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/avatars")
 class AvatarController {
-    private final AvatarService avatarService;
+  private final AvatarService avatarService;
 
-    AvatarController(final AvatarService avatarService) {
-        this.avatarService = avatarService;
-    }
+  AvatarController(final AvatarService avatarService) {
+    this.avatarService = avatarService;
+  }
 
-    @GetMapping()
-    ResponseEntity<Collection<Avatar>> getAllAvatars() {
-        return new ResponseEntity<>(avatarService.getAllAvatars(), HttpStatus.OK);
-    }
+  @GetMapping()
+  ResponseEntity<Collection<Avatar>> getAllAvatars() {
+    return new ResponseEntity<>(avatarService.getAllAvatars(), HttpStatus.OK);
+  }
 
-    @GetMapping("/{id}")
-    ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id) throws AvatarNotFoundException {
-        return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
-    }
+  @GetMapping("/{id}")
+  ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id) 
+      throws AvatarNotFoundException {
+    return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
+  }
 
-    @PostMapping()
-    ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar) throws AvatarAlreadyExistsException {
-        Avatar createdAvatar = avatarService.createAvatar(avatar);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdAvatar.getId()).toUri();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location);
+  @PostMapping()
+  ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar) 
+      throws AvatarAlreadyExistsException {
+    Avatar createdAvatar = avatarService.createAvatar(avatar);
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        .path("/{id}")
+        .buildAndExpand(createdAvatar.getId())
+        .toUri();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(location);
 
-        return new ResponseEntity<>(createdAvatar, headers, HttpStatus.CREATED);
-    }
+    return new ResponseEntity<>(createdAvatar, headers, HttpStatus.CREATED);
+  }
 
-    @PutMapping("/{id}")
-    ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id, final @RequestBody @Valid Avatar avatar)
-            throws AvatarNotFoundException, AvatarAlreadyExistsException {
-        avatarService.updateAvatar(id, avatar);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  @PutMapping("/{id}")
+  ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id, 
+      final @RequestBody @Valid Avatar avatar) 
+      throws AvatarNotFoundException, AvatarAlreadyExistsException {
+    avatarService.updateAvatar(id, avatar);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id) throws AvatarNotFoundException {
-        avatarService.deleteAvatar(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  @DeleteMapping("/{id}")
+  ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id) 
+      throws AvatarNotFoundException {
+    avatarService.deleteAvatar(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
 }

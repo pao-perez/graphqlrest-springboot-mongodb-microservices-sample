@@ -24,46 +24,48 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/categories")
 class CategoryController {
-    private final CategoryService categoryService;
+  private final CategoryService categoryService;
 
-    CategoryController(final CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
+  CategoryController(final CategoryService categoryService) {
+    this.categoryService = categoryService;
+  }
 
-    @GetMapping()
-    ResponseEntity<Collection<Category>> getAllCategories() {
-        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
-    }
+  @GetMapping()
+  ResponseEntity<Collection<Category>> getAllCategories() {
+    return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+  }
 
-    @GetMapping("/{id}")
-    ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id) throws CategoryNotFoundException {
-        return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
-    }
+  @GetMapping("/{id}")
+  ResponseEntity<Category> getCategory(final @PathVariable @NotBlank String id)
+      throws CategoryNotFoundException {
+    return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
+  }
 
-    @PostMapping()
-    ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category)
-            throws CategoryAlreadyExistsException {
-        Category createdCategory = categoryService.createCategory(category);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdCategory.getId()).toUri();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location);
+  @PostMapping()
+  ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category)
+      throws CategoryAlreadyExistsException {
+    Category createdCategory = categoryService.createCategory(category);
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(createdCategory.getId()).toUri();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(location);
 
-        return new ResponseEntity<>(createdCategory, headers, HttpStatus.CREATED);
-    }
+    return new ResponseEntity<>(createdCategory, headers, HttpStatus.CREATED);
+  }
 
-    @PutMapping("/{id}")
-    ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
-            final @RequestBody @Valid Category category)
-            throws CategoryNotFoundException, CategoryAlreadyExistsException {
-        categoryService.updateCategory(id, category);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  @PutMapping("/{id}")
+  ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid Category category) 
+      throws CategoryNotFoundException, CategoryAlreadyExistsException {
+    categoryService.updateCategory(id, category);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) throws CategoryNotFoundException {
-        categoryService.deleteCategory(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  @DeleteMapping("/{id}")
+  ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) 
+      throws CategoryNotFoundException {
+    categoryService.deleteCategory(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
 }

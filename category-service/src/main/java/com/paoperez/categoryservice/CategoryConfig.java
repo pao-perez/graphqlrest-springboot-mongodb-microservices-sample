@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 class CategoryConfig {
-    @Bean
-    CategoryService categoryService(final CategoryRepository categoryRepository) {
-        return new CategoryServiceImpl(categoryRepository);
-    }
+  @Bean
+  CategoryService categoryService(final CategoryRepository categoryRepository) {
+    return new CategoryServiceImpl(categoryRepository);
+  }
 }
