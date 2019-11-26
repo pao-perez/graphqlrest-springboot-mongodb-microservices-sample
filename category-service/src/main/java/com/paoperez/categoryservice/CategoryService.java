@@ -9,7 +9,7 @@ interface CategoryService {
 
   Category createCategory(Category category) throws CategoryAlreadyExistsException;
 
-  void updateCategory(String id, Category category) 
+  void updateCategory(String id, Category category)
       throws CategoryNotFoundException, CategoryAlreadyExistsException;
 
   void deleteCategory(String id) throws CategoryNotFoundException;

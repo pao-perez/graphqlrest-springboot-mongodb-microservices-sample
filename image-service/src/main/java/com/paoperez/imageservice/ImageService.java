@@ -3,13 +3,14 @@ package com.paoperez.imageservice;
 import java.util.Collection;
 
 interface ImageService {
-    Collection<Image> getAllImages();
+  Collection<Image> getAllImages();
 
-    Image getImage(String id) throws ImageNotFoundException;
+  Image getImage(String id) throws ImageNotFoundException;
 
-    Image createImage(Image image) throws ImageAlreadyExistsException;
+  Image createImage(Image image) throws ImageAlreadyExistsException;
 
-    void updateImage(String id, Image image) throws ImageNotFoundException, ImageAlreadyExistsException;
+  void updateImage(String id, Image image)
+      throws ImageNotFoundException, ImageAlreadyExistsException;
 
-    void deleteImage(String id) throws ImageNotFoundException;
+  void deleteImage(String id) throws ImageNotFoundException;
 }

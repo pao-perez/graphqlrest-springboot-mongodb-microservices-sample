@@ -13,8 +13,13 @@ public class CategoryService {
   }
 
   public Category getCategory(String id) {
-    return this.webClientBuilder.baseUrl(CATEGORY_URL).build().get().uri("/{id}", id).retrieve()
-        .bodyToMono(Category.class).block();
+    return this.webClientBuilder
+        .baseUrl(CATEGORY_URL)
+        .build()
+        .get()
+        .uri("/{id}", id)
+        .retrieve()
+        .bodyToMono(Category.class)
+        .block();
   }
-
 }

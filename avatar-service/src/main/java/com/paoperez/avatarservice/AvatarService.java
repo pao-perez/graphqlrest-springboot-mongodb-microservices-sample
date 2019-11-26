@@ -9,7 +9,7 @@ interface AvatarService {
 
   Avatar createAvatar(Avatar avatar) throws AvatarAlreadyExistsException;
 
-  void updateAvatar(String id, Avatar avatar) 
+  void updateAvatar(String id, Avatar avatar)
       throws AvatarNotFoundException, AvatarAlreadyExistsException;
 
   void deleteAvatar(String id) throws AvatarNotFoundException;

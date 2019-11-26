@@ -1,7 +1,6 @@
 package com.paoperez.categoryservice;
 
 import java.util.Collection;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,5 +47,4 @@ final class CategoryServiceImpl implements CategoryService {
     categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     categoryRepository.deleteById(id);
   }
-
 }

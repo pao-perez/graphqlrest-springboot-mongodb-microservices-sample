@@ -13,8 +13,13 @@ public class AvatarService {
   }
 
   public Avatar getAvatar(String id) {
-    return this.webClientBuilder.baseUrl(AVATAR_URL).build()
-            .get().uri("/{id}", id).retrieve().bodyToMono(Avatar.class).block();
+    return this.webClientBuilder
+        .baseUrl(AVATAR_URL)
+        .build()
+        .get()
+        .uri("/{id}", id)
+        .retrieve()
+        .bodyToMono(Avatar.class)
+        .block();
   }
-
 }

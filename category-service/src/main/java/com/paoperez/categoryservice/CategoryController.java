@@ -2,10 +2,8 @@ package com.paoperez.categoryservice;
 
 import java.net.URI;
 import java.util.Collection;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +43,11 @@ class CategoryController {
   ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category)
       throws CategoryAlreadyExistsException {
     Category createdCategory = categoryService.createCategory(category);
-    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(createdCategory.getId()).toUri();
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(createdCategory.getId())
+            .toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
@@ -54,18 +55,17 @@ class CategoryController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
-      final @RequestBody @Valid Category category) 
+  ResponseEntity<Void> updateCategory(
+      final @PathVariable @NotBlank String id, final @RequestBody @Valid Category category)
       throws CategoryNotFoundException, CategoryAlreadyExistsException {
     categoryService.updateCategory(id, category);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id) 
+  ResponseEntity<Void> deleteCategory(final @PathVariable @NotBlank String id)
       throws CategoryNotFoundException {
     categoryService.deleteCategory(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
 }

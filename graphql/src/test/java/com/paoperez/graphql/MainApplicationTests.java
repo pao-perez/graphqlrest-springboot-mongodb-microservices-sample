@@ -3,7 +3,6 @@ package com.paoperez.graphql;
 import static org.junit.Assert.assertNotNull;
 
 import graphql.GraphQL;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class MainApplicationTests {
 
-  @Autowired
-  GraphQL graphql;
+  @Autowired GraphQL graphql;
 
   @Test
   public void contextLoads() {
     assertNotNull(graphql);
   }
-
 }

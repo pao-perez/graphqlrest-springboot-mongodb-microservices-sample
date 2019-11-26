@@ -13,8 +13,13 @@ public class ImageService {
   }
 
   public Image getImage(String id) {
-    return this.webClientBuilder.baseUrl(IMAGE_URL).build()
-            .get().uri("/{id}", id).retrieve().bodyToMono(Image.class).block();
+    return this.webClientBuilder
+        .baseUrl(IMAGE_URL)
+        .build()
+        .get()
+        .uri("/{id}", id)
+        .retrieve()
+        .bodyToMono(Image.class)
+        .block();
   }
-
 }

@@ -3,21 +3,19 @@ package com.paoperez.contentservice.util;
 import java.time.LocalDateTime;
 
 public class DateTimeFactory {
-    private static DateTimeFactory instance = null;
+  private static DateTimeFactory instance = null;
 
-    private DateTimeFactory() {
+  private DateTimeFactory() {}
+
+  public static DateTimeFactory instance() {
+    if (instance == null) {
+      instance = new DateTimeFactory();
     }
 
-    public static DateTimeFactory instance() {
-        if (instance == null) {
-            instance = new DateTimeFactory();
-        }
+    return instance;
+  }
 
-        return instance;
-    }
-
-    public String dateTime() {
-        return LocalDateTime.now().toString();
-    }
-
+  public String dateTime() {
+    return LocalDateTime.now().toString();
+  }
 }

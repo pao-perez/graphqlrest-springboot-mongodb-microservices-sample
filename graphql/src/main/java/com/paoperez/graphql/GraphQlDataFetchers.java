@@ -8,13 +8,9 @@ import com.paoperez.graphql.content.Content;
 import com.paoperez.graphql.content.ContentService;
 import com.paoperez.graphql.image.Image;
 import com.paoperez.graphql.image.ImageService;
-
 import graphql.schema.DataFetcher;
-
 import java.util.Collection;
-
 import org.springframework.stereotype.Component;
-
 
 @Component
 class GraphQlDataFetchers {
@@ -23,8 +19,11 @@ class GraphQlDataFetchers {
   private final CategoryService categoryService;
   private final AvatarService avatarService;
 
-  GraphQlDataFetchers(final ContentService contentService, final ImageService imageService,
-      final CategoryService categoryService, final AvatarService avatarService) {
+  GraphQlDataFetchers(
+      final ContentService contentService,
+      final ImageService imageService,
+      final CategoryService categoryService,
+      final AvatarService avatarService) {
     this.contentService = contentService;
     this.imageService = imageService;
     this.categoryService = categoryService;
@@ -75,5 +74,4 @@ class GraphQlDataFetchers {
       return this.imageService.getImage(id);
     };
   }
-
 }

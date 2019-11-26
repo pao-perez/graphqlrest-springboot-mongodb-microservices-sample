@@ -1,7 +1,6 @@
 package com.paoperez.avatarservice;
 
 import java.util.Collection;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,11 +39,8 @@ final class AvatarServiceImpl implements AvatarService {
       throw new AvatarAlreadyExistsException(avatarUserName);
     }
 
-    Avatar updateAvatar = Avatar.builder()
-        .userName(avatarUserName)
-        .imageId(avatar.getImageId())
-        .id(id)
-        .build();
+    Avatar updateAvatar =
+        Avatar.builder().userName(avatarUserName).imageId(avatar.getImageId()).id(id).build();
     avatarRepository.save(updateAvatar);
   }
 
@@ -52,5 +48,4 @@ final class AvatarServiceImpl implements AvatarService {
     avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
     avatarRepository.deleteById(id);
   }
-
 }

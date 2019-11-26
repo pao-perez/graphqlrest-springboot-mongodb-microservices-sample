@@ -2,10 +2,8 @@ package com.paoperez.contentservice;
 
 import java.net.URI;
 import java.util.Collection;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,44 +22,49 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/contents")
 class ContentController {
-    private final ContentService contentService;
+  private final ContentService contentService;
 
-    ContentController(final ContentService contentService) {
-        this.contentService = contentService;
-    }
+  ContentController(final ContentService contentService) {
+    this.contentService = contentService;
+  }
 
-    @GetMapping()
-    ResponseEntity<Collection<Content>> getAllContents() {
-        return new ResponseEntity<>(contentService.getAllContents(), HttpStatus.OK);
-    }
+  @GetMapping()
+  ResponseEntity<Collection<Content>> getAllContents() {
+    return new ResponseEntity<>(contentService.getAllContents(), HttpStatus.OK);
+  }
 
-    @GetMapping("/{id}")
-    ResponseEntity<Content> getContent(final @PathVariable @NotBlank String id) throws ContentNotFoundException {
-        return new ResponseEntity<>(contentService.getContent(id), HttpStatus.OK);
-    }
+  @GetMapping("/{id}")
+  ResponseEntity<Content> getContent(final @PathVariable @NotBlank String id)
+      throws ContentNotFoundException {
+    return new ResponseEntity<>(contentService.getContent(id), HttpStatus.OK);
+  }
 
-    @PostMapping()
-    ResponseEntity<Content> createContent(final @RequestBody @Valid Content content) {
-        Content createdContent = contentService.createContent(content);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdContent.getId()).toUri();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location);
+  @PostMapping()
+  ResponseEntity<Content> createContent(final @RequestBody @Valid Content content) {
+    Content createdContent = contentService.createContent(content);
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(createdContent.getId())
+            .toUri();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(location);
 
-        return new ResponseEntity<>(createdContent, headers, HttpStatus.CREATED);
-    }
+    return new ResponseEntity<>(createdContent, headers, HttpStatus.CREATED);
+  }
 
-    @PutMapping("/{id}")
-    ResponseEntity<Void> updateContent(final @PathVariable @NotBlank String id,
-            final @RequestBody @Valid Content content) throws ContentNotFoundException {
-        contentService.updateContent(id, content);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  @PutMapping("/{id}")
+  ResponseEntity<Void> updateContent(
+      final @PathVariable @NotBlank String id, final @RequestBody @Valid Content content)
+      throws ContentNotFoundException {
+    contentService.updateContent(id, content);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteContent(final @PathVariable @NotBlank String id) throws ContentNotFoundException {
-        contentService.deleteContent(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
+  @DeleteMapping("/{id}")
+  ResponseEntity<Void> deleteContent(final @PathVariable @NotBlank String id)
+      throws ContentNotFoundException {
+    contentService.deleteContent(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 }

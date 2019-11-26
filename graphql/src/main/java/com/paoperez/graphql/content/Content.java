@@ -3,7 +3,6 @@ package com.paoperez.graphql.content;
 import com.paoperez.graphql.avatar.Avatar;
 import com.paoperez.graphql.category.Category;
 import com.paoperez.graphql.image.Image;
-
 import lombok.Value;
 
 @Value

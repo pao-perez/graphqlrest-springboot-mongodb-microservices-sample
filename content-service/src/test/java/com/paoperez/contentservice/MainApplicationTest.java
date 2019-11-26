@@ -9,12 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class MainApplicationTest {
 
-    @Autowired
-    private ContentController controller;
+  @Autowired private ContentController controller;
 
-    @Test
-    public void contextLoads() {
-        assertNotNull(controller);
-    }
-
+  @Test
+  public void contextLoads() {
+    assertNotNull(controller);
+  }
 }
