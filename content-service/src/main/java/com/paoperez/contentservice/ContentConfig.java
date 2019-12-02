@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 class ContentConfig {
   @Bean
   DateTimeFactory dateTimeFactory() {
-    return DateTimeFactory.instance();
+    return new DateTimeFactory();
   }
 
   @Bean
