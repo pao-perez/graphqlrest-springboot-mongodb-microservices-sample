@@ -1,4 +1,4 @@
-package com.paoperez.graphql;
+package com.paoperez.graphqlservice;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
