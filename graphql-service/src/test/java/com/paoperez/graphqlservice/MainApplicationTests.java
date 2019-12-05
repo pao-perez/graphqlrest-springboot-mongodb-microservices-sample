@@ -1,15 +1,12 @@
 package com.paoperez.graphql;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import graphql.GraphQL;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import graphql.GraphQL;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class MainApplicationTests {
 
