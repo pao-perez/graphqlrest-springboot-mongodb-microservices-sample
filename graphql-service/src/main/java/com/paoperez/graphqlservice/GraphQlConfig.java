@@ -1,4 +1,4 @@
-package com.paoperez.graphql;
+package com.paoperez.graphqlservice;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;

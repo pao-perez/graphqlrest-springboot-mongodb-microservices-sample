@@ -1,4 +1,4 @@
-package com.paoperez.graphql;
+package com.paoperez.graphqlservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

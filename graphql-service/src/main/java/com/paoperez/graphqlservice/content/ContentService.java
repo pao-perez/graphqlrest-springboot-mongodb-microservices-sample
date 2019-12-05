@@ -1,4 +1,4 @@
-package com.paoperez.graphql.content;
+package com.paoperez.graphqlservice.content;
 
 import java.util.Collection;
 import org.springframework.http.MediaType;

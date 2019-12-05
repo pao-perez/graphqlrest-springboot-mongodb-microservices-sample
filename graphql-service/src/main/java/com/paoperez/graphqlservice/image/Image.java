@@ -1,4 +1,4 @@
-package com.paoperez.graphql.image;
+package com.paoperez.graphqlservice.image;
 
 import lombok.Value;
 

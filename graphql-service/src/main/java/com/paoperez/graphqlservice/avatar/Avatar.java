@@ -1,6 +1,6 @@
-package com.paoperez.graphql.avatar;
+package com.paoperez.graphqlservice.avatar;
 
-import com.paoperez.graphql.image.Image;
+import com.paoperez.graphqlservice.image.Image;
 import lombok.Value;
 
 @Value

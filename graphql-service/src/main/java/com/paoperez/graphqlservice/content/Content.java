@@ -1,8 +1,9 @@
-package com.paoperez.graphql.content;
+package com.paoperez.graphqlservice.content;
 
-import com.paoperez.graphql.avatar.Avatar;
-import com.paoperez.graphql.category.Category;
-import com.paoperez.graphql.image.Image;
+import com.paoperez.graphqlservice.avatar.Avatar;
+import com.paoperez.graphqlservice.category.Category;
+import com.paoperez.graphqlservice.image.Image;
+
 import lombok.Value;
 
 @Value

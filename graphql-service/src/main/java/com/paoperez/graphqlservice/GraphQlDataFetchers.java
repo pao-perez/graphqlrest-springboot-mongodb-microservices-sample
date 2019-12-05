@@ -1,15 +1,17 @@
-package com.paoperez.graphql;
+package com.paoperez.graphqlservice;
 
-import com.paoperez.graphql.avatar.Avatar;
-import com.paoperez.graphql.avatar.AvatarService;
-import com.paoperez.graphql.category.Category;
-import com.paoperez.graphql.category.CategoryService;
-import com.paoperez.graphql.content.Content;
-import com.paoperez.graphql.content.ContentService;
-import com.paoperez.graphql.image.Image;
-import com.paoperez.graphql.image.ImageService;
 import graphql.schema.DataFetcher;
 import java.util.Collection;
+
+import com.paoperez.graphqlservice.avatar.Avatar;
+import com.paoperez.graphqlservice.avatar.AvatarService;
+import com.paoperez.graphqlservice.category.Category;
+import com.paoperez.graphqlservice.category.CategoryService;
+import com.paoperez.graphqlservice.content.Content;
+import com.paoperez.graphqlservice.content.ContentService;
+import com.paoperez.graphqlservice.image.Image;
+import com.paoperez.graphqlservice.image.ImageService;
+
 import org.springframework.stereotype.Component;
 
 @Component

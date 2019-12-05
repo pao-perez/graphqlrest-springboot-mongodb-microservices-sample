@@ -1,4 +1,4 @@
-package com.paoperez.graphql.image;
+package com.paoperez.graphqlservice.image;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

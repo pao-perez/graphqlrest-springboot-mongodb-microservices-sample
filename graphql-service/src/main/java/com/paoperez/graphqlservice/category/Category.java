@@ -1,4 +1,4 @@
-package com.paoperez.graphql.category;
+package com.paoperez.graphqlservice.category;
 
 import lombok.Value;
 

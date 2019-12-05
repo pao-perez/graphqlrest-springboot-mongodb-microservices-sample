@@ -1,4 +1,4 @@
-package com.paoperez.graphql.avatar;
+package com.paoperez.graphqlservice.avatar;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
