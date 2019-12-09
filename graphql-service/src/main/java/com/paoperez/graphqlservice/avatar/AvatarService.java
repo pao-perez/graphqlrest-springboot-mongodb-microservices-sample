@@ -5,7 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class AvatarService {
-  private static final String AVATAR_URL = "http://avatar-service/avatars";
+  private static final String AVATAR_URL = "http://avatar-service/avatars"; //TODO: Move to prop file
   private final WebClient.Builder webClientBuilder;
 
   public AvatarService(final WebClient.Builder webClientBuilder) {

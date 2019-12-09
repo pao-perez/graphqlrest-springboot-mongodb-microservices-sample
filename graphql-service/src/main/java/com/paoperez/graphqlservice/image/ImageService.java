@@ -5,7 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ImageService {
-  private static final String IMAGE_URL = "http://image-service/images";
+  private static final String IMAGE_URL = "http://image-service/images"; //TODO: Move to prop file
   private final WebClient.Builder webClientBuilder;
 
   public ImageService(final WebClient.Builder webClientBuilder) {

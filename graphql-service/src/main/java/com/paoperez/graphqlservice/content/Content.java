@@ -5,8 +5,10 @@ import com.paoperez.graphqlservice.category.Category;
 import com.paoperez.graphqlservice.image.Image;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Content {
   private String id;
   private String created;
