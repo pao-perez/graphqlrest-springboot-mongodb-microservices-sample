@@ -4,9 +4,9 @@ import com.paoperez.graphqlservice.avatar.Avatar;
 import com.paoperez.graphqlservice.category.Category;
 import com.paoperez.graphqlservice.image.Image;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Content {
   private String id;
   private String created;

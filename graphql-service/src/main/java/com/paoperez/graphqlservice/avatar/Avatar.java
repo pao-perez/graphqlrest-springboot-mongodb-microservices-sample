@@ -1,9 +1,10 @@
 package com.paoperez.graphqlservice.avatar;
 
 import com.paoperez.graphqlservice.image.Image;
-import lombok.Value;
 
-@Value
+import lombok.Data;
+
+@Data
 public class Avatar {
   private String id;
   private String userName;

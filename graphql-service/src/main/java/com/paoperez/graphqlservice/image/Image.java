@@ -1,8 +1,8 @@
 package com.paoperez.graphqlservice.image;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Image {
   private String id;
   private String name;

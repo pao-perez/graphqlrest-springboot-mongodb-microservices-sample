@@ -1,8 +1,8 @@
 package com.paoperez.graphqlservice.category;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Category {
   private String id;
   private String name;
