@@ -5,7 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ImageService {
-  private static final String IMAGE_URL = "http://localhost:8082/images";
+  private static final String IMAGE_URL = "http://image-service/images";
   private final WebClient.Builder webClientBuilder;
 
   public ImageService(final WebClient.Builder webClientBuilder) {

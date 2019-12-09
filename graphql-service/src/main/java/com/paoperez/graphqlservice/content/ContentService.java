@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ContentService {
-  private static final String CONTENT_URL = "http://localhost:8081/contents";
+  private static final String CONTENT_URL = "http://content-service/contents";
   private final WebClient.Builder webClientBuilder;
 
   public ContentService(final WebClient.Builder webClientBuilder) {
