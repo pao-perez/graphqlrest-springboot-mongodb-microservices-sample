@@ -1,0 +1,7 @@
+spring:
+  application.name: category-service
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/${MONGODB_DATABASE}
+server:
+    port: 8084

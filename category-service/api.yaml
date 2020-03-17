@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: category-service
+  labels:
+    app: category-service 
+spec:
+  type: LoadBalancer
+  selector:
+    app: category-service
+  ports:
+  - name: category-service
+    port: 8084
+    targetPort: 8084
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: category-service
+  labels:
+    app: category-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: category-service
+  template:
+    metadata:
+      labels:
+        app: category-service
+    spec:
+      containers:
+      - name: category-service
+        image: asia.gcr.io/dev-contentually/category-service:0.0.1
+        ports:
+        - containerPort: 8084
+        env:
+        - name: MONGODB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb
+              key: database
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: username
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: password
