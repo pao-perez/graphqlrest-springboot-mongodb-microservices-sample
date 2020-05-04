@@ -36,11 +36,6 @@ spec:
         ports:
         - containerPort: 8084
         env:
-        - name: MONGODB_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: mongodb
-              key: database
         - name: MONGODB_USERNAME
           valueFrom:
             secretKeyRef:
