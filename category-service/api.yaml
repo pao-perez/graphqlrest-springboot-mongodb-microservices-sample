@@ -5,14 +5,15 @@ metadata:
   labels:
     app: category-service 
 spec:
-  type: LoadBalancer
   selector:
     app: category-service
   ports:
-  - name: category-service
-    port: 8084
+  # - name: category-service
+  - port: 8084
     targetPort: 8084
-    protocol: TCP
+    # protocol: TCP
+  type: LoadBalancer
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,17 +33,20 @@ spec:
     spec:
       containers:
       - name: category-service
-        image: asia.gcr.io/dev-contentually/category-service:0.0.1
+        image: category-service:0.0.1
+        imagePullPolicy: Never
         ports:
         - containerPort: 8084
         env:
-        - name: MONGODB_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongodb
-              key: username
-        - name: MONGODB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb
-              key: password
+        # - name: MONGODB_USERNAME
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongodb
+        #       key: username
+        # - name: MONGODB_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongodb
+        #       key: password
+        - name: MONGO_URL
+          value: mongodb://mongodb:27017/category

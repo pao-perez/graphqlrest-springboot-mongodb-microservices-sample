@@ -2,6 +2,7 @@ spring:
   application.name: category-service
   data:
     mongodb:
-      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/${MONGODB_DATABASE}
+      #uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/categoryService
+      uri: ${MONGO_URL:mongodb://localhost:27017/category}
 server:
     port: 8084

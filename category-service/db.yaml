@@ -1,18 +1,32 @@
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodbpvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  #storageClassName: mongodbstorage
+  resources:
+    requests:
+      storage: 20Gi
+  #volumeMode: Filesystem
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: mongodb
   labels:
     app: mongodb
 spec:
-  clusterIP: None
+  # clusterIP: None
   selector:
     app: mongodb
   ports:
-  - name: mongodb
-    port: 27017
+  # - name: mongodb
+  - port: 27017
     targetPort: 27017
-    protocol: TCP
+    # protocol: TCP
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -31,23 +45,23 @@ spec:
       labels:
         app: mongodb
     spec:
-      terminationGracePeriodSeconds: 10
+      # terminationGracePeriodSeconds: 10
       containers:
       - name: mongodb
         image: mongo:latest
         ports:
         - containerPort: 27017
-        env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongodb
-              key: username
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongodb
-              key: passwords
+        # env:
+        # - name: MONGO_INITDB_ROOT_USERNAME
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongodb
+        #       key: username
+        # - name: MONGO_INITDB_ROOT_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongodb
+        #       key: passwords
         volumeMounts:
         - name: mongodbpv
           mountPath: /data/db
@@ -56,26 +70,13 @@ spec:
         persistentVolumeClaim:
           claimName: mongodbpvc
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodbpvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: mongodbstorage
-  resources:
-    requests:
-      storage: 10Gi
-  volumeMode: Filesystem
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: mongodbstorage
-provisioner: kubernetes.io/gce-pd
-parameters:
-  type: pd-standard
-  replication-type: none
-reclaimPolicy: Delete
-allowVolumeExpansion: true #allows the users to grow the volume by editing the corresponding PVC object
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: mongodbstorage
+# provisioner: kubernetes.io/gce-pd
+# parameters:
+#   type: pd-standard
+#   replication-type: none
+# reclaimPolicy: Delete
+# allowVolumeExpansion: true #allows the users to grow the volume by editing the corresponding PVC object
