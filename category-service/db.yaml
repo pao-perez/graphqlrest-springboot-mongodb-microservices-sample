@@ -25,7 +25,7 @@ spec:
   # - name: mongodb
   - port: 27017
     targetPort: 27017
-    # protocol: TCP
+    protocol: TCP
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -51,17 +51,19 @@ spec:
         image: mongo:latest
         ports:
         - containerPort: 27017
-        # env:
-        # - name: MONGO_INITDB_ROOT_USERNAME
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: mongodb
-        #       key: username
-        # - name: MONGO_INITDB_ROOT_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: mongodb
-        #       key: passwords
+        env:
+        - name: MONGO_INITDB_DATABASE
+          value: admin
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
         volumeMounts:
         - name: mongodbpv
           mountPath: /data/db

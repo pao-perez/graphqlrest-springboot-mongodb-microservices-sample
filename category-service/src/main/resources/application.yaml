@@ -1,8 +1,19 @@
 spring:
   application.name: category-service
+  cloud:
+    kubernetes:
+      secrets:
+        name: db-secret
+        enabled: true
+        enableApi: true
   data:
     mongodb:
-      #uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/categoryService
-      uri: ${MONGO_URL:mongodb://localhost:27017/category}
+      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/categoryService
+      # uri: ${MONGO_URL:mongodb://localhost:27017/category}
+      host: mongodb
+      port: 27017
+      database: admin
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
 server:
     port: 8084

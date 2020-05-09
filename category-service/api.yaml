@@ -38,15 +38,15 @@ spec:
         ports:
         - containerPort: 8084
         env:
-        # - name: MONGODB_USERNAME
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: mongodb
-        #       key: username
-        # - name: MONGODB_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: mongodb
-        #       key: password
-        - name: MONGO_URL
-          value: mongodb://mongodb:27017/category
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+        # - name: MONGO_URL
+        #   value: mongodb://mongodb:27017/category
