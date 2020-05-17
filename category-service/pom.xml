@@ -31,6 +31,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<!-- Try to improve startup performance by creating a static list of candidates of component scan at compilation time. -->
+		<!-- To generate the index, add this dependency to each module that contains components that are targets for component scan directives. -->
+		<dependency>
+  	      <groupId>org.springframework</groupId>
+  	      <artifactId>spring-context-indexer</artifactId>
+  	      <optional>true</optional>
+  		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-kubernetes</artifactId>

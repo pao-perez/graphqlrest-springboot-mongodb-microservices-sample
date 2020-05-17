@@ -9,11 +9,13 @@ spring:
   data:
     mongodb:
       # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/categoryService
-      # uri: ${MONGO_URL:mongodb://localhost:27017/category}
+      # uri: ${MONGO_URL:mongodb://appuser:supersecret@localhost:27017/categoryService}
+      # uri: ${MONGO_URL:mongodb://localhost:27017/categoryService}
       host: mongodb
       port: 27017
-      database: admin
+      database: categoryService
       username: ${DB_USERNAME}
       password: ${DB_PASSWORD}
+  jmx.enabled: false
 server:
     port: 8084

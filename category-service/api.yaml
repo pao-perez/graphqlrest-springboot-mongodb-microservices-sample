@@ -8,10 +8,9 @@ spec:
   selector:
     app: category-service
   ports:
-  # - name: category-service
   - port: 8084
     targetPort: 8084
-    # protocol: TCP
+    protocol: TCP
   type: LoadBalancer
 
 ---
@@ -49,4 +48,5 @@ spec:
               name: db-secret
               key: password
         # - name: MONGO_URL
-        #   value: mongodb://mongodb:27017/category
+        # value: mongodb://mongodb:27017/category
+        # value: mongodb://appuser:supersecret@localhost:27017/categoryService

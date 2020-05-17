@@ -1,11 +1,31 @@
-# Use the official openjdk/alpine as base image to create the container image
-# https://hub.docker.com/_/openjdk
+# syntax=docker/dockerfile:experimental
+FROM openjdk:8-jdk-alpine as build
+
+ENV BASE_PATH="/workspace/app"
+ENV EXPLODED="target/exploded"
+WORKDIR ${BASE_PATH}
+
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN --mount=type=cache,target=/root/.m2 ./mvnw install
+RUN mkdir -p ${EXPLODED} && (cd ${EXPLODED}; jar -xf ../*.jar)
+
+
 FROM openjdk:8-jre-alpine
 
-ENV APP_FILE category-service-0.0.1-SNAPSHOT.jar
-ENV APP_HOME /usr/apps
-WORKDIR ${APP_HOME}
-COPY target/${APP_FILE} ${APP_HOME}
-EXPOSE 8084
+RUN addgroup -S run && adduser -S run -G run
+USER run:run
 
-ENTRYPOINT exec java $JAVA_OPTS -jar $APP_FILE
+ENV BASE_PATH="/usr/app"
+ENV SOURCE="/workspace/app/target/exploded"
+ENV ENTRY_SCRIPT="entry.sh"
+WORKDIR ${BASE_PATH}
+COPY --from=build ${SOURCE}/BOOT-INF/lib ./lib
+COPY --from=build ${SOURCE}/META-INF ./META-INF
+COPY --from=build ${SOURCE}/BOOT-INF/classes .
+COPY ${ENTRY_SCRIPT} .
+
+ENTRYPOINT ["/usr/app/entry.sh"]
