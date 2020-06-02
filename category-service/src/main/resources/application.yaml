@@ -1,21 +1,29 @@
 spring:
   application.name: category-service
-  cloud:
-    kubernetes:
-      secrets:
-        name: db-secret
-        enabled: true
-        enableApi: true
+  # cloud:
+  #   kubernetes:
+  #     secrets:
+  #       name: db-secret
+  #       enabled: true
+  #       enableApi: true
   data:
     mongodb:
-      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb/categoryService
-      # uri: ${MONGO_URL:mongodb://appuser:supersecret@localhost:27017/categoryService}
-      # uri: ${MONGO_URL:mongodb://localhost:27017/categoryService}
-      host: mongodb
+      # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@category-db/category?authSource=admin}
+      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@category-db/category?authSource=admin
+      host: category-db
       port: 27017
-      database: categoryService
-      username: ${DB_USERNAME}
-      password: ${DB_PASSWORD}
+      authentication-database: admin
+      database: category
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
   jmx.enabled: false
 server:
-    port: 8084
+  port: 8084
+# logging:
+#   file:
+#     path: /var/log/category
+#     name: spring.log
+#     max-history: 14
+#   level:
+#     root: WARN
+#     com.paoperez.categoryservice: TRACE

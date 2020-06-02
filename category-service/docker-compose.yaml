@@ -1,0 +1,31 @@
+version: '3.3'
+
+networks:
+  category-network:
+
+services:
+  category-db:
+    image: category-db:0.0.1
+    build: ./db
+    container_name: category-db
+    volumes:
+      - /data/db:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - category-network
+    env_file:
+      - dev.env
+  category-service:
+    image: category-service:0.0.1
+    build: .
+    container_name: category-service
+    depends_on:
+      - category-db
+    # volumes:
+    #   - /var/log/category:/var/log/category:rw
+    networks:
+      - category-network
+    ports:
+      - '8084:8084'
+    env_file:
+      - dev.env
