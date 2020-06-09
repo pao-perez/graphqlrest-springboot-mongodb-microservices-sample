@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 
 networks:
   category-network:
@@ -6,7 +6,9 @@ networks:
 services:
   category-db:
     image: category-db:0.0.1
-    build: ./db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
     container_name: category-db
     volumes:
       - /data/db:/data/db:rw
@@ -17,7 +19,9 @@ services:
       - dev.env
   category-service:
     image: category-service:0.0.1
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: category-service
     depends_on:
       - category-db
@@ -26,6 +30,6 @@ services:
     networks:
       - category-network
     ports:
-      - '8084:8084'
+      - "8084:8084"
     env_file:
       - dev.env
