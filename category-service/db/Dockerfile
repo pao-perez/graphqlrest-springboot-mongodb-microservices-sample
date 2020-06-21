@@ -1,4 +1,4 @@
-FROM mongo:latest
+FROM mongo:4.4-rc-bionic
 
 ARG INIT_SCRIPT="./scripts/init.sh"
 ARG CONFIG_FILE="./config/mongod.conf"
