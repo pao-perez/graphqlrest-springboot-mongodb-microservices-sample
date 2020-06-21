@@ -1,14 +1,5 @@
 spring:
   application.name: category-service
-  cloud:
-    kubernetes:
-      discovery.all-namespaces: true
-      config:
-        enabled: true
-        paths: /etc/configs/category-service
-      secrets:
-        enabled: true
-        paths: /etc/secrets/category-service
   data:
     mongodb:
       # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@category-db/category?authSource=admin}

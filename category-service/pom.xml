@@ -37,14 +37,10 @@
   	      <groupId>org.springframework</groupId>
   	      <artifactId>spring-context-indexer</artifactId>
   	      <optional>true</optional>
-  		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-kubernetes</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-		    <artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
