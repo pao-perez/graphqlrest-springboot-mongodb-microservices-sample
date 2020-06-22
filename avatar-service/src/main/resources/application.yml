@@ -1,4 +1,0 @@
-spring:
-    application.name: avatar-service
-server:
-    port: 8083

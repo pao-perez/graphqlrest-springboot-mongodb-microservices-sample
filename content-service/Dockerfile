@@ -1,8 +1,32 @@
-FROM fabric8/java-alpine-openjdk11-jre
-LABEL maintainer="Pao Perez"
+# syntax=docker/dockerfile:experimental
+FROM openjdk:8-jdk-alpine as build
 
-WORKDIR /usr/app
-COPY target/content-service-0.0.1-SNAPSHOT.jar .
-EXPOSE 8081
+ARG BASE_PATH="/workspace/app"
+ARG EXPLODED="target/exploded"
+WORKDIR ${BASE_PATH}
 
-CMD ["java", "-jar", "content-service-0.0.1-SNAPSHOT.jar"]
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN --mount=type=cache,target=/root/.m2 ./mvnw install
+# RUN ./mvnw install
+RUN mkdir -p ${EXPLODED} && (cd ${EXPLODED}; jar -xf ../*.jar)
+
+
+FROM openjdk:8-jre-alpine
+
+RUN addgroup -S app && adduser -S user -G app
+USER user:app
+
+ARG BASE_PATH="/usr/app"
+ARG SOURCE="/workspace/app/target/exploded"
+ARG ENTRY_SCRIPT="entry.sh"
+WORKDIR ${BASE_PATH}
+COPY --from=build ${SOURCE}/BOOT-INF/lib ./lib
+COPY --from=build ${SOURCE}/META-INF ./META-INF
+COPY --from=build ${SOURCE}/BOOT-INF/classes .
+COPY ${ENTRY_SCRIPT} .
+
+ENTRYPOINT ["/usr/app/entry.sh"]

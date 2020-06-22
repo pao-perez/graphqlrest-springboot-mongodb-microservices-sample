@@ -1,0 +1,23 @@
+spring:
+  application.name: avatar-service
+  data:
+    mongodb:
+      # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@avatar-db/avatar?authSource=admin}
+      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@avatar-db/avatar?authSource=admin
+      host: avatar-db
+      port: 27017
+      authentication-database: admin
+      database: avatar
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+  jmx.enabled: false
+server:
+  port: 8083
+# logging:
+#   file:
+#     path: /var/log/avatar
+#     name: spring.log
+#     max-history: 14
+#   level:
+#     root: WARN
+#     com.paoperez.avatarservice: TRACE

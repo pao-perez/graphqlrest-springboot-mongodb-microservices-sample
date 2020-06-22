@@ -1,0 +1,23 @@
+spring:
+  application.name: content-service
+  data:
+    mongodb:
+      # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@content-db/content?authSource=admin}
+      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@content-db/content?authSource=admin
+      host: content-db
+      port: 27017
+      authentication-database: admin
+      database: content
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+  jmx.enabled: false
+server:
+  port: 8081
+# logging:
+#   file:
+#     path: /var/log/content
+#     name: spring.log
+#     max-history: 14
+#   level:
+#     root: WARN
+#     com.paoperez.contentservice: TRACE
