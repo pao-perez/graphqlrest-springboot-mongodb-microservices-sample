@@ -1,0 +1,35 @@
+version: '3.7'
+
+networks:
+  image-network:
+
+services:
+  image-db:
+    image: image-db:0.0.1
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: avatar-db
+    volumes:
+      - /data/db:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - image-network
+    env_file:
+      - dev.env
+  image-service:
+    image: image-service:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: image-service
+    depends_on:
+      - image-db
+    # volumes:
+    #   - /var/log/image:/var/log/image:rw
+    networks:
+      - image-network
+    ports:
+      - "8082:8082"
+    env_file:
+      - dev.env

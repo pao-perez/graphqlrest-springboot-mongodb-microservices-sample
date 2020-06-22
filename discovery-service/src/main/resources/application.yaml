@@ -1,0 +1,17 @@
+spring:
+  application.name: discovery-service
+  jmx.enabled: false
+server:
+  port: 8761
+# logging:
+#   file:
+#     path: /var/log/discovery
+#     name: spring.log
+#     max-history: 14
+#   level:
+#     root: WARN
+#     com.paoperez.discoveryservice: TRACE
+eureka:
+    client:
+        register-with-eureka: false
+        fetch-registry: false

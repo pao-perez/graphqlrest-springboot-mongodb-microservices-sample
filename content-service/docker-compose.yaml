@@ -1,0 +1,35 @@
+version: '3.7'
+
+networks:
+  content-network:
+
+services:
+  content-db:
+    image: content-db:0.0.1
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: content-db
+    volumes:
+      - /data/db:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - content-network
+    env_file:
+      - dev.env
+  content-service:
+    image: content-service:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: content-service
+    depends_on:
+      - content-db
+    # volumes:
+    #   - /var/log/content:/var/log/content:rw
+    networks:
+      - content-network
+    ports:
+      - "8081:8081"
+    env_file:
+      - dev.env
