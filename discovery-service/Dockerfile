@@ -10,8 +10,8 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN --mount=type=cache,target=/root/.m2 ./mvnw install
-# RUN ./mvnw install
+RUN --mount=type=cache,target=/root/.m2 ./mvnw clean install
+# RUN ./mvnw clean install
 RUN mkdir -p ${EXPLODED} && (cd ${EXPLODED}; jar -xf ../*.jar)
 
 
@@ -22,11 +22,9 @@ USER user:app
 
 ARG BASE_PATH="/usr/app"
 ARG SOURCE="/workspace/app/target/exploded"
-ARG ENTRY_SCRIPT="entry.sh"
 WORKDIR ${BASE_PATH}
 COPY --from=build ${SOURCE}/BOOT-INF/lib ./lib
 COPY --from=build ${SOURCE}/META-INF ./META-INF
 COPY --from=build ${SOURCE}/BOOT-INF/classes .
-COPY ${ENTRY_SCRIPT} .
 
-ENTRYPOINT ["/usr/app/entry.sh"]
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -cp /usr/app:/usr/app/lib/* com.paoperez.discoveryservice.MainApplication ${0} ${@}"]
