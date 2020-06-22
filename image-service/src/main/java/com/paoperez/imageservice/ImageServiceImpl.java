@@ -22,8 +22,10 @@ final class ImageServiceImpl implements ImageService {
   public Image createImage(final Image image) throws ImageAlreadyExistsException {
     final String url = image.getUrl();
 
-    if (imageRepository.findByUrl(url) != null) throw new ImageAlreadyExistsException(url);
-
+    if (imageRepository.findByUrl(url) != null) {
+      throw new ImageAlreadyExistsException(url);
+    }
+    
     return imageRepository.save(image);
   }
 
@@ -33,8 +35,9 @@ final class ImageServiceImpl implements ImageService {
 
     final String imageUrl = image.getUrl();
     final Image currentImage = imageRepository.findByUrl(imageUrl);
-    if (currentImage != null && !currentImage.getId().equals(id))
+    if (currentImage != null && !currentImage.getId().equals(id)) {
       throw new ImageAlreadyExistsException(imageUrl);
+    }
 
     Image updateImage =
         Image.builder()
