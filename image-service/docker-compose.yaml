@@ -9,7 +9,7 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile
-    container_name: avatar-db
+    container_name: image-db
     volumes:
       - /data/db:/data/db:rw
       - /var/log/mongodb:/var/log/mongodb:rw
