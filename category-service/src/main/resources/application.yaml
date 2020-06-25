@@ -21,3 +21,7 @@ server:
 #   level:
 #     root: WARN
 #     com.paoperez.categoryservice: TRACE
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}

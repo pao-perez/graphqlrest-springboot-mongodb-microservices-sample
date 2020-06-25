@@ -11,21 +11,25 @@ server:
 #   level:
 #     root: WARN
 #     com.paoperez.graphqlservice: TRACE
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
 resilience4j.circuitbreaker:
-    configs:
-        default:
-            slidingWindowType: COUNT_BASED
-            slidingWindowSize: 100
-            permittedNumberOfCallsInHalfOpenState: 10
-            waitDurationInOpenState: 10
-            failureRateThreshold: 60
-            registerHealthIndicator: true
-    instances:
-        categoryService:
-            baseConfig: default
-        contentService:
-            baseConfig: default
-        imageService:
-            baseConfig: default
-        avatarService:
-            baseConfig: default
+  configs:
+    default:
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 100
+      permittedNumberOfCallsInHalfOpenState: 10
+      waitDurationInOpenState: 10
+      failureRateThreshold: 60
+      registerHealthIndicator: true
+  instances:
+    categoryService:
+      baseConfig: default
+    contentService:
+      baseConfig: default
+    imageService:
+      baseConfig: default
+    avatarService:
+      baseConfig: default
