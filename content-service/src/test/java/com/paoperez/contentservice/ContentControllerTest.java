@@ -205,8 +205,7 @@ class ContentControllerTest {
         .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
         .andExpect(
             jsonPath("$.message")
-                .value(
-                    "Sucky, an internal error occurred. We will fix this along with our dignity. Please try again later."));
+                .value("An internal error occurred. Please try again later."));
 
     verify(service, times(1)).createContent(paramContent);
   }
@@ -320,8 +319,7 @@ class ContentControllerTest {
         .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
         .andExpect(
             jsonPath("$.message")
-                .value(
-                    "Sucky, an internal error occurred. We will fix this along with our dignity. Please try again later."));
+                .value("An internal error occurred. Please try again later."));
 
     verify(service, times(1)).updateContent(existingId, paramContent);
   }
