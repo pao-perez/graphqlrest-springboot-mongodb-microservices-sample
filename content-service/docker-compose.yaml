@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile
     container_name: content-db
     volumes:
-      - /data/db/content:/data/db:rw
+      - /mnt/disks/sdb_mnt/dev-contentually/content:/data/db:rw
       - /var/log/mongodb:/var/log/mongodb:rw
     networks:
       - content-network

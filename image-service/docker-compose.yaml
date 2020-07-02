@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile
     container_name: image-db
     volumes:
-      - /data/db/image:/data/db:rw
+      - /mnt/disks/sdb_mnt/dev-contentually/image:/data/db:rw
       - /var/log/mongodb:/var/log/mongodb:rw
     networks:
       - image-network

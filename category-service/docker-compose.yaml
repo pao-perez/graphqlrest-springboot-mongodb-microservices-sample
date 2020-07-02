@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile
     container_name: category-db
     volumes:
-      - /data/db/category:/data/db:rw
+      - /mnt/disks/sdb_mnt/dev-contentually/category:/data/db:rw
       - /var/log/mongodb:/var/log/mongodb:rw
     networks:
       - category-network

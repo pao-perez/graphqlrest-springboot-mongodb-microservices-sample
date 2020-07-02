@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile
     container_name: avatar-db
     volumes:
-      - /data/db/avatar:/data/db:rw
+      - /mnt/disks/sdb_mnt/dev-contentually/avatar:/data/db:rw
       - /var/log/mongodb:/var/log/mongodb:rw
     networks:
       - avatar-network
