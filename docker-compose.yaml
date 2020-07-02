@@ -1,0 +1,184 @@
+version: '3.7'
+
+networks:
+  discovery-network:
+  image-network:
+  avatar-network:
+  category-network:
+  content-network:
+
+services:
+  discovery-service:
+    image: discovery-service:0.0.1
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    container_name: discovery-service
+    # volumes:
+    #   - /var/log/discovery:/var/log/discovery:rw
+    networks:
+      - discovery-network
+    ports:
+      - "8761:8761"
+
+
+  image-db:
+    image: image-db:0.0.1
+    build:
+      context: ./image-service/db
+      dockerfile: Dockerfile
+    container_name: image-db
+    volumes:
+      - /data/db/image:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - image-network
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./image-service/dev.env
+  image-service:
+    image: image-service:0.0.1
+    build:
+      context: ./image-service
+      dockerfile: Dockerfile
+    container_name: image-service
+    depends_on:
+      - image-db
+      - discovery-service
+    # volumes:
+    #   - /var/log/image:/var/log/image:rw
+    networks:
+      - image-network
+      - discovery-network
+    ports:
+      - "8082:8082"
+    env_file:
+      - ./image-service/dev.env
+
+
+  avatar-db:
+    image: avatar-db:0.0.1
+    build:
+      context: ./avatar-service/db
+      dockerfile: Dockerfile
+    container_name: avatar-db
+    volumes:
+      - /data/db/avatar:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - avatar-network
+    ports:
+      - "27018:27017"
+    env_file:
+      - ./avatar-service/dev.env
+  avatar-service:
+    image: avatar-service:0.0.1
+    build:
+      context: ./avatar-service
+      dockerfile: Dockerfile
+    container_name: avatar-service
+    depends_on:
+      - avatar-db
+      - discovery-service
+    # volumes:
+    #   - /var/log/avatar:/var/log/avatar:rw
+    networks:
+      - avatar-network
+      - discovery-network
+    ports:
+      - "8083:8083"
+    env_file:
+      - ./avatar-service/dev.env
+
+
+  category-db:
+    image: category-db:0.0.1
+    build:
+      context: ./category-service/db
+      dockerfile: Dockerfile
+    container_name: category-db
+    volumes:
+      - /data/db/category:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - category-network
+    ports:
+      - "27019:27017"
+    env_file:
+      - ./category-service/dev.env
+  category-service:
+    image: category-service:0.0.1
+    build:
+      context: ./category-service
+      dockerfile: Dockerfile
+    container_name: category-service
+    depends_on:
+      - category-db
+      - discovery-service
+    # volumes:
+    #   - /var/log/category:/var/log/category:rw
+    networks:
+      - category-network
+      - discovery-network
+    ports:
+      - "8084:8084"
+    env_file:
+      - ./category-service/dev.env
+
+
+  content-db:
+    image: content-db:0.0.1
+    build:
+      context: ./content-service/db
+      dockerfile: Dockerfile
+    container_name: content-db
+    volumes:
+      - /data/db/content:/data/db:rw
+      - /var/log/mongodb:/var/log/mongodb:rw
+    networks:
+      - content-network
+    ports:
+      - "27016:27017"
+    env_file:
+      - ./content-service/dev.env
+  content-service:
+    image: content-service:0.0.1
+    build:
+      context: ./content-service
+      dockerfile: Dockerfile
+    container_name: content-service
+    depends_on:
+      - content-db
+      - discovery-service
+    # volumes:
+    #   - /var/log/content:/var/log/content:rw
+    networks:
+      - content-network
+      - discovery-network
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./content-service/dev.env
+
+
+  graphql-service:
+    image: graphql-service:0.0.1
+    build:
+      context: ./graphql-service
+      dockerfile: Dockerfile
+    container_name: graphql-service
+    depends_on:
+      - image-service
+      - avatar-service
+      - category-service
+      - content-service
+      - discovery-service
+    # volumes:
+    #   - /var/log/graphql:/var/log/graphql:rw
+    networks:
+      - discovery-network
+    ports:
+      - "8090:8090"
+    env_file:
+      - ./graphql-service/dev.env
