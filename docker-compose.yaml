@@ -139,7 +139,7 @@ services:
     networks:
       - content-network
     ports:
-      - "27016:27017"
+      - "27020:27017"
     env_file:
       - ./content-service/dev.env
   content-service:
