@@ -10,8 +10,8 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN --mount=type=cache,target=/root/.m2 ./mvnw clean install
-# RUN ./mvnw clean install
+# RUN --mount=type=cache,target=/root/.m2 ./mvnw clean install
+RUN ./mvnw clean install
 RUN mkdir -p ${EXPLODED} && (cd ${EXPLODED}; jar -xf ../*.jar)
 
 
