@@ -11,8 +11,8 @@ services:
       dockerfile: Dockerfile
     container_name: category-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/category:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/category/db/data:/data/db:rw
+      - /mnt/disks/dev-contentually/category/db/log:/var/log/mongodb:rw
     networks:
       - category-network
     env_file:
@@ -25,8 +25,8 @@ services:
     container_name: category-service
     depends_on:
       - category-db
-    # volumes:
-    #   - /var/log/category:/var/log/category:rw
+    volumes:
+      - /mnt/disks/dev-contentually/category/service/log:/var/log/category:rw
     networks:
       - category-network
     ports:

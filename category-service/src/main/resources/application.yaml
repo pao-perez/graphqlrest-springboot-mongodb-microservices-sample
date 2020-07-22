@@ -13,14 +13,14 @@ spring:
   jmx.enabled: false
 server:
   port: 8084
-# logging:
-#   file:
-#     path: /var/log/category
-#     name: spring.log
-#     max-history: 14
-#   level:
-#     root: WARN
-#     com.paoperez.categoryservice: TRACE
+logging:
+  file:
+    path: /var/log/category
+    max-history: 14
+  level:
+    root: ERROR
+    org.springframework.web: INFO
+    com.paoperez.categoryservice: TRACE
 eureka:
   client:
     service-url:

@@ -11,8 +11,8 @@ services:
       dockerfile: Dockerfile
     container_name: image-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/image:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/image/db/data:/data/db:rw
+      - /mnt/disks/dev-contentually/image/db/log:/var/log/mongodb:rw
     networks:
       - image-network
     env_file:
@@ -25,8 +25,8 @@ services:
     container_name: image-service
     depends_on:
       - image-db
-    # volumes:
-    #   - /var/log/image:/var/log/image:rw
+    volumes:
+      - /mnt/disks/dev-contentually/image/service/log:/var/log/image:rw
     networks:
       - image-network
     ports:

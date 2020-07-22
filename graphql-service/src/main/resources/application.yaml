@@ -3,14 +3,14 @@ spring:
   jmx.enabled: false
 server:
   port: 8090
-# logging:
-#   file:
-#     path: /var/log/graphql
-#     name: spring.log
-#     max-history: 14
-#   level:
-#     root: WARN
-#     com.paoperez.graphqlservice: TRACE
+logging:
+  file:
+    path: /var/log/graphql
+    max-history: 14
+  level:
+    root: ERROR
+    org.springframework.web: INFO
+    com.paoperez.graphqlservice: TRACE
 eureka:
   client:
     service-url:

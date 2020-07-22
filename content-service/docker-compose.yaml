@@ -11,8 +11,8 @@ services:
       dockerfile: Dockerfile
     container_name: content-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/content:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/content/db/data:/data/db:rw
+      - /mnt/disks/dev-contentually/content/db/log:/var/log/mongodb:rw
     networks:
       - content-network
     env_file:
@@ -25,8 +25,8 @@ services:
     container_name: content-service
     depends_on:
       - content-db
-    # volumes:
-    #   - /var/log/content:/var/log/content:rw
+    volumes:
+      - /mnt/disks/dev-contentually/content/service/log:/var/log/content:rw
     networks:
       - content-network
     ports:

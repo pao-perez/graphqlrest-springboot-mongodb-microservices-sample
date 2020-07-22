@@ -13,14 +13,14 @@ spring:
   jmx.enabled: false
 server:
   port: 8083
-# logging:
-#   file:
-#     path: /var/log/avatar
-#     name: spring.log
-#     max-history: 14
-#   level:
-#     root: WARN
-#     com.paoperez.avatarservice: TRACE
+logging:
+  file:
+    path: /var/log/avatar
+    max-history: 14
+  level:
+    root: ERROR
+    org.springframework.web: INFO
+    com.paoperez.avatarservice: TRACE
 eureka:
   client:
     service-url:
