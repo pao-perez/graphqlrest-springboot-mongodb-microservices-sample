@@ -29,8 +29,8 @@ services:
       dockerfile: Dockerfile
     container_name: image-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/image:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/image/db:/data/db:rw
+      - /mnt/disks/dev-contentually/image/db/log:/var/log/mongodb:rw
     networks:
       - image-network
     ports:
@@ -64,8 +64,8 @@ services:
       dockerfile: Dockerfile
     container_name: avatar-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/avatar:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/avatar/db:/data/db:rw
+      - /mnt/disks/dev-contentually/avatar/db/log:/var/log/mongodb:rw
     networks:
       - avatar-network
     ports:
@@ -99,8 +99,8 @@ services:
       dockerfile: Dockerfile
     container_name: category-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/category:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/category/db:/data/db:rw
+      - /mnt/disks/dev-contentually/category/db/log:/var/log/mongodb:rw
     networks:
       - category-network
     ports:
@@ -134,8 +134,8 @@ services:
       dockerfile: Dockerfile
     container_name: content-db
     volumes:
-      - /mnt/disks/sdb_mnt/dev-contentually/content:/data/db:rw
-      - /var/log/mongodb:/var/log/mongodb:rw
+      - /mnt/disks/dev-contentually/content/db:/data/db:rw
+      - /mnt/disks/dev-contentually/content/db/log:/var/log/mongodb:rw
     networks:
       - content-network
     ports:
