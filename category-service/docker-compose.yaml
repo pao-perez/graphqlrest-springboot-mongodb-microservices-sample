@@ -16,7 +16,7 @@ services:
     networks:
       - category-network
     env_file:
-      - dev.env
+      - .env
   category-service:
     image: category-service:0.0.1
     build:
@@ -32,4 +32,4 @@ services:
     ports:
       - "8084:8084"
     env_file:
-      - dev.env
+      - .env

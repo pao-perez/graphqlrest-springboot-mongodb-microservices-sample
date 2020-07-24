@@ -16,7 +16,7 @@ services:
     networks:
       - image-network
     env_file:
-      - dev.env
+      - .env
   image-service:
     image: image-service:0.0.1
     build:
@@ -32,4 +32,4 @@ services:
     ports:
       - "8082:8082"
     env_file:
-      - dev.env
+      - .env

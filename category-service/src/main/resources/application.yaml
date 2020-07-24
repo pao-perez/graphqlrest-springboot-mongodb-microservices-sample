@@ -2,8 +2,6 @@ spring:
   application.name: category-service
   data:
     mongodb:
-      # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@category-db/category?authSource=admin}
-      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@category-db/category?authSource=admin
       host: category-db
       port: 27017
       authentication-database: admin

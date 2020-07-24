@@ -16,7 +16,7 @@ services:
     networks:
       - content-network
     env_file:
-      - dev.env
+      - .env
   content-service:
     image: content-service:0.0.1
     build:
@@ -32,4 +32,4 @@ services:
     ports:
       - "8081:8081"
     env_file:
-      - dev.env
+      - .env

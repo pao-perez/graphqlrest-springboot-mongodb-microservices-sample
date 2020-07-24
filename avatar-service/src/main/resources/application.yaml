@@ -2,8 +2,6 @@ spring:
   application.name: avatar-service
   data:
     mongodb:
-      # uri: ${MONGO_URL:mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@avatar-db/avatar?authSource=admin}
-      # uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@avatar-db/avatar?authSource=admin
       host: avatar-db
       port: 27017
       authentication-database: admin

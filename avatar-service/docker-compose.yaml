@@ -16,7 +16,7 @@ services:
     networks:
       - avatar-network
     env_file:
-      - dev.env
+      - .env
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -32,4 +32,4 @@ services:
     ports:
       - "8083:8083"
     env_file:
-      - dev.env
+      - .env

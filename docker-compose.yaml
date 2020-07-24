@@ -35,7 +35,7 @@ services:
     ports:
       - "27017:27017"
     env_file:
-      - ./image-service/dev.env
+      - ./image-service/.env
   image-service:
     image: image-service:0.0.1
     build:
@@ -53,7 +53,7 @@ services:
     ports:
       - "8082:8082"
     env_file:
-      - ./image-service/dev.env
+      - ./image-service/.env
 
   avatar-db:
     image: avatar-db:0.0.1
@@ -69,7 +69,7 @@ services:
     ports:
       - "27018:27017"
     env_file:
-      - ./avatar-service/dev.env
+      - ./avatar-service/.env
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -87,7 +87,7 @@ services:
     ports:
       - "8083:8083"
     env_file:
-      - ./avatar-service/dev.env
+      - ./avatar-service/.env
 
   category-db:
     image: category-db:0.0.1
@@ -103,7 +103,7 @@ services:
     ports:
       - "27019:27017"
     env_file:
-      - ./category-service/dev.env
+      - ./category-service/.env
   category-service:
     image: category-service:0.0.1
     build:
@@ -121,7 +121,7 @@ services:
     ports:
       - "8084:8084"
     env_file:
-      - ./category-service/dev.env
+      - ./category-service/.env
 
   content-db:
     image: content-db:0.0.1
@@ -137,7 +137,7 @@ services:
     ports:
       - "27020:27017"
     env_file:
-      - ./content-service/dev.env
+      - ./content-service/.env
   content-service:
     image: content-service:0.0.1
     build:
@@ -155,7 +155,7 @@ services:
     ports:
       - "8081:8081"
     env_file:
-      - ./content-service/dev.env
+      - ./content-service/.env
 
   graphql-service:
     image: graphql-service:0.0.1
@@ -175,5 +175,3 @@ services:
       - discovery-network
     ports:
       - "8090:8090"
-    env_file:
-      - ./graphql-service/dev.env
