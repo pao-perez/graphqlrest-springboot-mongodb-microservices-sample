@@ -10,9 +10,6 @@ services:
       context: ./db
       dockerfile: Dockerfile
     container_name: avatar-db
-    volumes:
-      - /mnt/disks/dev-contentually/avatar/db/data:/data/db:rw
-      - /mnt/disks/dev-contentually/avatar/db/log:/var/log/mongodb:rw
     networks:
       - avatar-network
     env_file:
@@ -25,8 +22,6 @@ services:
     container_name: avatar-service
     depends_on:
       - avatar-db
-    volumes:
-      - /mnt/disks/dev-contentually/avatar/service/log:/var/log/avatar:rw
     networks:
       - avatar-network
     ports:

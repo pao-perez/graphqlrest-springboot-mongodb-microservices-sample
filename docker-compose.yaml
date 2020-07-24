@@ -14,8 +14,6 @@ services:
       context: ./discovery-service
       dockerfile: Dockerfile
     container_name: discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/discovery/service/log:/var/log/discovery:rw
     networks:
       - discovery-network
     ports:
@@ -27,9 +25,6 @@ services:
       context: ./image-service/db
       dockerfile: Dockerfile
     container_name: image-db
-    volumes:
-      - /mnt/disks/dev-contentually/image/db/data:/data/db:rw
-      - /mnt/disks/dev-contentually/image/db/log:/var/log/mongodb:rw
     networks:
       - image-network
     ports:
@@ -45,8 +40,6 @@ services:
     depends_on:
       - image-db
       - discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/image/service/log:/var/log/image:rw
     networks:
       - image-network
       - discovery-network
@@ -61,9 +54,6 @@ services:
       context: ./avatar-service/db
       dockerfile: Dockerfile
     container_name: avatar-db
-    volumes:
-      - /mnt/disks/dev-contentually/avatar/db/data:/data/db:rw
-      - /mnt/disks/dev-contentually/avatar/db/log:/var/log/mongodb:rw
     networks:
       - avatar-network
     ports:
@@ -79,8 +69,6 @@ services:
     depends_on:
       - avatar-db
       - discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/avatar/service/log:/var/log/avatar:rw
     networks:
       - avatar-network
       - discovery-network
@@ -95,9 +83,6 @@ services:
       context: ./category-service/db
       dockerfile: Dockerfile
     container_name: category-db
-    volumes:
-      - /mnt/disks/dev-contentually/category/db/data:/data/db:rw
-      - /mnt/disks/dev-contentually/category/db/log:/var/log/mongodb:rw
     networks:
       - category-network
     ports:
@@ -113,8 +98,6 @@ services:
     depends_on:
       - category-db
       - discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/category/service/log:/var/log/category:rw
     networks:
       - category-network
       - discovery-network
@@ -129,9 +112,6 @@ services:
       context: ./content-service/db
       dockerfile: Dockerfile
     container_name: content-db
-    volumes:
-      - /mnt/disks/dev-contentually/content/db/data:/data/db:rw
-      - /mnt/disks/dev-contentually/content/db/log:/var/log/mongodb:rw
     networks:
       - content-network
     ports:
@@ -147,8 +127,6 @@ services:
     depends_on:
       - content-db
       - discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/content/service/log:/var/log/content:rw
     networks:
       - content-network
       - discovery-network
@@ -169,8 +147,6 @@ services:
       - category-service
       - content-service
       - discovery-service
-    volumes:
-      - /mnt/disks/dev-contentually/graphql/service/log:/var/log/graphql:rw
     networks:
       - discovery-network
     ports:

@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  avatar-db:
+    volumes:
+      - /mnt/disks/prod-contentually/avatar/db/data:/data/db:rw
+      - /mnt/disks/prod-contentually/avatar/db/log:/var/log/mongodb:rw
+  avatar-service:
+    volumes:
+      - /mnt/disks/prod-contentually/avatar/service/log:/var/log/avatar:rw

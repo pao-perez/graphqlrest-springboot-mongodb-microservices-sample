@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  content-db:
+    volumes:
+      - /mnt/disks/prod-contentually/content/db/data:/data/db:rw
+      - /mnt/disks/prod-contentually/content/db/log:/var/log/mongodb:rw
+  content-service:
+    volumes:
+      - /mnt/disks/prod-contentually/content/service/log:/var/log/content:rw

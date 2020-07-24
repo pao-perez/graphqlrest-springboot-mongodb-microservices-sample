@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  image-db:
+    volumes:
+      - /mnt/disks/dev-contentually/image/db/data:/data/db:rw
+      - /mnt/disks/dev-contentually/image/db/log:/var/log/mongodb:rw
+  image-service:
+    volumes:
+      - /mnt/disks/dev-contentually/image/service/log:/var/log/image:rw
