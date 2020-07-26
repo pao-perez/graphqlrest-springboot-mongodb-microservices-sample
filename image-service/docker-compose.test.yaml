@@ -8,3 +8,5 @@ services:
   image-service:
     volumes:
       - /mnt/disks/test-contentually/image/service/log:/var/log/image:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=test

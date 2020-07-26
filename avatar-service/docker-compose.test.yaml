@@ -8,3 +8,5 @@ services:
   avatar-service:
     volumes:
       - /mnt/disks/test-contentually/avatar/service/log:/var/log/avatar:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=test

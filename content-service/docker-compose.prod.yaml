@@ -8,3 +8,5 @@ services:
   content-service:
     volumes:
       - /mnt/disks/prod-contentually/content/service/log:/var/log/content:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod

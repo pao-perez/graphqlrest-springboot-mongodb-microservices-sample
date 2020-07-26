@@ -8,3 +8,5 @@ services:
   category-service:
     volumes:
       - /mnt/disks/dev-contentually/category/service/log:/var/log/category:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev

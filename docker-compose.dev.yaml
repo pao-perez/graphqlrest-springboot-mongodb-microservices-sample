@@ -12,6 +12,8 @@ services:
   image-service:
     volumes:
       - /mnt/disks/dev-contentually/image/service/log:/var/log/image:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
   avatar-db:
     volumes:
@@ -20,6 +22,8 @@ services:
   avatar-service:
     volumes:
       - /mnt/disks/dev-contentually/avatar/service/log:/var/log/avatar:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
   category-db:
     volumes:
@@ -28,6 +32,8 @@ services:
   category-service:
     volumes:
       - /mnt/disks/dev-contentually/category/service/log:/var/log/category:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
   content-db:
     volumes:
@@ -36,7 +42,11 @@ services:
   content-service:
     volumes:
       - /mnt/disks/dev-contentually/content/service/log:/var/log/content:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
   graphql-service:
     volumes:
       - /mnt/disks/dev-contentually/graphql/service/log:/var/log/graphql:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
