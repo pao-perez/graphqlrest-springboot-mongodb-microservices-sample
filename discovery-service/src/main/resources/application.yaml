@@ -11,6 +11,8 @@ logging:
     root: ERROR
     org.springframework.web: INFO
     com.paoperez.discoveryservice: TRACE
+    com.netflix.eureka: OFF
+    com.netflix.discovery: OFF
 eureka:
     client:
         register-with-eureka: false
