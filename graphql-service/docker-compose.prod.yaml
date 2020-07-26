@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  graphql-service:
+    volumes:
+      - /mnt/disks/prod-contentually/graphql/service/log:/var/log/graphql:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod

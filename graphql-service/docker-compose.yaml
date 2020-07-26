@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  graphql-service:
+    image: graphql-service:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: graphql-service
+    ports:
+      - "8090:8090"
