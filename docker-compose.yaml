@@ -30,7 +30,7 @@ services:
     networks:
       - image-network
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
@@ -68,7 +68,7 @@ services:
     networks:
       - avatar-network
     ports:
-      - "27018:27017"
+      - "27019:27017"
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
@@ -106,7 +106,7 @@ services:
     networks:
       - category-network
     ports:
-      - "27019:27017"
+      - "27020:27017"
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
@@ -144,7 +144,7 @@ services:
     networks:
       - content-network
     ports:
-      - "27020:27017"
+      - "27021:27017"
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
