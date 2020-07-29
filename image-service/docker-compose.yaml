@@ -12,6 +12,9 @@ services:
     container_name: image-db
     networks:
       - image-network
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/data:/data/db:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
     env_file:
       - .env
   image-service:
@@ -26,5 +29,9 @@ services:
       - image-network
     ports:
       - "8082:8082"
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/service/log:/var/log/image:rw
     env_file:
       - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}

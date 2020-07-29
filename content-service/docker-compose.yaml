@@ -12,6 +12,9 @@ services:
     container_name: content-db
     networks:
       - content-network
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
     env_file:
       - .env
   content-service:
@@ -26,5 +29,9 @@ services:
       - content-network
     ports:
       - "8081:8081"
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
     env_file:
       - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}

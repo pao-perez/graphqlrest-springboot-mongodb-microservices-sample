@@ -9,3 +9,7 @@ services:
     container_name: graphql-service
     ports:
       - "8090:8090"
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/graphql/service/log:/var/log/graphql:rw
+    environment:
+      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
