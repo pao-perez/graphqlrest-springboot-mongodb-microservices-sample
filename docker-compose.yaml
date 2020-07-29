@@ -36,8 +36,6 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
     env_file:
       - ./image-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
   image-service:
     image: image-service:0.0.1
     build:
@@ -74,8 +72,6 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
     env_file:
       - ./avatar-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -112,8 +108,6 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
     env_file:
       - ./category-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
   category-service:
     image: category-service:0.0.1
     build:
@@ -150,8 +144,6 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
     env_file:
       - ./content-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
   content-service:
     image: content-service:0.0.1
     build:
