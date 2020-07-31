@@ -5,7 +5,7 @@ spring:
       host: content-db
       port: 27017
       authentication-database: admin
-      database: content
+      database: contentually
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
   jmx.enabled: false

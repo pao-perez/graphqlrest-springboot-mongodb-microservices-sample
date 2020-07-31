@@ -5,7 +5,7 @@ spring:
       host: avatar-db
       port: 27017
       authentication-database: admin
-      database: avatar
+      database: contentually
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
   jmx.enabled: false
