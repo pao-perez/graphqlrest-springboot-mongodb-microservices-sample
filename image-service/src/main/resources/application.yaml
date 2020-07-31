@@ -5,7 +5,7 @@ spring:
       host: image-db
       port: 27017
       authentication-database: admin
-      database: image
+      database: contentually
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
   jmx.enabled: false
