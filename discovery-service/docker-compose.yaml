@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  discovery-service:
+    image: discovery-service:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
