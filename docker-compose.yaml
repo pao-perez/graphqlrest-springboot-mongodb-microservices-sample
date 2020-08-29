@@ -18,6 +18,8 @@ services:
       - discovery-network
     ports:
       - "8761:8761"
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
 
@@ -31,11 +33,13 @@ services:
       - image-network
     ports:
       - "27018:27017"
+    env_file:
+      - ./image-service/.env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
-    env_file:
-      - ./image-service/.env
   image-service:
     image: image-service:0.0.1
     build:
@@ -50,12 +54,13 @@ services:
       - discovery-network
     ports:
       - "8082:8082"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/service/log:/var/log/image:rw
     env_file:
       - ./image-service/.env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/service/log:/var/log/image:rw
 
   avatar-db:
     image: avatar-db:0.0.1
@@ -67,11 +72,13 @@ services:
       - avatar-network
     ports:
       - "27019:27017"
+    env_file:
+      - ./avatar-service/.env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
-    env_file:
-      - ./avatar-service/.env
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -86,12 +93,13 @@ services:
       - discovery-network
     ports:
       - "8083:8083"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
     env_file:
       - ./avatar-service/.env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
 
   category-db:
     image: category-db:0.0.1
@@ -103,11 +111,13 @@ services:
       - category-network
     ports:
       - "27020:27017"
+    env_file:
+      - ./category-service/.env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
-    env_file:
-      - ./category-service/.env
   category-service:
     image: category-service:0.0.1
     build:
@@ -122,12 +132,13 @@ services:
       - discovery-network
     ports:
       - "8084:8084"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
     env_file:
       - ./category-service/.env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
 
   content-db:
     image: content-db:0.0.1
@@ -139,11 +150,13 @@ services:
       - content-network
     ports:
       - "27021:27017"
+    env_file:
+      - ./content-service/.env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
-    env_file:
-      - ./content-service/.env
   content-service:
     image: content-service:0.0.1
     build:
@@ -158,12 +171,13 @@ services:
       - discovery-network
     ports:
       - "8081:8081"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
     env_file:
       - ./content-service/.env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
 
   graphql-service:
     image: graphql-service:0.0.1
@@ -180,8 +194,9 @@ services:
     networks:
       - discovery-network
     ports:
-      - "8090:8090"
+      - "8080:8080"
+    environment:
+      - DEPLOYMENT_ENV
+      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/graphql/service/log:/var/log/graphql:rw
-    environment:
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}

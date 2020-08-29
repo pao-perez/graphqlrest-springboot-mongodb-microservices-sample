@@ -12,11 +12,13 @@ services:
     container_name: avatar-db
     networks:
       - avatar-network
+    env_file:
+      - .env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
-    env_file:
-      - .env
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -29,9 +31,10 @@ services:
       - avatar-network
     ports:
       - "8083:8083"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
     env_file:
       - .env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw

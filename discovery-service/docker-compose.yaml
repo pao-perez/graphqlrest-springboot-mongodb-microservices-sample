@@ -9,5 +9,7 @@ services:
     container_name: discovery-service
     ports:
       - "8761:8761"
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw

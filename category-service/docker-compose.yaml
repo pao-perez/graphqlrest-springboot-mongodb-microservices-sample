@@ -12,11 +12,13 @@ services:
     container_name: category-db
     networks:
       - category-network
+    env_file:
+      - .env
+    environment:
+      - DEPLOYMENT_ENV
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
-    env_file:
-      - .env
   category-service:
     image: category-service:0.0.1
     build:
@@ -29,9 +31,10 @@ services:
       - category-network
     ports:
       - "8084:8084"
-    volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
     env_file:
       - .env
     environment:
+      - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
