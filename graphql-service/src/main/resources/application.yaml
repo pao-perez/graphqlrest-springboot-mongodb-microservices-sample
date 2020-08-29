@@ -2,7 +2,7 @@ spring:
   application.name: graphql-service
   jmx.enabled: false
 server:
-  port: 8090
+  port: 8080
 logging:
   file:
     path: /var/log/graphql
