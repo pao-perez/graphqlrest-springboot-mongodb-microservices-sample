@@ -19,8 +19,9 @@ USER user:app
 
 WORKDIR /usr/app
 ARG SOURCE="/workspace/app/target/exploded"
+COPY entry.sh .
 COPY --from=builder ${SOURCE}/BOOT-INF/lib ./lib
 COPY --from=builder ${SOURCE}/META-INF ./META-INF
 COPY --from=builder ${SOURCE}/BOOT-INF/classes .
 
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -cp /usr/app:/usr/app/lib/* com.paoperez.imageservice.MainApplication ${0} ${@}"]
+ENTRYPOINT ["/usr/app/entry.sh"]
