@@ -6,8 +6,8 @@ spring:
       port: 27017
       authentication-database: admin
       database: contentually
-      username: ${MONGO_USERNAME}
-      password: ${MONGO_PASSWORD}
+      username: ${MONGO_USERNAME:dummy_username}
+      password: ${MONGO_PASSWORD:dummy_password}
   jmx.enabled: false
 server:
   port: 8084
