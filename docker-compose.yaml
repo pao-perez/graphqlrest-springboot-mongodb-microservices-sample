@@ -33,8 +33,6 @@ services:
       - image-network
     ports:
       - "27018:27017"
-    env_file:
-      - ./image-service/.env
     environment:
       - DEPLOYMENT_ENV
     volumes:
@@ -54,8 +52,6 @@ services:
       - discovery-network
     ports:
       - "8082:8082"
-    env_file:
-      - ./image-service/.env
     environment:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
@@ -72,8 +68,6 @@ services:
       - avatar-network
     ports:
       - "27019:27017"
-    env_file:
-      - ./avatar-service/.env
     environment:
       - DEPLOYMENT_ENV
     volumes:
@@ -93,8 +87,6 @@ services:
       - discovery-network
     ports:
       - "8083:8083"
-    env_file:
-      - ./avatar-service/.env
     environment:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
@@ -111,8 +103,6 @@ services:
       - category-network
     ports:
       - "27020:27017"
-    env_file:
-      - ./category-service/.env
     environment:
       - DEPLOYMENT_ENV
     volumes:
@@ -132,8 +122,6 @@ services:
       - discovery-network
     ports:
       - "8084:8084"
-    env_file:
-      - ./category-service/.env
     environment:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
@@ -150,8 +138,6 @@ services:
       - content-network
     ports:
       - "27021:27017"
-    env_file:
-      - ./content-service/.env
     environment:
       - DEPLOYMENT_ENV
     volumes:
@@ -171,8 +157,6 @@ services:
       - discovery-network
     ports:
       - "8081:8081"
-    env_file:
-      - ./content-service/.env
     environment:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
