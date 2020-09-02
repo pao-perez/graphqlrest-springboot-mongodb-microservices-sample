@@ -38,6 +38,7 @@ services:
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
   image-service:
     image: image-service:0.0.1
     build:
@@ -57,6 +58,7 @@ services:
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/service/log:/var/log/image:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
 
   avatar-db:
     image: avatar-db:0.0.1
@@ -73,6 +75,7 @@ services:
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -92,6 +95,7 @@ services:
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
 
   category-db:
     image: category-db:0.0.1
@@ -108,6 +112,7 @@ services:
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
   category-service:
     image: category-service:0.0.1
     build:
@@ -127,6 +132,7 @@ services:
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
 
   content-db:
     image: content-db:0.0.1
@@ -143,6 +149,7 @@ services:
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
   content-service:
     image: content-service:0.0.1
     build:
@@ -162,6 +169,7 @@ services:
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
 
   graphql-service:
     image: graphql-service:0.0.1
