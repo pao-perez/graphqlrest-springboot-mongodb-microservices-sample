@@ -7,9 +7,6 @@ set -e
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 DEPLOYMENT_ENV=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/deployment-env" -H "Metadata-Flavor: Google")
 
-# Make environment avail in docker containers
-export $DEPLOYMENT_ENV
-
 # Setup for Docker
 apt-get update
 apt-get -y install \
