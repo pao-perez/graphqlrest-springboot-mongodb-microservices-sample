@@ -9,11 +9,14 @@ networks:
 
 services:
   discovery-service:
-    image: discovery-service:0.0.1
-    build:
-      context: ./discovery-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/discovery-service:0.0.1
     container_name: discovery-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - discovery-network
     ports:
@@ -24,11 +27,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
 
   image-db:
-    image: image-db:0.0.1
-    build:
-      context: ./image-service/db
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
     container_name: image-db
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - image-network
     ports:
@@ -40,11 +46,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
   image-service:
-    image: image-service:0.0.1
-    build:
-      context: ./image-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
     container_name: image-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     depends_on:
       - image-db
       - discovery-service
@@ -61,11 +70,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
 
   avatar-db:
-    image: avatar-db:0.0.1
-    build:
-      context: ./avatar-service/db
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
     container_name: avatar-db
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - avatar-network
     ports:
@@ -77,11 +89,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
   avatar-service:
-    image: avatar-service:0.0.1
-    build:
-      context: ./avatar-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
     container_name: avatar-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     depends_on:
       - avatar-db
       - discovery-service
@@ -98,11 +113,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
 
   category-db:
-    image: category-db:0.0.1
-    build:
-      context: ./category-service/db
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
     container_name: category-db
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - category-network
     ports:
@@ -114,11 +132,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
   category-service:
-    image: category-service:0.0.1
-    build:
-      context: ./category-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
     container_name: category-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     depends_on:
       - category-db
       - discovery-service
@@ -135,11 +156,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
 
   content-db:
-    image: content-db:0.0.1
-    build:
-      context: ./content-service/db
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
     container_name: content-db
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - content-network
     ports:
@@ -151,11 +175,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
   content-service:
-    image: content-service:0.0.1
-    build:
-      context: ./content-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
     container_name: content-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     depends_on:
       - content-db
       - discovery-service
@@ -172,11 +199,14 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
 
   graphql-service:
-    image: graphql-service:0.0.1
-    build:
-      context: ./graphql-service
-      dockerfile: Dockerfile
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
     container_name: graphql-service
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     depends_on:
       - image-service
       - avatar-service

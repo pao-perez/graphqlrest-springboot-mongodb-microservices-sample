@@ -10,6 +10,8 @@ PROJECT_NUMBER=$2
 PROJECT_ID=$3
 ZONE=asia-southeast1-b
 DISK_AUTO_DELETE=yes
+# DISK_NAME=$DEPLOYMENT_ENV-contentually-data
+# INSTANCE_NAME=$DEPLOYMENT_ENV-contentually
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
@@ -46,6 +48,8 @@ gcloud compute --project=$PROJECT_ID instances create $DEPLOYMENT_ENV-contentual
     --shielded-vtpm \
     --shielded-integrity-monitoring \
     --reservation-affinity=any
+
+gcloud compute --project=$PROJECT_ID scp ./docker-compose.yaml root@$DEPLOYMENT_ENV-contentually:/
 
 gcloud compute --project=$PROJECT_ID firewall-rules create default-allow-http-services \
     --direction=INGRESS \
