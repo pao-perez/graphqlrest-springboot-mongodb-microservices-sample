@@ -6,8 +6,8 @@ set -e
 set -x
 
 DEPLOYMENT_ENV=$1
-PROJECT_NUMBER=$2
-PROJECT_ID=$3
+PROJECT_ID=$2
+PROJECT_NUMBER=$3
 ZONE=asia-southeast1-b
 DISK_AUTO_DELETE=yes
 INSTANCE_NAME=$DEPLOYMENT_ENV-contentually
@@ -15,6 +15,16 @@ DISK_NAME=$INSTANCE_NAME-data
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
+    exit 1;
+fi
+
+if [[ $PROJECT_ID == "" ]]; then
+    echo "PROJECT_ID is invalid. Exiting setup script."
+    exit 1;
+fi
+
+if [[ $PROJECT_NUMBER == "" ]]; then
+    echo "PROJECT_NUMBER is invalid. Exiting setup script."
     exit 1;
 fi
 
