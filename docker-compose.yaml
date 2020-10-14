@@ -11,12 +11,7 @@ services:
   discovery-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/discovery-service:0.0.1
     container_name: discovery-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     networks:
       - discovery-network
     ports:
@@ -29,12 +24,7 @@ services:
   image-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
     container_name: image-db
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     networks:
       - image-network
     ports:
@@ -48,12 +38,7 @@ services:
   image-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
     container_name: image-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     depends_on:
       - image-db
       - discovery-service
@@ -72,12 +57,7 @@ services:
   avatar-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
     container_name: avatar-db
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     networks:
       - avatar-network
     ports:
@@ -91,12 +71,7 @@ services:
   avatar-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
     container_name: avatar-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     depends_on:
       - avatar-db
       - discovery-service
@@ -115,12 +90,7 @@ services:
   category-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
     container_name: category-db
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     networks:
       - category-network
     ports:
@@ -134,12 +104,7 @@ services:
   category-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
     container_name: category-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     depends_on:
       - category-db
       - discovery-service
@@ -158,12 +123,7 @@ services:
   content-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
     container_name: content-db
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     networks:
       - content-network
     ports:
@@ -177,12 +137,7 @@ services:
   content-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
     container_name: content-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     depends_on:
       - content-db
       - discovery-service
@@ -201,12 +156,7 @@ services:
   graphql-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
     container_name: graphql-service
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+    restart: always
     depends_on:
       - image-service
       - avatar-service
