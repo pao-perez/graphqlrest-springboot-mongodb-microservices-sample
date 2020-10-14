@@ -10,15 +10,15 @@ PROJECT_NUMBER=$2
 PROJECT_ID=$3
 ZONE=asia-southeast1-b
 DISK_AUTO_DELETE=yes
-# DISK_NAME=$DEPLOYMENT_ENV-contentually-data
-# INSTANCE_NAME=$DEPLOYMENT_ENV-contentually
+INSTANCE_NAME=$DEPLOYMENT_ENV-contentually
+DISK_NAME=$INSTANCE_NAME-data
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
     exit 1;
 fi
 
-gcloud compute --project=$PROJECT_ID disks create $DEPLOYMENT_ENV-contentually-data \
+gcloud compute --project=$PROJECT_ID disks create $DISK_NAME \
     --zone=$ZONE \
     --size=10 \
     --type=pd-standard
@@ -27,7 +27,7 @@ if [[ $DEPLOYMENT_ENV == "production" ]]; then
     DISK_AUTO_DELETE=no
 fi
 
-gcloud compute --project=$PROJECT_ID instances create $DEPLOYMENT_ENV-contentually \
+gcloud compute --project=$PROJECT_ID instances create $INSTANCE_NAME \
     --zone=$ZONE \
     --machine-type=g1-small \
     --subnet=default \
@@ -42,14 +42,14 @@ gcloud compute --project=$PROJECT_ID instances create $DEPLOYMENT_ENV-contentual
     --image-project=ubuntu-os-cloud \
     --boot-disk-size=10GB \
     --boot-disk-type=pd-standard \
-    --boot-disk-device-name=$DEPLOYMENT_ENV-contentually-boot \
-    --disk=name=$DEPLOYMENT_ENV-contentually-data,device-name=$DEPLOYMENT_ENV-contentually-data,mode=rw,boot=no,auto-delete=$DISK_AUTO_DELETE \
+    --boot-disk-device-name=$INSTANCE_NAME-boot \
+    --disk=name=$DISK_NAME,device-name=$DISK_NAME,mode=rw,boot=no,auto-delete=$DISK_AUTO_DELETE \
     --shielded-secure-boot \
     --shielded-vtpm \
     --shielded-integrity-monitoring \
     --reservation-affinity=any
 
-gcloud compute --project=$PROJECT_ID scp ./docker-compose.yaml root@$DEPLOYMENT_ENV-contentually:/
+gcloud compute --project=$PROJECT_ID scp ./docker-compose.yaml root@$INSTANCE_NAME:/
 
 gcloud compute --project=$PROJECT_ID firewall-rules create default-allow-http-services \
     --direction=INGRESS \
