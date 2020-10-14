@@ -5,8 +5,8 @@ set -e
 # Enable debug mode/printing of all executed commands
 set -x
 
-DEPLOYMENT_ENV=testing
-PROJECT_ID=startupscript-gettingstarted
+DEPLOYMENT_ENV=$1
+PROJECT_ID=$2
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting deployment script."
