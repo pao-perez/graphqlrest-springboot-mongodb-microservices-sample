@@ -13,6 +13,11 @@ if [[ $DEPLOYMENT_ENV == "" ]]; then
     exit 1;
 fi
 
+if [[ $PROJECT_ID == "" ]]; then
+    echo "PROJECT_ID is invalid. Exiting setup script."
+    exit 1;
+fi
+
 gcloud compute --project=$PROJECT_ID instances add-metadata $DEPLOYMENT_ENV-contentually \
   --metadata-from-file=startup-script=deploy-startup-script.sh
 
