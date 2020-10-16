@@ -8,10 +8,13 @@ set -x
 DEPLOYMENT_ENV=$1
 PROJECT_ID=$2
 PROJECT_NUMBER=$3
+REGION=asia-southeast1
 ZONE=asia-southeast1-b
 DISK_AUTO_DELETE=yes
-INSTANCE_NAME=$DEPLOYMENT_ENV-contentually
-DISK_NAME=$INSTANCE_NAME-data
+ENV_NAME=$DEPLOYMENT_ENV-contentually
+BUCKET_NAME=$PROJECT_ID-$ENV_NAME-bucket
+DISK_NAME=$ENV_NAME-data
+INSTANCE_NAME=$ENV_NAME-instance
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
@@ -28,6 +31,9 @@ if [[ $PROJECT_NUMBER == "" ]]; then
     exit 1;
 fi
 
+gsutil mb -p $PROJECT_ID -l $REGION gs://$BUCKET_NAME/
+gsutil cp ./docker-compose.yaml gs://$BUCKET_NAME
+
 gcloud compute --project=$PROJECT_ID disks create $DISK_NAME \
     --zone=$ZONE \
     --size=10 \
@@ -39,7 +45,7 @@ fi
 
 gcloud compute --project=$PROJECT_ID instances create $INSTANCE_NAME \
     --zone=$ZONE \
-    --machine-type=g1-small \
+    --machine-type=n1-standard-1 \
     --subnet=default \
     --network-tier=PREMIUM \
     --metadata-from-file=startup-script=setup-startup-script.sh \
@@ -48,7 +54,7 @@ gcloud compute --project=$PROJECT_ID instances create $INSTANCE_NAME \
     --service-account=$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
     --scopes=cloud-platform \
     --tags=http-server,https-server \
-    --image=ubuntu-minimal-1804-bionic-v20200923 \
+    --image=ubuntu-minimal-1804-bionic-v20201014 \
     --image-project=ubuntu-os-cloud \
     --boot-disk-size=10GB \
     --boot-disk-type=pd-standard \
@@ -58,8 +64,6 @@ gcloud compute --project=$PROJECT_ID instances create $INSTANCE_NAME \
     --shielded-vtpm \
     --shielded-integrity-monitoring \
     --reservation-affinity=any
-
-gcloud compute --project=$PROJECT_ID scp ./docker-compose.yaml root@$INSTANCE_NAME:/
 
 gcloud compute --project=$PROJECT_ID firewall-rules create default-allow-http-services \
     --direction=INGRESS \

@@ -7,6 +7,10 @@ set -e
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 DEPLOYMENT_ENV=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/deployment-env" -H "Metadata-Flavor: Google")
 
+ENV_NAME=$DEPLOYMENT_ENV-contentually
+INSTANCE_NAME=$ENV_NAME-instance
+ZONE=asia-southeast1-b
+
 # Setup for Docker
 apt-get update
 apt-get -y install \
@@ -39,11 +43,11 @@ gcloud auth configure-docker --quiet
 
 # Format and mount persistent disk
 mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
-mkdir -p /mnt/disks/$DEPLOYMENT_ENV-contentually
-mount -o discard,defaults /dev/sdb /mnt/disks/$DEPLOYMENT_ENV-contentually
-chmod a+w /mnt/disks/$DEPLOYMENT_ENV-contentually
+mkdir -p /mnt/disks/$ENV_NAME
+mount -o discard,defaults /dev/sdb /mnt/disks/$ENV_NAME
+chmod a+w /mnt/disks/$ENV_NAME
 cp /etc/fstab /etc/fstab.backup
-echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/disks/$DEPLOYMENT_ENV-contentually ext4 discard,defaults,nofail 0 2 | tee -a /etc/fstab
+echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/disks/$ENV_NAME ext4 discard,defaults,nofail 0 2 | tee -a /etc/fstab
 
 # Setup dirs to be mounted on docker containers
 cd /mnt/disks/$DEPLOYMENT_ENV-contentually
@@ -57,3 +61,12 @@ mkdir -m 777 -p ./discovery/service/log ./graphql/service/log \
 echo $(gcloud secrets versions access latest --secret=mongo-username --project=$PROJECT_ID) | tee ./image/secrets/mongo_username ./category/secrets/mongo_username ./avatar/secrets/mongo_username > ./content/secrets/mongo_username
 echo $(gcloud secrets versions access latest --secret=mongo-password --project=$PROJECT_ID) | tee ./image/secrets/mongo_password ./category/secrets/mongo_password ./avatar/secrets/mongo_password > ./content/secrets/mongo_password
 cd -
+
+# Download docker-compose.yaml file
+gsutil cp gs://$PROJECT_ID-$ENV_NAME-bucket/docker-compose.yaml /.
+
+# Start app
+DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up -d
+
+# Remove startup script so succeeding boot won't run this setup script
+gcloud compute --project=$PROJECT_ID instances remove-metadata $INSTANCE_NAME --keys=startup-script --zone=$ZONE
