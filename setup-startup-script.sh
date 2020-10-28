@@ -7,9 +7,9 @@ set -e
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 DEPLOYMENT_ENV=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/deployment-env" -H "Metadata-Flavor: Google")
 
-ENV_NAME=$DEPLOYMENT_ENV-contentually
-INSTANCE_NAME=$ENV_NAME-instance
-ZONE=asia-southeast1-b
+RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
+INSTANCE=$RESOURCE_TAG-instance
+ZONE=asia-southeast1-a
 
 # Setup for Docker
 apt-get update
@@ -43,14 +43,14 @@ gcloud auth configure-docker --quiet
 
 # Format and mount persistent disk
 mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
-mkdir -p /mnt/disks/$ENV_NAME
-mount -o discard,defaults /dev/sdb /mnt/disks/$ENV_NAME
-chmod a+w /mnt/disks/$ENV_NAME
+mkdir -p /mnt/disks/$RESOURCE_TAG
+mount -o discard,defaults /dev/sdb /mnt/disks/$RESOURCE_TAG
+chmod a+w /mnt/disks/$RESOURCE_TAG
 cp /etc/fstab /etc/fstab.backup
-echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/disks/$ENV_NAME ext4 discard,defaults,nofail 0 2 | tee -a /etc/fstab
+echo UUID=`blkid -s UUID -o value /dev/sdb` /mnt/disks/$RESOURCE_TAG ext4 discard,defaults,nofail 0 2 | tee -a /etc/fstab
 
 # Setup dirs to be mounted on docker containers
-cd /mnt/disks/$DEPLOYMENT_ENV-contentually
+cd /mnt/disks/$RESOURCE_TAG
 mkdir -p ./image/db/data ./image/secrets ./category/db/data ./category/secrets ./avatar/db/data ./avatar/secrets ./content/db/data ./content/secrets
 mkdir -m 777 -p ./discovery/service/log ./graphql/service/log \
     ./image/service/log ./image/db/log \
@@ -63,10 +63,10 @@ echo $(gcloud secrets versions access latest --secret=mongo-password --project=$
 cd -
 
 # Download docker-compose.yaml file
-gsutil cp gs://$PROJECT_ID-$ENV_NAME-bucket/docker-compose.yaml /.
+gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/docker-compose.yaml /.
 
 # Start app
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up -d
 
 # Remove startup script so succeeding boot won't run this setup script
-gcloud compute --project=$PROJECT_ID instances remove-metadata $INSTANCE_NAME --keys=startup-script --zone=$ZONE
+gcloud compute --project=$PROJECT_ID instances remove-metadata $INSTANCE --keys=startup-script --zone=$ZONE
