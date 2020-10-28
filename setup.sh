@@ -153,17 +153,17 @@ gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allo
 # Create load balancer backend service
 LB_BE=$RESOURCE_TAG-lb-be
 gcloud compute --project=$PROJECT_ID backend-services create $LB_BE \
-	--protocol=HTTP \
-	--port-name=http \
-	--health-checks=$HTTP_HEALTH_CHECK \
-	--global-health-checks \
-	--global
+    --protocol=HTTP \
+    --port-name=http \
+    --health-checks=$HTTP_HEALTH_CHECK \
+    --global-health-checks \
+    --global
 
 # Add network endpoint group as backend to load balancer backend service
 gcloud compute --project=$PROJECT_ID backend-services add-backend $LB_BE \
-	--network-endpoint-group=$NEG \
-	--network-endpoint-group-zone=$ZONE \
-	--balancing-mode=RATE \
+    --network-endpoint-group=$NEG \
+    --network-endpoint-group-zone=$ZONE \
+    --balancing-mode=RATE \
     --max-rate-per-endpoint=100 \
     --global
 
