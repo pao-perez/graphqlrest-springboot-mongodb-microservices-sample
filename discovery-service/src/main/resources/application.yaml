@@ -14,6 +14,6 @@ logging:
     com.netflix.eureka: OFF
     com.netflix.discovery: OFF
 eureka:
-    client:
-        register-with-eureka: false
-        fetch-registry: false
+  client:
+    register-with-eureka: false
+    fetch-registry: false

@@ -19,23 +19,13 @@ logging:
     root: ERROR
     org.springframework.web: INFO
     com.paoperez.contentservice: TRACE
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
 ---
 spring:
-  profiles: development
+  profiles: local
 eureka:
   client:
     enabled: false
----
-spring:
-  profiles: testing
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
----
-spring:
-  profiles: production
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
