@@ -53,6 +53,7 @@ gcloud secrets --project=$PROJECT_ID add-iam-policy-binding mongo-username \
 BUCKET=$PROJECT_ID-$RESOURCE_TAG-bucket
 gsutil mb -p $PROJECT_ID -l $REGION gs://$BUCKET/
 gsutil cp ./docker-compose.yaml gs://$BUCKET
+gsutil cp ./docker-compose.vm.yaml gs://$BUCKET
 gsutil cp ./docker-compose.discovery.yaml gs://$BUCKET
 
 # Build and upload container images

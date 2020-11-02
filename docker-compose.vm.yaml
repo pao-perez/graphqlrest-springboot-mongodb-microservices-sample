@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  image-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
+  image-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
+
+  avatar-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
+  avatar-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
+
+  category-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
+  category-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
+
+  content-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
+  content-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
+
+  graphql-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
