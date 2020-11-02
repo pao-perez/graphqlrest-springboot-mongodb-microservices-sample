@@ -15,6 +15,8 @@ PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectN
 COMPUTE_SERVICEACCOUNT=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
 RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
 
+echo "Start $DEPLOYMENT_ENV Setup"
+
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
     exit 1;
@@ -51,6 +53,7 @@ gcloud secrets --project=$PROJECT_ID add-iam-policy-binding mongo-username \
 BUCKET=$PROJECT_ID-$RESOURCE_TAG-bucket
 gsutil mb -p $PROJECT_ID -l $REGION gs://$BUCKET/
 gsutil cp ./docker-compose.yaml gs://$BUCKET
+gsutil cp ./docker-compose.vm.yaml gs://$BUCKET
 
 # Build and upload container images
 gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
@@ -84,7 +87,7 @@ gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --machine-type=n1-standard-1 \
     --subnet=$SUBNET \
     --network-tier=PREMIUM \
-    --metadata-from-file=startup-script=setup-startup-script.sh \
+    --metadata-from-file=startup-script=vm-setup-startup-script.sh \
     --metadata=deployment-env=$DEPLOYMENT_ENV \
     --maintenance-policy=MIGRATE \
     --service-account=$COMPUTE_SERVICEACCOUNT \

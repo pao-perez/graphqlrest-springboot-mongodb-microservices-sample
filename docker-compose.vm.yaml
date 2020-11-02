@@ -1,0 +1,61 @@
+version: '3.7'
+
+networks:
+    discovery-network:
+
+services:
+  discovery-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/discovery-service:0.0.1
+    container_name: discovery-service
+    restart: always
+    networks:
+      - discovery-network
+    ports:
+      - "8761:8761"
+    environment:
+      - DEPLOYMENT_ENV
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
+
+  image-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
+  image-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
+    depends_on:
+      - discovery-service
+    networks:
+      - discovery-network
+
+  avatar-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
+  avatar-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
+    depends_on:
+      - discovery-service
+    networks:
+      - discovery-network
+
+  category-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
+  category-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
+    depends_on:
+      - discovery-service
+    networks:
+      - discovery-network
+
+  content-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
+  content-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
+    depends_on:
+      - discovery-service
+    networks:
+      - discovery-network
+
+  graphql-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
+    depends_on:
+      - discovery-service
+    networks:
+      - discovery-network

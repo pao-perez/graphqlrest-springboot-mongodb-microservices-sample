@@ -10,6 +10,8 @@ DEPLOYMENT_ENV=$(curl -s "http://metadata.google.internal/computeMetadata/v1/ins
 RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
 INSTANCE=$RESOURCE_TAG-instance
 ZONE=asia-southeast1-a
+COMPOSE_FILE=docker-compose.yaml
+VM_COMPOSE_FILE=docker-compose.vm.yaml
 
 # Setup for Docker
 apt-get update
@@ -62,11 +64,12 @@ echo $(gcloud secrets versions access latest --secret=mongo-username --project=$
 echo $(gcloud secrets versions access latest --secret=mongo-password --project=$PROJECT_ID) | tee ./image/secrets/mongo_password ./category/secrets/mongo_password ./avatar/secrets/mongo_password > ./content/secrets/mongo_password
 cd -
 
-# Download docker-compose.yaml file
-gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/docker-compose.yaml /.
+# Download docker compose files
+gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$COMPOSE_FILE /.
+gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$VM_COMPOSE_FILE /.
 
 # Start app
-DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up -d
+DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f $COMPOSE_FILE -f $VM_COMPOSE_FILE up
 
 # Remove startup script so succeeding boot won't run this setup script
 gcloud compute --project=$PROJECT_ID instances remove-metadata $INSTANCE --keys=startup-script --zone=$ZONE
