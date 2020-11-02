@@ -10,7 +10,7 @@ PROJECT_ID=$2
 STATIC_IP_ADDRESS=$3
 DOMAIN=$4
 REGION=asia-southeast1
-ZONE=asia-southeast1-a
+ZONE=$REGION-a
 PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
 COMPUTE_SERVICEACCOUNT=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
 RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
@@ -78,6 +78,7 @@ gcloud compute --project=$PROJECT_ID disks create $DATA_DISK \
 VM_INSTANCE=$RESOURCE_TAG-instance
 SUBNET=default
 HTTP_PORT=8080
+EUREKA_PORT=8761
 HTTP_TARGET_TAG=http-server
 gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --zone=$ZONE \
@@ -107,7 +108,7 @@ gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allo
     --priority=1000 \
     --network=default \
     --action=ALLOW \
-    --rules=tcp:$HTTP_PORT,tcp:8761 \
+    --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
     --source-ranges=$STATIC_IP_ADDRESS \
     --target-tags=$HTTP_TARGET_TAG \
     --description='Allow incoming traffic on TCP port 8080,8761'
@@ -123,10 +124,11 @@ gcloud compute --project=$PROJECT_ID network-endpoint-groups create $NEG \
 # Get vm instance internal/primary IP
 VM_INSTANCE_PRIMARY_IP=$(gcloud compute --project=$PROJECT_ID instances describe $VM_INSTANCE --zone=$ZONE --format='get(networkInterfaces[0].networkIP)')
 
-# Attach vm instance as network endpoint to network endpoint group
+# Attach vm instance endpoints as network endpoint to network endpoint group
 gcloud compute --project=$PROJECT_ID network-endpoint-groups update $NEG \
     --zone=$ZONE \
     --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$HTTP_PORT
+    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$EUREKA_PORT
 
 # Create http health check
 HTTP_HEALTH_CHECK=$RESOURCE_TAG-health-check-http
@@ -146,7 +148,7 @@ gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allo
     --priority=1000 \
     --network=default \
     --action=ALLOW \
-    --rules=tcp:$HTTP_PORT \
+    --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
     --source-ranges=130.211.0.0/22,35.191.0.0/16 \
     --target-tags=$HTTP_TARGET_TAG
 
