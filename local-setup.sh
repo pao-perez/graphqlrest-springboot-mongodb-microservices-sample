@@ -156,6 +156,6 @@ if [[ $TARGET_SPECIFIED = false ]]; then
   quit
 fi
 
-DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f docker-compose.yaml -f $COMPOSE_FILE up
+DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f docker-compose.yaml -f docker-compose.discovery.yaml -f $COMPOSE_FILE up
 
 cleanup
