@@ -1,13 +1,27 @@
 version: '3.7'
 
 networks:
+  discovery-network:
   image-network:
   avatar-network:
   category-network:
   content-network:
 
 services:
+  discovery-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/discovery-service:0.0.1
+    container_name: discovery-service
+    restart: always
+    networks:
+      - discovery-network
+    ports:
+      - "8761:8761"
+    environment:
+      - DEPLOYMENT_ENV
+    volumes:
+      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
   image-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
     container_name: image-db
     restart: always
     networks:
@@ -21,12 +35,15 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
   image-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
     container_name: image-service
     restart: always
     depends_on:
       - image-db
+      - discovery-service
     networks:
       - image-network
+      - discovery-network
     ports:
       - "8082:8082"
     environment:
@@ -37,6 +54,7 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
 
   avatar-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
     container_name: avatar-db
     restart: always
     networks:
@@ -50,12 +68,15 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
   avatar-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
     container_name: avatar-service
     restart: always
     depends_on:
       - avatar-db
+      - discovery-service
     networks:
       - avatar-network
+      - discovery-network
     ports:
       - "8083:8083"
     environment:
@@ -66,6 +87,7 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
 
   category-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
     container_name: category-db
     restart: always
     networks:
@@ -79,12 +101,15 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
   category-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
     container_name: category-service
     restart: always
     depends_on:
       - category-db
+      - discovery-service
     networks:
       - category-network
+      - discovery-network
     ports:
       - "8084:8084"
     environment:
@@ -95,6 +120,7 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
 
   content-db:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
     container_name: content-db
     restart: always
     networks:
@@ -108,12 +134,15 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
   content-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
     container_name: content-service
     restart: always
     depends_on:
       - content-db
+      - discovery-service
     networks:
       - content-network
+      - discovery-network
     ports:
       - "8081:8081"
     environment:
@@ -124,6 +153,7 @@ services:
       - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
 
   graphql-service:
+    image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
     container_name: graphql-service
     restart: always
     depends_on:
@@ -131,6 +161,9 @@ services:
       - avatar-service
       - category-service
       - content-service
+      - discovery-service
+    networks:
+      - discovery-network
     ports:
       - "8080:8080"
     environment:

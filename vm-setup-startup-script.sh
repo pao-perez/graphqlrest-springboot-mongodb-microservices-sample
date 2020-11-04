@@ -11,8 +11,6 @@ RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
 INSTANCE=$RESOURCE_TAG-instance
 ZONE=asia-southeast1-a
 COMPOSE_FILE=docker-compose.yaml
-VM_COMPOSE_FILE=docker-compose.vm.yaml
-DISCOVERY_COMPOSE_FILE=docker-compose.discovery.yaml
 
 # Setup for Docker
 apt-get update
@@ -67,11 +65,9 @@ cd -
 
 # Download docker compose files
 gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$COMPOSE_FILE /.
-gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$VM_COMPOSE_FILE /.
-gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$DISCOVERY_COMPOSE_FILE /.
 
 # Start app
-DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f $COMPOSE_FILE -f $VM_COMPOSE_FILE -f $DISCOVERY_COMPOSE_FILE up
+DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f $COMPOSE_FILE up
 
 # Remove startup script so succeeding boot won't run this setup script
 gcloud compute --project=$PROJECT_ID instances remove-metadata $INSTANCE --keys=startup-script --zone=$ZONE

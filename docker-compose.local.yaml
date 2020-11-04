@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  discovery-service:
+    image: discovery-service:0.0.1
+
+  image-service:
+    image: image-service:0.0.1
+  image-db:
+    image: image-db:0.0.1
+    build:
+      context: ./image-service/db
+
+  avatar-service:
+    image: avatar-service:0.0.1
+  avatar-db:
+    image: avatar-db:0.0.1
+    build:
+      context: ./avatar-service/db
+
+  category-service:
+    image: category-service:0.0.1
+  category-db:
+    image: category-db:0.0.1
+    build:
+      context: ./category-service/db
+
+  content-service:
+    image: content-service:0.0.1
+  content-db:
+    image: content-db:0.0.1
+    build:
+      context: ./content-service/db
+
+  graphql-service:
+    image: graphql-service:0.0.1

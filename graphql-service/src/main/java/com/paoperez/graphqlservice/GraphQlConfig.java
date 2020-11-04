@@ -12,6 +12,7 @@ import graphql.schema.idl.TypeRuntimeWiring;
 import java.io.IOException;
 import java.net.URL;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 class GraphQlConfig {
+  @Value("${web.client.address}")
+  private String webClientAddress;
 
   @Bean
   @LoadBalanced
@@ -74,11 +77,11 @@ class GraphQlConfig {
   }
 
   @Bean
-  WebMvcConfigurer corsConfigurer() {
+  WebMvcConfigurer corsConfigurer() {    
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/graphql").allowedOrigins("http://localhost:3000");
+        registry.addMapping("/graphql").allowedOrigins(webClientAddress);
       }
     };
   }

@@ -6,7 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CategoryService {
-  private static final String CATEGORY_URL = "http://category-service/categories"; // TODO: Move to prop file
+  private static final String CATEGORY_URL = "http://category-service/categories";
   private final WebClient.Builder webClientBuilder;
 
   public CategoryService(final WebClient.Builder webClientBuilder) {
