@@ -54,17 +54,16 @@ setup_service() {
 while getopts "t:" opt; do
   case $opt in
     t)
-      # Preceeding services will have invalid target environment if this isn't specified first
-      if [[ $OPTIND -ne 3 ]]; then
-        echo "Target environment (-t) needs to be specified."
-        quit
-      fi
       if [[ ! $OPTARG =~ ^[a-zA-Z]+$ ]]; then
         echo "Invalid argument $OPTARG, only letter/s are allowed for the target environment (-t)"
         quit
       fi
       DEPLOYMENT_ENV=$OPTARG
       TARGET_SPECIFIED=true
+      if [[ $DEPLOYMENT_ENV == "local" ]]; then
+        echo "Client services aren't registered for discovery on 'local' environment, please use a different environment."
+        quit
+      fi
       setup_service avatar
       setup_service category
       setup_service content
@@ -80,11 +79,6 @@ done
 
 if [[ $TARGET_SPECIFIED = false ]]; then
   echo "Target environment (-t) needs to be specified"
-  quit
-fi
-
-if [[ $DEPLOYMENT_ENV == "local" ]]; then
-  echo "Client services aren't registered for discovery on 'local' environment, please use a different environment."
   quit
 fi
 
