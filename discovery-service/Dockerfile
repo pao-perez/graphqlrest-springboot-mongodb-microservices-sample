@@ -8,7 +8,7 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw clean install
+RUN ./mvnw install
 RUN mkdir -p ${EXPLODED} && (cd ${EXPLODED}; jar -xf ../*.jar)
 
 

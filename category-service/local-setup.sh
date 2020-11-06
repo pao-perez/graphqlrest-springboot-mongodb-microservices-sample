@@ -6,16 +6,7 @@ set -e
 DEPLOYMENT_ENV=local
 ROOT_DIR=/mnt/disks/$DEPLOYMENT_ENV-contentually
 SERVICE=category
-APP_DIR=../
-
-cleanup() {
-  rm -rf $ROOT_DIR
-}
-
-quit() {
-  cleanup
-  exit
-}
+APP_DIR=./..
 
 # Create service log dir
 mkdir -m 777 -p $ROOT_DIR/$SERVICE/service/log
@@ -31,5 +22,3 @@ cat $APP_DIR/secrets/mongo_password > $ROOT_DIR/$SERVICE/secrets/mongo_password
 cd $APP_DIR/$SERVICE-service/db && docker build -t $SERVICE-db:0.0.1 . && cd -
 
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up
-
-cleanup
