@@ -15,10 +15,6 @@ logging:
   file:
     path: /var/log/category
     max-history: 14
-  level:
-    root: ERROR
-    org.springframework.web: INFO
-    com.paoperez.categoryservice: TRACE
 eureka:
   client:
     service-url:
