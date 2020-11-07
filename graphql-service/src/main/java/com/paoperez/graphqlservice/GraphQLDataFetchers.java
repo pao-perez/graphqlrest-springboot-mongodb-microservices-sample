@@ -15,13 +15,13 @@ import com.paoperez.graphqlservice.image.ImageService;
 import org.springframework.stereotype.Component;
 
 @Component
-class GraphQlDataFetchers {
+class GraphQLDataFetchers {
   private final ContentService contentService;
   private final ImageService imageService;
   private final CategoryService categoryService;
   private final AvatarService avatarService;
 
-  GraphQlDataFetchers(
+  GraphQLDataFetchers(
       final ContentService contentService,
       final ImageService imageService,
       final CategoryService categoryService,

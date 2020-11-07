@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-class GraphQlConfig {
+class GraphQLConfig {
   @Value("${web.client.address}")
   private String webClientAddress;
 
@@ -47,7 +47,7 @@ class GraphQlConfig {
   }
 
   @Bean
-  RuntimeWiring runtimeWiring(final GraphQlDataFetchers dataFetchers) {
+  RuntimeWiring runtimeWiring(final GraphQLDataFetchers dataFetchers) {
     return RuntimeWiring.newRuntimeWiring()
         .type(
             TypeRuntimeWiring.newTypeWiring("Query")
