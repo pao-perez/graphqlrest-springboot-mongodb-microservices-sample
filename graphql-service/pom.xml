@@ -46,6 +46,12 @@
 			<version>2.0</version>
 		</dependency>
 		<dependency>
+    		<groupId>com.graphql-java-kickstart</groupId>
+    		<artifactId>graphiql-spring-boot-starter</artifactId>
+    		<version>8.0.0</version>
+    		<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
