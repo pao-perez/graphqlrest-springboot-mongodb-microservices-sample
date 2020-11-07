@@ -1,6 +1,5 @@
 package com.paoperez.graphqlservice.content;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.Collection;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ public class ContentService {
     this.webClientBuilder = webClientBuilder;
   }
 
-  @CircuitBreaker(name = "contentService") // TODO: Define fallback - , fallbackMethod = "getFallbackContent")
   public Content getContent(String id) {
     return this.webClientBuilder
         .baseUrl(CONTENT_URL)
@@ -27,7 +25,6 @@ public class ContentService {
         .block();
   }
 
-  @CircuitBreaker(name = "contentService") // TODO: Define fallback - , fallbackMethod = "getFallbackContents")
   public Collection<Content> getAllContents() {
     return this.webClientBuilder
         .baseUrl(CONTENT_URL)

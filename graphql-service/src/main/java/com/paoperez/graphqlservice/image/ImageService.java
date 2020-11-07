@@ -1,6 +1,5 @@
 package com.paoperez.graphqlservice.image;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,7 +12,6 @@ public class ImageService {
     this.webClientBuilder = webClientBuilder;
   }
 
-  @CircuitBreaker(name = "imageService") // TODO: Define fallback - , fallbackMethod = "getFallbackImage")
   public Image getImage(String id) {
     return this.webClientBuilder
         .baseUrl(IMAGE_URL)

@@ -7,28 +7,6 @@ logging:
   file:
     path: /var/log/graphql
     max-history: 14
-  level:
-    root: ERROR
-    org.springframework.web: INFO
-    com.paoperez.graphqlservice: TRACE
-resilience4j.circuitbreaker:
-  configs:
-    default:
-      slidingWindowType: COUNT_BASED
-      slidingWindowSize: 100
-      permittedNumberOfCallsInHalfOpenState: 10
-      waitDurationInOpenState: 10
-      failureRateThreshold: 60
-      registerHealthIndicator: true
-  instances:
-    categoryService:
-      baseConfig: default
-    contentService:
-      baseConfig: default
-    imageService:
-      baseConfig: default
-    avatarService:
-      baseConfig: default
 eureka:
   client:
     service-url:

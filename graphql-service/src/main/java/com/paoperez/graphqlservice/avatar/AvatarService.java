@@ -1,6 +1,5 @@
 package com.paoperez.graphqlservice.avatar;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,7 +12,6 @@ public class AvatarService {
     this.webClientBuilder = webClientBuilder;
   }
 
-  @CircuitBreaker(name = "avatarService") // TODO: Define fallback - , fallbackMethod = "getFallbackAvatar")
   public Avatar getAvatar(String id) {
     return this.webClientBuilder
         .baseUrl(AVATAR_URL)
