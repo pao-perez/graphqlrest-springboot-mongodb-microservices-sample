@@ -12,16 +12,21 @@ import graphql.schema.idl.TypeRuntimeWiring;
 import java.io.IOException;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 class GraphQLConfig {
+  private static final Logger logger = LoggerFactory.getLogger(GraphQLConfig.class);
+
   @Value("${web.client.address}")
   private String webClientAddress;
 
@@ -76,8 +81,10 @@ class GraphQLConfig {
     return new SchemaGenerator();
   }
 
+  @Profile("local")
   @Bean
-  WebMvcConfigurer corsConfigurer() {    
+  WebMvcConfigurer corsConfigurer() {
+    logger.info("Allowing cross-origin requests for /graphql from origin: " + webClientAddress);
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {

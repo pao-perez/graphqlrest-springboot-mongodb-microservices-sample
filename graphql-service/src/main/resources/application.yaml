@@ -11,12 +11,12 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
-web:
-  client:
-    address: http://localhost:5000
 ---
 spring:
   profiles: local
+web:
+  client:
+    address: http://localhost:5000
 eureka:
   client:
     enabled: false

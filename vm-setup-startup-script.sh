@@ -64,7 +64,7 @@ echo $(gcloud secrets versions access latest --secret=mongo-password --project=$
 cd -
 
 # Download docker compose files
-gsutil cp gs://$PROJECT_ID-$RESOURCE_TAG-bucket/$COMPOSE_FILE /.
+gsutil cp gs://$RESOURCE_TAG-bucket/$COMPOSE_FILE /.
 
 # Start app
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f $COMPOSE_FILE up

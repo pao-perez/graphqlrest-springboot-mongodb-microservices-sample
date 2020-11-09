@@ -7,7 +7,7 @@ set -x
 
 DEPLOYMENT_ENV=$1
 PROJECT_ID=$2
-SOURCE_IP_ADDRESS=$3
+SOURCE_IP_ADDRESS=$3 # the static ip attached to the external https load balancer (non-development env setup)
 DOMAIN=$4
 REGION=asia-southeast1
 ZONE=$REGION-a
@@ -50,7 +50,7 @@ gcloud secrets --project=$PROJECT_ID add-iam-policy-binding mongo-username \
     --role="roles/secretmanager.secretAccessor"
 
 # Create bucket and upload root docker-compose file
-BUCKET=$PROJECT_ID-$RESOURCE_TAG-bucket
+BUCKET=$RESOURCE_TAG-bucket
 gsutil mb -p $PROJECT_ID -l $REGION gs://$BUCKET/
 gsutil cp ./docker-compose.yaml gs://$BUCKET
 
@@ -102,17 +102,6 @@ gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --shielded-vtpm \
     --shielded-integrity-monitoring \
     --reservation-affinity=any
-
-# Create firewall to allow http traffic from static ip to vm instance on port 8080,8761
-gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allow-ip-http-traffic \
-    --direction=INGRESS \
-    --priority=1000 \
-    --network=default \
-    --action=ALLOW \
-    --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
-    --source-ranges=$SOURCE_IP_ADDRESS \
-    --target-tags=$HTTP_TARGET_TAG \
-    --description='Allow incoming traffic on TCP port 8080,8761'
 
 if [[ $DEPLOYMENT_ENV != "development" ]]; then
     # Create network endpoint group
