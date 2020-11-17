@@ -1,7 +1,6 @@
 package com.paoperez.graphqlservice;
 
 import graphql.schema.DataFetcher;
-import java.util.Collection;
 
 import com.paoperez.graphqlservice.avatar.Avatar;
 import com.paoperez.graphqlservice.avatar.AvatarService;
@@ -32,9 +31,9 @@ class GraphQLDataFetchers {
     this.avatarService = avatarService;
   }
 
-  DataFetcher<Collection<Content>> getAllContentsDataFetcher() {
+  DataFetcher<Content[]> getContentsDataFetcher() {
     return dataFetchingEnvironment -> {
-      return this.contentService.getAllContents();
+      return this.contentService.getContents();
     };
   }
 

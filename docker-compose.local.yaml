@@ -3,9 +3,15 @@ version: '3.7'
 services:
   discovery-service:
     image: discovery-service:0.0.1
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile.local
 
   image-service:
     image: image-service:0.0.1
+    build:
+      context: ./image-service
+      dockerfile: Dockerfile.local
   image-db:
     image: image-db:0.0.1
     build:
@@ -13,6 +19,9 @@ services:
 
   avatar-service:
     image: avatar-service:0.0.1
+    build:
+      context: ./avatar-service
+      dockerfile: Dockerfile.local
   avatar-db:
     image: avatar-db:0.0.1
     build:
@@ -20,6 +29,9 @@ services:
 
   category-service:
     image: category-service:0.0.1
+    build:
+      context: ./category-service
+      dockerfile: Dockerfile.local
   category-db:
     image: category-db:0.0.1
     build:
@@ -27,6 +39,9 @@ services:
 
   content-service:
     image: content-service:0.0.1
+    build:
+      context: ./content-service
+      dockerfile: Dockerfile.local
   content-db:
     image: content-db:0.0.1
     build:
@@ -34,3 +49,6 @@ services:
 
   graphql-service:
     image: graphql-service:0.0.1
+    build:
+      context: ./graphql-service
+      dockerfile: Dockerfile.local

@@ -1,39 +1,24 @@
 package com.paoperez.graphqlservice.content;
 
-import java.util.Collection;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ContentService {
-  private static final String CONTENT_URL = "http://content-service/contents";
-  private final WebClient.Builder webClientBuilder;
+  @Value("${api.content.url}")
+  private String contentUrl;
+  private final RestTemplate restTemplate;
 
-  public ContentService(final WebClient.Builder webClientBuilder) {
-    this.webClientBuilder = webClientBuilder;
+  public ContentService(final RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
   }
 
   public Content getContent(String id) {
-    return this.webClientBuilder
-        .baseUrl(CONTENT_URL)
-        .build()
-        .get()
-        .uri("/{id}", id)
-        .retrieve()
-        .bodyToMono(Content.class)
-        .block();
+    return this.restTemplate.getForObject(String.format("%s/%s", contentUrl, id), Content.class);
   }
 
-  public Collection<Content> getAllContents() {
-    return this.webClientBuilder
-        .baseUrl(CONTENT_URL)
-        .build()
-        .get()
-        .accept(MediaType.APPLICATION_STREAM_JSON)
-        .exchange()
-        .flatMapMany(response -> response.bodyToFlux(Content.class))
-        .collectList()
-        .block();
+  public Content[] getContents() {
+    return this.restTemplate.getForObject(contentUrl, Content[].class);
   }
 }

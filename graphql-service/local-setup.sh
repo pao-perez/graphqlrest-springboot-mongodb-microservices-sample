@@ -10,6 +10,8 @@ SERVICE=graphql
 # Create service log dir
 mkdir -m 777 -p $ROOT_DIR/$SERVICE/service/log
 # Build service container image
-docker build -t $SERVICE-service:0.0.1 .
+DOCKER_BUILDKIT=1 docker build -t $SERVICE-service:0.0.1 .
 
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up
+
+docker-compose down

@@ -22,7 +22,7 @@ services:
     image: avatar-service:0.0.1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: avatar-service
     depends_on:
       - avatar-db

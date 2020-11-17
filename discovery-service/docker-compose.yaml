@@ -5,7 +5,7 @@ services:
     image: discovery-service:0.0.1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: discovery-service
     ports:
       - "8761:8761"

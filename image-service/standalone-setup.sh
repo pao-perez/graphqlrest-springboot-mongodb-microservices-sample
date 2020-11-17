@@ -3,9 +3,9 @@
 # Exit as soon as an error is encountered
 set -e
 
-DEPLOYMENT_ENV=local
+DEPLOYMENT_ENV=standalone
 ROOT_DIR=/mnt/disks/$DEPLOYMENT_ENV-contentually
-SERVICE=category
+SERVICE=image
 APP_DIR=./..
 
 # Create service log dir
@@ -19,6 +19,8 @@ mkdir -m 777 -p $ROOT_DIR/$SERVICE/db/log
 cat $APP_DIR/secrets/mongo_username > $ROOT_DIR/$SERVICE/secrets/mongo_username
 cat $APP_DIR/secrets/mongo_password > $ROOT_DIR/$SERVICE/secrets/mongo_password
 # Build db container image
-cd db/ && docker build -t $SERVICE-db:0.0.1 . && cd -
+cd db/ && DOCKER_BUILDKIT=1 docker build -t $SERVICE-db:0.0.1 . && cd -
 
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up
+
+docker-compose down

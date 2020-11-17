@@ -21,24 +21,24 @@ EOF
 }
 
 cleanup() {
+  docker-compose down
   rm -rf $ROOT_DIR
-}
-
-quit() {
-  cleanup
-  usage
-  exit
 }
 
 setup_service() {
   local service=$1
   local app_dir=$(pwd)
+  local buildkit_enabled=0
+  
+  if [[ $DEPLOYMENT_ENV == "local" ]]; then
+    buildkit_enabled=1
+  fi
 
   ROOT_DIR=/mnt/disks/$DEPLOYMENT_ENV-contentually
   # Create service log dir
   mkdir -m 777 -p $ROOT_DIR/$service/service/log
   # Build service container image
-  cd $app_dir/$service-service && docker build -t $service-service:0.0.1 . && cd -
+  cd $app_dir/$service-service && DOCKER_BUILDKIT=$buildkit_enabled docker build -t $service-service:0.0.1 . && cd -
   if [[ $service != "discovery" ]] && [[ $service != "graphql" ]]; then
     # Setup db data/log and secrets directories
     mkdir -p $ROOT_DIR/$service/db/data $ROOT_DIR/$service/secrets
@@ -56,13 +56,14 @@ while getopts "t:" opt; do
     t)
       if [[ ! $OPTARG =~ ^[a-zA-Z]+$ ]]; then
         echo "Invalid argument $OPTARG, only letter/s are allowed for the target environment (-t)"
-        quit
+        usage
+        exit
       fi
       DEPLOYMENT_ENV=$OPTARG
       TARGET_SPECIFIED=true
-      if [[ $DEPLOYMENT_ENV == "local" ]]; then
-        echo "Client services aren't registered for discovery on 'local' environment, please use a different environment."
-        quit
+      if [[ $DEPLOYMENT_ENV == "standalone" ]]; then
+        echo "Error: Client services aren't registered for discovery on 'standalone' environment, please specify a different environment."
+        exit
       fi
       setup_service avatar
       setup_service category
@@ -72,14 +73,16 @@ while getopts "t:" opt; do
       setup_service graphql
       ;;
     ?)
-      quit
+      usage
+      exit
       ;;
   esac
 done
 
 if [[ $TARGET_SPECIFIED = false ]]; then
-  echo "Target environment (-t) needs to be specified"
-  quit
+  echo "Target environment (-t) needs to be specified as first argument"
+  usage
+  exit
 fi
 
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f docker-compose.yaml -f docker-compose.local.yaml up

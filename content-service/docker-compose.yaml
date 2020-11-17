@@ -22,7 +22,7 @@ services:
     image: content-service:0.0.1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: content-service
     depends_on:
       - content-db

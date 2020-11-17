@@ -11,12 +11,18 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
+api:
+  content:
+    url: http://content-service/contents
+  category:
+    url: http://category-service/categories
+  avatar:
+    url: http://avatar-service/avatars
+  image:
+    url: http://image-service/images
 ---
 spring:
   profiles: local
-web:
-  client:
+client:
+  web:
     address: http://localhost:5000
-eureka:
-  client:
-    enabled: false

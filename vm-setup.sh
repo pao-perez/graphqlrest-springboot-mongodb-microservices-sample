@@ -7,7 +7,7 @@ set -x
 
 DEPLOYMENT_ENV=$1
 PROJECT_ID=$2
-SOURCE_IP_ADDRESS=$3 # the static ip attached to the external https load balancer (non-development env setup)
+SOURCE_IP_ADDRESS=$3 # the static ip attached to the external https load balancer
 DOMAIN=$4
 REGION=asia-southeast1
 ZONE=$REGION-a
@@ -37,6 +37,20 @@ if [[ $DEPLOYMENT_ENV != "development" ]] && [[ $DOMAIN == "" ]]; then
     exit 1;
 fi
 
+# Build and upload container images
+gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
+cd ./avatar-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/avatar-service:0.0.1 --project=$PROJECT_ID
+cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/avatar-db:0.0.1 --project=$PROJECT_ID
+cd ../../image-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/image-service:0.0.1 --project=$PROJECT_ID
+cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/image-db:0.0.1 --project=$PROJECT_ID
+cd ../../category-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/category-service:0.0.1 --project=$PROJECT_ID
+cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/category-db:0.0.1 --project=$PROJECT_ID
+cd ../../content-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/content-service:0.0.1 --project=$PROJECT_ID
+cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/content-db:0.0.1 --project=$PROJECT_ID
+cd ../../graphql-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/graphql-service:0.0.1 --project=$PROJECT_ID
+cd ../discovery-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/discovery-service:0.0.1 --project=$PROJECT_ID
+cd ..
+
 # Enable Secret Manager api
 gcloud services enable secretmanager.googleapis.com --project=$PROJECT_ID
 
@@ -53,20 +67,6 @@ gcloud secrets --project=$PROJECT_ID add-iam-policy-binding mongo-username \
 BUCKET=$RESOURCE_TAG-bucket
 gsutil mb -p $PROJECT_ID -l $REGION gs://$BUCKET/
 gsutil cp ./docker-compose.yaml gs://$BUCKET
-
-# Build and upload container images
-gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
-cd ./avatar-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/avatar-service:0.0.1 --project=$PROJECT_ID
-cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/avatar-db:0.0.1 --project=$PROJECT_ID
-cd ../../image-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/image-service:0.0.1 --project=$PROJECT_ID
-cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/image-db:0.0.1 --project=$PROJECT_ID
-cd ../../category-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/category-service:0.0.1 --project=$PROJECT_ID
-cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/category-db:0.0.1 --project=$PROJECT_ID
-cd ../../content-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/content-service:0.0.1 --project=$PROJECT_ID
-cd ./db && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/content-db:0.0.1 --project=$PROJECT_ID
-cd ../../graphql-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/graphql-service:0.0.1 --project=$PROJECT_ID
-cd ../discovery-service && gcloud builds submit --tag asia.gcr.io/$PROJECT_ID/discovery-service:0.0.1 --project=$PROJECT_ID
-cd ..
 
 # Create data disk
 DATA_DISK=$RESOURCE_TAG-disk-data
@@ -103,86 +103,84 @@ gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --shielded-integrity-monitoring \
     --reservation-affinity=any
 
-if [[ $DEPLOYMENT_ENV != "development" ]]; then
-    # Create network endpoint group
-    NEG=$RESOURCE_TAG-neg
-    gcloud compute --project=$PROJECT_ID network-endpoint-groups create $NEG \
-        --zone=$ZONE \
-        --subnet=$SUBNET \
-        --network-endpoint-type=GCE_VM_IP_PORT \
-        --default-port=$HTTP_PORT
+# Create network endpoint group
+NEG=$RESOURCE_TAG-neg
+gcloud compute --project=$PROJECT_ID network-endpoint-groups create $NEG \
+    --zone=$ZONE \
+    --subnet=$SUBNET \
+    --network-endpoint-type=GCE_VM_IP_PORT \
+    --default-port=$HTTP_PORT
 
-    # Get vm instance internal/primary IP
-    VM_INSTANCE_PRIMARY_IP=$(gcloud compute --project=$PROJECT_ID instances describe $VM_INSTANCE --zone=$ZONE --format='get(networkInterfaces[0].networkIP)')
+# Get vm instance internal/primary IP
+VM_INSTANCE_PRIMARY_IP=$(gcloud compute --project=$PROJECT_ID instances describe $VM_INSTANCE --zone=$ZONE --format='get(networkInterfaces[0].networkIP)')
 
-    # Attach vm instance endpoints as network endpoint to network endpoint group
-    gcloud compute --project=$PROJECT_ID network-endpoint-groups update $NEG \
-        --zone=$ZONE \
-        --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$HTTP_PORT \
-        --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$EUREKA_PORT
+# Attach vm instance endpoints as network endpoint to network endpoint group
+gcloud compute --project=$PROJECT_ID network-endpoint-groups update $NEG \
+    --zone=$ZONE \
+    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$HTTP_PORT \
+    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$EUREKA_PORT
 
-    # Create http health check
-    HTTP_HEALTH_CHECK=$RESOURCE_TAG-health-check-http
-    gcloud beta compute --project=$PROJECT_ID health-checks create http $HTTP_HEALTH_CHECK \
-        --use-serving-port \
-        --request-path=/ \
-        --proxy-header=NONE \
-        --check-interval=10 \
-        --timeout=10 \
-        --unhealthy-threshold=3 \
-        --healthy-threshold=2 \
-        --no-enable-logging # avail in beta only at time of writing
+# Create http health check
+HTTP_HEALTH_CHECK=$RESOURCE_TAG-health-check-http
+gcloud beta compute --project=$PROJECT_ID health-checks create http $HTTP_HEALTH_CHECK \
+    --use-serving-port \
+    --request-path=/ \
+    --proxy-header=NONE \
+    --check-interval=10 \
+    --timeout=10 \
+    --unhealthy-threshold=3 \
+    --healthy-threshold=2 \
+    --no-enable-logging # avail in beta only at time of writing
 
-    # Create firewall to allow health check from Google Cloud health checking systems to vm instance on port 8080
-    gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allow-lb-health-check-http-traffic \
-        --direction=INGRESS \
-        --priority=1000 \
-        --network=default \
-        --action=ALLOW \
-        --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
-        --source-ranges=130.211.0.0/22,35.191.0.0/16 \
-        --target-tags=$HTTP_TARGET_TAG
+# Create firewall to allow health check from Google Cloud health checking systems to vm instance on port 8080
+gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allow-lb-health-check-http-traffic \
+    --direction=INGRESS \
+    --priority=1000 \
+    --network=default \
+    --action=ALLOW \
+    --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --target-tags=$HTTP_TARGET_TAG
 
-    # Create load balancer backend service
-    LB_BE=$RESOURCE_TAG-lb-be
-    gcloud compute --project=$PROJECT_ID backend-services create $LB_BE \
-        --protocol=HTTP \
-        --port-name=http \
-        --health-checks=$HTTP_HEALTH_CHECK \
-        --global-health-checks \
-        --global
+# Create load balancer backend service
+LB_BE=$RESOURCE_TAG-lb-be
+gcloud compute --project=$PROJECT_ID backend-services create $LB_BE \
+    --protocol=HTTP \
+    --port-name=http \
+    --health-checks=$HTTP_HEALTH_CHECK \
+    --global-health-checks \
+    --global
 
-    # Add network endpoint group as backend to load balancer backend service
-    gcloud compute --project=$PROJECT_ID backend-services add-backend $LB_BE \
-        --network-endpoint-group=$NEG \
-        --network-endpoint-group-zone=$ZONE \
-        --balancing-mode=RATE \
-        --max-rate-per-endpoint=100 \
-        --global
+# Add network endpoint group as backend to load balancer backend service
+gcloud compute --project=$PROJECT_ID backend-services add-backend $LB_BE \
+    --network-endpoint-group=$NEG \
+    --network-endpoint-group-zone=$ZONE \
+    --balancing-mode=RATE \
+    --max-rate-per-endpoint=100 \
+    --global
 
-    # Create load balancer URL map that will route requests to load balancer backend service
-    LB_URL_MAP=$RESOURCE_TAG-lb
-    gcloud compute --project=$PROJECT_ID url-maps create $LB_URL_MAP \
-        --default-service=$LB_BE
+# Create load balancer URL map that will route requests to load balancer backend service
+LB_URL_MAP=$RESOURCE_TAG-lb
+gcloud compute --project=$PROJECT_ID url-maps create $LB_URL_MAP \
+    --default-service=$LB_BE
 
-    # Create SSL certificate
-    SSL_CERTIFICATE=$RESOURCE_TAG-ssl-certificate
-    gcloud compute --project=$PROJECT_ID ssl-certificates create $SSL_CERTIFICATE \
-        --domains=$DOMAIN \
-        --global
+# Create SSL certificate
+SSL_CERTIFICATE=$RESOURCE_TAG-ssl-certificate
+gcloud compute --project=$PROJECT_ID ssl-certificates create $SSL_CERTIFICATE \
+    --domains=$DOMAIN \
+    --global
 
-    # Create load balancer https target proxy that will route requests to load balancer url map and attach ssl certificate
-    LB_HTTPS_TARGET_PROXY=$RESOURCE_TAG-lb-target-proxy-https
-    gcloud compute --project=$PROJECT_ID target-https-proxies create $LB_HTTPS_TARGET_PROXY \
-        --url-map=$LB_URL_MAP \
-        --ssl-certificates=$SSL_CERTIFICATE
+# Create load balancer https target proxy that will route requests to load balancer url map and attach ssl certificate
+LB_HTTPS_TARGET_PROXY=$RESOURCE_TAG-lb-target-proxy-https
+gcloud compute --project=$PROJECT_ID target-https-proxies create $LB_HTTPS_TARGET_PROXY \
+    --url-map=$LB_URL_MAP \
+    --ssl-certificates=$SSL_CERTIFICATE
 
-    # Create load balancer forwarding rule to route incoming requests to the load balancer https target proxy
-    gcloud compute --project=$PROJECT_ID forwarding-rules create $RESOURCE_TAG-lb-forwarding-rule-https \
-        --address=$SOURCE_IP_ADDRESS \
-        --target-https-proxy=$LB_HTTPS_TARGET_PROXY \
-        --ports=443 \
-        --global
-fi
+# Create load balancer forwarding rule to route incoming requests to the load balancer https target proxy
+gcloud compute --project=$PROJECT_ID forwarding-rules create $RESOURCE_TAG-lb-forwarding-rule-https \
+    --address=$SOURCE_IP_ADDRESS \
+    --target-https-proxy=$LB_HTTPS_TARGET_PROXY \
+    --ports=443 \
+    --global
 
 echo "$DEPLOYMENT_ENV Setup Complete"

@@ -14,26 +14,19 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
-class GraphQLConfig {
-  private static final Logger logger = LoggerFactory.getLogger(GraphQLConfig.class);
+class BaseConfig {
+  private static final Logger logger = LoggerFactory.getLogger(BaseConfig.class);
 
-  @Value("${web.client.address}")
-  private String webClientAddress;
-
-  @Bean
   @LoadBalanced
-  WebClient.Builder webClientBuilder() {
-    return WebClient.builder();
+  @Bean
+  RestTemplate restTemplate() {
+      return new RestTemplate();
   }
 
   @Bean
@@ -43,8 +36,7 @@ class GraphQLConfig {
 
   @Bean
   GraphQLSchema schema(
-      final SchemaGenerator generator, final SchemaParser parser, final RuntimeWiring wiring)
-      throws IOException {
+      final SchemaGenerator generator, final SchemaParser parser, final RuntimeWiring wiring) throws IOException {
     URL url = Resources.getResource("schema.graphqls");
     String sdl = Resources.toString(url, Charsets.UTF_8);
     TypeDefinitionRegistry typeRegistry = parser.parse(sdl);
@@ -56,7 +48,7 @@ class GraphQLConfig {
     return RuntimeWiring.newRuntimeWiring()
         .type(
             TypeRuntimeWiring.newTypeWiring("Query")
-                .dataFetcher("contents", dataFetchers.getAllContentsDataFetcher()))
+                .dataFetcher("contents", dataFetchers.getContentsDataFetcher()))
         .type(
             TypeRuntimeWiring.newTypeWiring("Query")
                 .dataFetcher("content", dataFetchers.getContentDataFetcher()))
@@ -79,17 +71,5 @@ class GraphQLConfig {
   @Bean
   SchemaGenerator schemaGenerator() {
     return new SchemaGenerator();
-  }
-
-  @Profile("local")
-  @Bean
-  WebMvcConfigurer corsConfigurer() {
-    logger.info("Allowing cross-origin requests for /graphql from origin: " + webClientAddress);
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/graphql").allowedOrigins(webClientAddress);
-      }
-    };
   }
 }
