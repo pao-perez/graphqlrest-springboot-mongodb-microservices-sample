@@ -32,7 +32,7 @@ if [[ $SOURCE_IP_ADDRESS == "" ]]; then
     exit 1;
 fi
 
-if [[ $DEPLOYMENT_ENV != "development" ]] && [[ $DOMAIN == "" ]]; then
+if [[ $DOMAIN == "" ]]; then
     echo "DOMAIN is invalid. Exiting setup script."
     exit 1;
 fi
@@ -79,7 +79,6 @@ gcloud compute --project=$PROJECT_ID disks create $DATA_DISK \
 VM_INSTANCE=$RESOURCE_TAG-instance
 SUBNET=default
 HTTP_PORT=8080
-EUREKA_PORT=8761
 HTTP_TARGET_TAG=http-server
 gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --zone=$ZONE \
@@ -117,14 +116,13 @@ VM_INSTANCE_PRIMARY_IP=$(gcloud compute --project=$PROJECT_ID instances describe
 # Attach vm instance endpoints as network endpoint to network endpoint group
 gcloud compute --project=$PROJECT_ID network-endpoint-groups update $NEG \
     --zone=$ZONE \
-    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$HTTP_PORT \
-    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$EUREKA_PORT
+    --add-endpoint=instance=$VM_INSTANCE,ip=$VM_INSTANCE_PRIMARY_IP,port=$HTTP_PORT
 
 # Create http health check
 HTTP_HEALTH_CHECK=$RESOURCE_TAG-health-check-http
 gcloud beta compute --project=$PROJECT_ID health-checks create http $HTTP_HEALTH_CHECK \
     --use-serving-port \
-    --request-path=/ \
+    --request-path=/actuator/health \
     --proxy-header=NONE \
     --check-interval=10 \
     --timeout=10 \
@@ -138,7 +136,7 @@ gcloud compute --project=$PROJECT_ID firewall-rules create $RESOURCE_TAG-fw-allo
     --priority=1000 \
     --network=default \
     --action=ALLOW \
-    --rules=tcp:$HTTP_PORT,tcp:$EUREKA_PORT \
+    --rules=tcp:$HTTP_PORT \
     --source-ranges=130.211.0.0/22,35.191.0.0/16 \
     --target-tags=$HTTP_TARGET_TAG
 
@@ -151,7 +149,7 @@ gcloud compute --project=$PROJECT_ID backend-services create $LB_BE \
     --global-health-checks \
     --global
 
-# Add network endpoint group as backend to load balancer backend service
+# Attach network endpoint group as backend to load balancer backend service
 gcloud compute --project=$PROJECT_ID backend-services add-backend $LB_BE \
     --network-endpoint-group=$NEG \
     --network-endpoint-group-zone=$ZONE \
@@ -163,6 +161,12 @@ gcloud compute --project=$PROJECT_ID backend-services add-backend $LB_BE \
 LB_URL_MAP=$RESOURCE_TAG-lb
 gcloud compute --project=$PROJECT_ID url-maps create $LB_URL_MAP \
     --default-service=$LB_BE
+
+# Add a host rule to the load balancer URL map to direct requests for $DOMAIN host to the load balancer $LB_BE backend service
+gcloud compute --project=$PROJECT_ID url-maps add-path-matcher $LB_URL_MAP \
+    --default-service=$LB_BE \
+    --path-matcher-name=graphql-api-path \
+    --new-hosts=$DOMAIN --global
 
 # Create SSL certificate
 SSL_CERTIFICATE=$RESOURCE_TAG-ssl-certificate
