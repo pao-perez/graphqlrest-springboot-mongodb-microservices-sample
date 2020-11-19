@@ -11,6 +11,15 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://discovery-service:8761/eureka}
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      enabled: true
 api:
   content:
     url: http://content-service/contents

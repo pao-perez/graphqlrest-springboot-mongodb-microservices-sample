@@ -9,6 +9,15 @@ spring:
       username: ${MONGO_USERNAME:dummy_username}
       password: ${MONGO_PASSWORD:dummy_password}
   jmx.enabled: false
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      enabled: true
 server:
   port: 8082
 logging:
