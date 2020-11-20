@@ -29,9 +29,32 @@ api:
     url: http://avatar-service/avatars
   image:
     url: http://image-service/images
+# Add placeholder and set to a dummy value so cloud build won't complain
+client:
+  web:
+    address: dummy
 ---
 spring:
   profiles: local
 client:
   web:
     address: http://localhost:5000
+---
+spring:
+  profiles: development
+client:
+  web:
+    address: https://development.web.contentually.dev
+---
+spring:
+  profiles: testing
+client:
+  web:
+    address: https://testing.web.contentually.dev
+---
+# TODO: Ideally we avoid having to allow CORS in production for performance reasons (e.g. additional preflight request)
+spring:
+  profiles: production
+client:
+  web:
+    address: https://web.contentually.dev
