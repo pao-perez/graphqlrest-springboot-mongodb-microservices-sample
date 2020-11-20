@@ -15,7 +15,6 @@ PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectN
 COMPUTE_SERVICEACCOUNT=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
 RESOURCE_TAG=$DEPLOYMENT_ENV-contentually
 
-echo "Start $DEPLOYMENT_ENV Setup"
 
 if [[ $DEPLOYMENT_ENV == "" ]]; then
     echo "DEPLOYMENT_ENV is invalid. Exiting setup script."
@@ -36,6 +35,8 @@ if [[ $DOMAIN == "" ]]; then
     echo "DOMAIN is invalid. Exiting setup script."
     exit 1;
 fi
+
+echo "Start $DEPLOYMENT_ENV Setup"
 
 # Build and upload container images
 gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
@@ -91,7 +92,7 @@ gcloud compute --project=$PROJECT_ID instances create $VM_INSTANCE \
     --service-account=$COMPUTE_SERVICEACCOUNT \
     --scopes=cloud-platform \
     --tags=$HTTP_TARGET_TAG \
-    --image=ubuntu-minimal-1804-bionic-v20201014 \
+    --image=ubuntu-minimal-1804-bionic-v20201116 \
     --image-project=ubuntu-os-cloud \
     --boot-disk-size=10GB \
     --boot-disk-type=pd-standard \
