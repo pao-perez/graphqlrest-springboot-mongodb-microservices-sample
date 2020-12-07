@@ -8,31 +8,6 @@
 		"source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
 	],
 	"overrideCommand": false,
-	// Use this environment variable if you need to bind mount your local source code into a new container.
-	"remoteEnv": {
-		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
-	},
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"[java]": {
-			"editor.suggest.snippetsPreventQuickSuggestions": false,
-			"editor.tabSize": 4
-		},
-		"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
-		"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -javaagent:\"/home/vscode/.vscode-server/extensions/gabrielbb.vscode-lombok-1.0.1/server/lombok.jar\"",
-		"java.refactor.renameFromFileExplorer": "autoApply",
-		"java.semanticHighlighting.enabled": true,
-		"java.debug.settings.console": "internalConsole",
-		"java.debug.settings.hotCodeReplace": "auto",
-		"java.project.importOnFirstTimeStartup": "automatic",
-		"files.exclude": {
-			"**/.classpath": true,
-			"**/.project": true,
-			"**/.settings": true,
-			"**/.factorypath": true
-		}
-	},
-	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"gabrielbb.vscode-lombok",
 		"graphql.vscode-graphql",
@@ -46,12 +21,5 @@
 		"vscjava.vscode-spring-boot-dashboard",
 		"vscjava.vscode-spring-initializr"
 	],
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [
-		8080
-	],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "docker --version",
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
