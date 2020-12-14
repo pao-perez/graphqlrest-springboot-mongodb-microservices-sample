@@ -5,7 +5,7 @@ server:
   port: 8080
 logging:
   file:
-    path: /var/log/graphql
+    name: /var/log/spring/spring.log
     max-history: 14
 eureka:
   client:
