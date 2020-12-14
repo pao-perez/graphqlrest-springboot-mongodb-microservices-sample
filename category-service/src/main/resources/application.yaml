@@ -22,7 +22,7 @@ server:
   port: 8084
 logging:
   file:
-    path: /var/log/category
+    name: /var/log/spring/spring.log
     max-history: 14
 eureka:
   client:
