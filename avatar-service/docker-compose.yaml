@@ -11,7 +11,7 @@ volumes:
     driver_opts: 
       type: none
       o: bind
-      device: /mnt/disks/logs
+      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/avatar/logs
 
 services:
   avatar-db:
