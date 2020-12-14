@@ -4,23 +4,21 @@
 set -e
 
 DEPLOYMENT_ENV=standalone
-ROOT_DIR=/mnt/disks/$DEPLOYMENT_ENV-contentually
 SERVICE=avatar
-APP_DIR=./..
+ROOT_DIR=/mnt/disks/${DEPLOYMENT_ENV}-contentually/${SERVICE}
 
-# Create service log dir
-mkdir -m 777 -p $ROOT_DIR/$SERVICE/service/log
+# Create spring log dir
+mkdir -m 777 -p ${ROOT_DIR}/logs
+
 # Build service container image
 DOCKER_BUILDKIT=1 docker build -t $SERVICE-service:0.0.1 .
-# Setup db data/log and secrets directories
-mkdir -p $ROOT_DIR/$SERVICE/db/data $ROOT_DIR/$SERVICE/secrets
-mkdir -m 777 -p $ROOT_DIR/$SERVICE/db/log
-# Setup Mongo db access
-cat $APP_DIR/secrets/mongo_username > $ROOT_DIR/$SERVICE/secrets/mongo_username
-cat $APP_DIR/secrets/mongo_password > $ROOT_DIR/$SERVICE/secrets/mongo_password
-# Build db container image
-cd db/ && docker build -t $SERVICE-db:0.0.1 . && cd -
 
-DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up
+# Build db container image
+cd db/ && docker build -t ${SERVICE}-db:0.0.1 . && cd -
+
+DEPLOYMENT_ENV=${DEPLOYMENT_ENV} docker-compose up
 
 docker-compose down
+docker volume prune
+docker volume rm ${SERVICE}-service_servicelog
+rm -r ${ROOT_DIR}

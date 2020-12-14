@@ -3,6 +3,16 @@ version: '3.7'
 networks:
   avatar-network:
 
+volumes:
+  data:
+  dblog:
+  servicelog:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/avatar/logs
+
 services:
   avatar-db:
     image: avatar-db:0.0.1
@@ -15,9 +25,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
+      - type: volume
+        source: data
+        target: /data/db
+      - type: volume
+        source: dblog
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/secrets
+        target: /mnt/disks/secrets
+        read_only: true
   avatar-service:
     image: avatar-service:0.0.1
     build:
@@ -34,5 +51,10 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
+      - type: volume
+        source: servicelog
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/secrets
+        target: /mnt/disks/secrets
+        read_only: true

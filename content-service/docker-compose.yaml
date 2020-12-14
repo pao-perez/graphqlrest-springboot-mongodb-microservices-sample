@@ -3,6 +3,16 @@ version: '3.7'
 networks:
   content-network:
 
+volumes:
+  data:
+  dblog:
+  servicelog:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/content/logs
+
 services:
   content-db:
     image: content-db:0.0.1
@@ -15,9 +25,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
+      - type: volume
+        source: data
+        target: /data/db
+      - type: volume
+        source: dblog
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/secrets
+        target: /mnt/disks/secrets
+        read_only: true
   content-service:
     image: content-service:0.0.1
     build:
@@ -34,5 +51,10 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
+      - type: volume
+        source: servicelog
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/secrets
+        target: /mnt/disks/secrets
+        read_only: true
