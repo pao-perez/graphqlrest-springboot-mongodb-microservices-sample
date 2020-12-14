@@ -1,5 +1,13 @@
 version: '3.7'
 
+volumes:
+  servicelog:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/discovery/logs
+
 services:
   discovery-service:
     image: discovery-service:0.0.1
@@ -12,4 +20,6 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
+      - type: volume
+        source: servicelog
+        target: /var/log/spring
