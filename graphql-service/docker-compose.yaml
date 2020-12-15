@@ -6,7 +6,7 @@ volumes:
     driver_opts: 
       type: none
       o: bind
-      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/graphql/logs
+      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/spring/logs
 
 services:
   graphql-service:
