@@ -19,6 +19,6 @@ cd db/ && docker build -t ${SERVICE}-db:0.0.1 . && cd -
 DEPLOYMENT_ENV=${DEPLOYMENT_ENV} docker-compose up
 
 docker-compose down
-docker volume prune
+docker volume prune --force
 docker volume rm ${SERVICE}-service_servicelog
 rm -r ${ROOT_DIR}
