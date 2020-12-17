@@ -4,7 +4,6 @@
 set -e
 
 DEPLOYMENT_ENV=
-ROOT_DIR=
 TARGET_SPECIFIED=false
 
 usage() {
@@ -20,11 +19,6 @@ cat << EOF
 EOF
 }
 
-cleanup() {
-  docker-compose down
-  rm -rf $ROOT_DIR
-}
-
 setup_service() {
   local service=$1
   local app_dir=$(pwd)
@@ -34,18 +28,9 @@ setup_service() {
     buildkit_enabled=1
   fi
 
-  ROOT_DIR=/mnt/disks/$DEPLOYMENT_ENV-contentually
-  # Create service log dir
-  mkdir -m 777 -p $ROOT_DIR/$service/service/log
   # Build service container image
   cd $app_dir/$service-service && DOCKER_BUILDKIT=$buildkit_enabled docker build -t $service-service:0.0.1 . && cd -
   if [[ $service != "discovery" ]] && [[ $service != "graphql" ]]; then
-    # Setup db data/log and secrets directories
-    mkdir -p $ROOT_DIR/$service/db/data $ROOT_DIR/$service/secrets
-    mkdir -m 777 -p $ROOT_DIR/$service/db/log
-    # Setup Mongo db access
-    cat $app_dir/secrets/mongo_username > $ROOT_DIR/$service/secrets/mongo_username
-    cat $app_dir/secrets/mongo_password > $ROOT_DIR/$service/secrets/mongo_password
     # Build db container image
     cd $app_dir/$service-service/db && docker build -t $service-db:0.0.1 . && cd -
   fi
@@ -65,12 +50,6 @@ while getopts "t:" opt; do
         echo "Error: Client services aren't registered for discovery on 'standalone' environment, please specify a different environment."
         exit
       fi
-      setup_service avatar
-      setup_service category
-      setup_service content
-      setup_service image
-      setup_service discovery
-      setup_service graphql
       ;;
     ?)
       usage
@@ -85,6 +64,15 @@ if [[ $TARGET_SPECIFIED = false ]]; then
   exit
 fi
 
+setup_service avatar
+setup_service category
+setup_service content
+setup_service image
+setup_service discovery
+setup_service graphql
+
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f docker-compose.yaml -f docker-compose.local.yaml up
 
-cleanup
+docker-compose down
+docker volume prune --force
+docker volume rm playground-portfolio-server_service-log

@@ -4,14 +4,14 @@ networks:
   image-network:
 
 volumes:
-  data:
-  dblog:
-  servicelog:
+  db-log:
+  service-log:
     driver: local
     driver_opts: 
       type: none
       o: bind
-      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/spring/logs
+      device: /mnt/disks/${DEPLOYMENT_ENV}-contentually/logs/spring
+  image-data:
 
 services:
   image-db:
@@ -26,14 +26,14 @@ services:
       - DEPLOYMENT_ENV
     volumes:
       - type: volume
-        source: data
+        source: image-data
         target: /data/db
       - type: volume
-        source: dblog
+        source: db-log
         target: /var/log/mongodb
       - type: bind
-        source: /mnt/disks/secrets
-        target: /mnt/disks/secrets
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
         read_only: true
   image-service:
     image: image-service:0.0.1
@@ -49,12 +49,12 @@ services:
       - "8082:8082"
     environment:
       - DEPLOYMENT_ENV
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+      - SPRING_PROFILES_ACTIVE=$DEPLOYMENT_ENV
     volumes:
       - type: volume
-        source: servicelog
+        source: service-log
         target: /var/log/spring
       - type: bind
-        source: /mnt/disks/secrets
-        target: /mnt/disks/secrets
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
         read_only: true

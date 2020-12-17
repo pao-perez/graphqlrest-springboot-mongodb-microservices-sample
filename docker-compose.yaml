@@ -7,6 +7,19 @@ networks:
   category-network:
   content-network:
 
+volumes:
+  db-log:
+  service-log:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /mnt/disks/${DEPLOYMENT_ENV}-contentually/logs/spring
+  image-data:
+  avatar-data:
+  category-data:
+  content-data:
+
 services:
   discovery-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/discovery-service:0.0.1
@@ -19,7 +32,9 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/discovery/service/log:/var/log/discovery:rw
+      - type: volume
+        source: service-log
+        target: /var/log/spring
   image-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-db:0.0.1
     container_name: image-db
@@ -31,9 +46,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
+      - type: volume
+        source: image-data
+        target: /data/db
+      - type: volume
+        source: db-log
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
   image-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/image-service:0.0.1
     container_name: image-service
@@ -50,8 +72,13 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/service/log:/var/log/image:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/image/secrets:/data/secrets:ro
+      - type: volume
+        source: service-log
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
 
   avatar-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-db:0.0.1
@@ -64,9 +91,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
+      - type: volume
+        source: avatar-data
+        target: /data/db
+      - type: volume
+        source: db-log
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
   avatar-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/avatar-service:0.0.1
     container_name: avatar-service
@@ -83,8 +117,13 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/service/log:/var/log/avatar:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/avatar/secrets:/data/secrets:ro
+      - type: volume
+        source: service-log
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
 
   category-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-db:0.0.1
@@ -97,9 +136,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
+      - type: volume
+        source: category-data
+        target: /data/db
+      - type: volume
+        source: db-log
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
   category-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/category-service:0.0.1
     container_name: category-service
@@ -116,8 +162,13 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/service/log:/var/log/category:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/category/secrets:/data/secrets:ro
+      - type: volume
+        source: service-log
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
 
   content-db:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-db:0.0.1
@@ -130,9 +181,16 @@ services:
     environment:
       - DEPLOYMENT_ENV
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/data:/data/db:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/db/log:/var/log/mongodb:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
+      - type: volume
+        source: content-data
+        target: /data/db
+      - type: volume
+        source: db-log
+        target: /var/log/mongodb
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
   content-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/content-service:0.0.1
     container_name: content-service
@@ -149,8 +207,13 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/service/log:/var/log/content:rw
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/content/secrets:/data/secrets:ro
+      - type: volume
+        source: service-log
+        target: /var/log/spring
+      - type: bind
+        source: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        target: /mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo
+        read_only: true
 
   graphql-service:
     image: asia.gcr.io/${DEPLOYMENT_ENV}-contentually/graphql-service:0.0.1
@@ -170,4 +233,6 @@ services:
       - DEPLOYMENT_ENV
       - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
     volumes:
-      - /mnt/disks/${DEPLOYMENT_ENV}-contentually/graphql/service/log:/var/log/graphql:rw
+      - type: volume
+        source: service-log
+        target: /var/log/spring

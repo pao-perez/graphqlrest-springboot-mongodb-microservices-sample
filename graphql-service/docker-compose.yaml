@@ -1,12 +1,12 @@
 version: '3.7'
 
 volumes:
-  servicelog:
+  service-log:
     driver: local
     driver_opts: 
       type: none
       o: bind
-      device: /mnt/disks/$DEPLOYMENT_ENV-contentually/spring/logs
+      device: /mnt/disks/${DEPLOYMENT_ENV}-contentually/logs/spring
 
 services:
   graphql-service:
@@ -19,8 +19,8 @@ services:
       - "8080:8080"
     environment:
       - DEPLOYMENT_ENV
-      - SPRING_PROFILES_ACTIVE=${DEPLOYMENT_ENV}
+      - SPRING_PROFILES_ACTIVE=$DEPLOYMENT_ENV
     volumes:
       - type: volume
-        source: servicelog
+        source: service-log
         target: /var/log/spring
