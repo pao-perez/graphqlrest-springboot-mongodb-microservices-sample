@@ -30,12 +30,6 @@ while getopts "s:" opt; do
       fi
       SERVICE=$OPTARG
       TARGET_SPECIFIED=true
-      # Build service container image
-      cd ${SERVICE}-service && DOCKER_BUILDKIT=1 docker build -t ${SERVICE}-service:0.0.1 .
-      if [[ $SERVICE != "discovery" ]] && [[ $SERVICE != "graphql" ]]; then
-        # Build db container image
-        cd db/ && docker build -t ${SERVICE}-db:0.0.1 . && cd -
-      fi
       ;;
     ?)
       usage
@@ -48,6 +42,13 @@ if [[ $TARGET_SPECIFIED = false ]]; then
   echo "Target service (-s) needs to be specified as first argument"
   usage
   exit
+fi
+
+# Build service container image
+cd ${SERVICE}-service && DOCKER_BUILDKIT=1 docker build -t ${SERVICE}-service:0.0.1 .
+if [[ $SERVICE != "discovery" ]] && [[ $SERVICE != "graphql" ]]; then
+  # Build db container image
+  cd db/ && docker build -t ${SERVICE}-db:0.0.1 . && cd -
 fi
 
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up

@@ -5,6 +5,7 @@ set -e
 
 DEPLOYMENT_ENV=
 TARGET_SPECIFIED=false
+APP_DIR=$(pwd)
 
 usage() {
 cat << EOF
@@ -21,7 +22,6 @@ EOF
 
 setup_service() {
   local service=$1
-  local app_dir=$(pwd)
   local buildkit_enabled=0
   
   if [[ $DEPLOYMENT_ENV == "local" ]]; then
@@ -29,11 +29,12 @@ setup_service() {
   fi
 
   # Build service container image
-  cd $app_dir/$service-service && DOCKER_BUILDKIT=$buildkit_enabled docker build -t $service-service:0.0.1 . && cd -
+  cd $service-service/ && DOCKER_BUILDKIT=$buildkit_enabled docker build -t $service-service:0.0.1 .
   if [[ $service != "discovery" ]] && [[ $service != "graphql" ]]; then
     # Build db container image
-    cd $app_dir/$service-service/db && docker build -t $service-db:0.0.1 . && cd -
+    cd db/ && docker build -t $service-db:0.0.1 .
   fi
+  cd $APP_DIR
 }
 
 while getopts "t:" opt; do
