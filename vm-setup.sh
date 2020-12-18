@@ -56,8 +56,8 @@ cd ..
 gcloud services enable secretmanager.googleapis.com --project=$PROJECT_ID
 
 # Create mongo secrets
-gcloud secrets --project=$PROJECT_ID create mongo-username --data-file=./secrets/mongo_username --locations=$REGION --replication-policy=user-managed
-gcloud secrets --project=$PROJECT_ID create mongo-password --data-file=./secrets/mongo_password --locations=$REGION --replication-policy=user-managed
+gcloud secrets --project=$PROJECT_ID create mongo-username --data-file=/mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo/username --locations=$REGION --replication-policy=user-managed
+gcloud secrets --project=$PROJECT_ID create mongo-password --data-file=/mnt/disks/${DEPLOYMENT_ENV}-contentually/secrets/mongo/password --locations=$REGION --replication-policy=user-managed
 
 # Grant Secret Accessor role to Compute Engine service account
 gcloud secrets --project=$PROJECT_ID add-iam-policy-binding mongo-username \
