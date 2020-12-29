@@ -5,7 +5,7 @@ set -e
 
 DEPLOYMENT_ENV=
 TARGET_SPECIFIED=false
-APP_DIR=$(pwd)
+APP_DIR=$PWD
 
 usage() {
 cat << EOF
