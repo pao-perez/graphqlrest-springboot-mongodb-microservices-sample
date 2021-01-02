@@ -1,7 +1,6 @@
 package com.paoperez.avatarservice;
 
 import java.net.URI;
-import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -29,8 +28,9 @@ class AvatarController {
   }
 
   @GetMapping()
-  ResponseEntity<Collection<Avatar>> getAllAvatars() {
-    return new ResponseEntity<>(avatarService.getAllAvatars(), HttpStatus.OK);
+  ResponseEntity<Avatars> getAllAvatars() {
+    Avatars avatars = Avatars.builder().data(avatarService.getAllAvatars()).build();
+    return new ResponseEntity<>(avatars, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -43,11 +43,8 @@ class AvatarController {
   ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar)
       throws AvatarAlreadyExistsException {
     Avatar createdAvatar = avatarService.createAvatar(avatar);
-    URI location =
-        ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(createdAvatar.getId())
-            .toUri();
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(createdAvatar.getId()).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
@@ -55,8 +52,8 @@ class AvatarController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateAvatar(
-      final @PathVariable @NotBlank String id, final @RequestBody @Valid Avatar avatar)
+  ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid Avatar avatar)
       throws AvatarNotFoundException, AvatarAlreadyExistsException {
     avatarService.updateAvatar(id, avatar);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

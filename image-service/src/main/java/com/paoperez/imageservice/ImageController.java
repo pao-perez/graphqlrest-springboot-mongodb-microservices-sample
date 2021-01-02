@@ -1,7 +1,6 @@
 package com.paoperez.imageservice;
 
 import java.net.URI;
-import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -29,8 +28,9 @@ class ImageController {
   }
 
   @GetMapping()
-  ResponseEntity<Collection<Image>> getAllImages() {
-    return new ResponseEntity<>(imageService.getAllImages(), HttpStatus.OK);
+  ResponseEntity<Images> getAllImages() {
+    Images images = Images.builder().data(imageService.getAllImages()).build();
+    return new ResponseEntity<>(images, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -43,11 +43,8 @@ class ImageController {
   ResponseEntity<Image> createImage(final @RequestBody @Valid Image image)
       throws ImageAlreadyExistsException {
     Image createdImage = imageService.createImage(image);
-    URI location =
-        ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(createdImage.getId())
-            .toUri();
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(createdImage.getId()).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
@@ -55,8 +52,8 @@ class ImageController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateImage(
-      final @PathVariable @NotBlank String id, final @RequestBody @Valid Image image)
+  ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid Image image)
       throws ImageNotFoundException, ImageAlreadyExistsException {
     imageService.updateImage(id, image);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

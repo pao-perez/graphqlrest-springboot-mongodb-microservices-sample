@@ -1,7 +1,6 @@
 package com.paoperez.categoryservice;
 
 import java.net.URI;
-import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -29,8 +28,9 @@ class CategoryController {
   }
 
   @GetMapping()
-  ResponseEntity<Collection<Category>> getAllCategories() {
-    return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+  ResponseEntity<Categories> getAllCategories() {
+    Categories categories = Categories.builder().data(categoryService.getAllCategories()).build();
+    return new ResponseEntity<>(categories, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -43,11 +43,8 @@ class CategoryController {
   ResponseEntity<Category> createCategory(final @RequestBody @Valid Category category)
       throws CategoryAlreadyExistsException {
     Category createdCategory = categoryService.createCategory(category);
-    URI location =
-        ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(createdCategory.getId())
-            .toUri();
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(createdCategory.getId()).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
@@ -55,8 +52,8 @@ class CategoryController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateCategory(
-      final @PathVariable @NotBlank String id, final @RequestBody @Valid Category category)
+  ResponseEntity<Void> updateCategory(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid Category category)
       throws CategoryNotFoundException, CategoryAlreadyExistsException {
     categoryService.updateCategory(id, category);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

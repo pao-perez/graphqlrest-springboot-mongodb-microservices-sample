@@ -1,17 +1,16 @@
 package com.paoperez.graphqlservice;
 
-import graphql.schema.DataFetcher;
-
 import com.paoperez.graphqlservice.avatar.Avatar;
 import com.paoperez.graphqlservice.avatar.AvatarService;
 import com.paoperez.graphqlservice.category.Category;
 import com.paoperez.graphqlservice.category.CategoryService;
 import com.paoperez.graphqlservice.content.Content;
 import com.paoperez.graphqlservice.content.ContentService;
+import com.paoperez.graphqlservice.content.Contents;
 import com.paoperez.graphqlservice.image.Image;
 import com.paoperez.graphqlservice.image.ImageService;
-
 import org.springframework.stereotype.Component;
+import graphql.schema.DataFetcher;
 
 @Component
 class GraphQLDataFetchers {
@@ -20,18 +19,15 @@ class GraphQLDataFetchers {
   private final CategoryService categoryService;
   private final AvatarService avatarService;
 
-  GraphQLDataFetchers(
-      final ContentService contentService,
-      final ImageService imageService,
-      final CategoryService categoryService,
-      final AvatarService avatarService) {
+  GraphQLDataFetchers(final ContentService contentService, final ImageService imageService,
+      final CategoryService categoryService, final AvatarService avatarService) {
     this.contentService = contentService;
     this.imageService = imageService;
     this.categoryService = categoryService;
     this.avatarService = avatarService;
   }
 
-  DataFetcher<Content[]> getContentsDataFetcher() {
+  DataFetcher<Contents> getContentsDataFetcher() {
     return dataFetchingEnvironment -> {
       return this.contentService.getContents();
     };

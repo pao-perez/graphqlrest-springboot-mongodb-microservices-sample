@@ -1,7 +1,6 @@
 package com.paoperez.contentservice;
 
 import java.net.URI;
-import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -29,8 +28,9 @@ class ContentController {
   }
 
   @GetMapping()
-  ResponseEntity<Collection<Content>> getAllContents() {
-    return new ResponseEntity<>(contentService.getAllContents(), HttpStatus.OK);
+  ResponseEntity<Contents> getAllContents() {
+    Contents contents = Contents.builder().data(contentService.getAllContents()).build();
+    return new ResponseEntity<>(contents, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -42,11 +42,8 @@ class ContentController {
   @PostMapping()
   ResponseEntity<Content> createContent(final @RequestBody @Valid Content content) {
     Content createdContent = contentService.createContent(content);
-    URI location =
-        ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(createdContent.getId())
-            .toUri();
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(createdContent.getId()).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
@@ -54,9 +51,8 @@ class ContentController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateContent(
-      final @PathVariable @NotBlank String id, final @RequestBody @Valid Content content)
-      throws ContentNotFoundException {
+  ResponseEntity<Void> updateContent(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid Content content) throws ContentNotFoundException {
     contentService.updateContent(id, content);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

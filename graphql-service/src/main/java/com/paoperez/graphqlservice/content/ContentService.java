@@ -18,7 +18,7 @@ public class ContentService {
     return this.restTemplate.getForObject(String.format("%s/%s", contentUrl, id), Content.class);
   }
 
-  public Content[] getContents() {
-    return this.restTemplate.getForObject(contentUrl, Content[].class);
+  public Contents getContents() {
+    return this.restTemplate.getForObject(contentUrl, Contents.class);
   }
 }

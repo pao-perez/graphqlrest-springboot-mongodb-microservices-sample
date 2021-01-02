@@ -1,6 +1,10 @@
 type Query {
   content(id: ID): Content
-  contents: [Content]
+  contents: Contents
+}
+
+type Contents {
+  data: [Content]
 }
 
 type Content {
