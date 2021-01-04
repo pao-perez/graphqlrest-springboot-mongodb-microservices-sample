@@ -77,3 +77,4 @@ DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose -f docker-compose.yaml -f docker-c
 docker-compose down
 docker volume prune --force
 docker volume rm playground-portfolio-server_service-log
+docker system prune --force

@@ -56,3 +56,4 @@ DEPLOYMENT_ENV=$DEPLOYMENT_ENV docker-compose up
 docker-compose down
 docker volume prune --force
 docker volume rm ${SERVICE}-service_service-log
+docker system prune --force
