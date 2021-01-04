@@ -44,3 +44,4 @@ if [[ $TARGET_SPECIFIED = false ]]; then
 fi
 
 rm -rf /mnt/disks/${DEPLOYMENT_ENV}-contentually
+docker system prune --force
