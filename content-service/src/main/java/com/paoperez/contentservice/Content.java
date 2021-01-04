@@ -1,17 +1,20 @@
 package com.paoperez.contentservice;
 
-import com.paoperez.contentservice.util.DateTimeFactory;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import com.paoperez.contentservice.util.DateTimeFactory;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @AllArgsConstructor
+@Document(collection = "Content")
 class Content {
-  @Id private String id;
+  @Id
+  private String id;
   private String created;
   private String updated;
 
@@ -46,7 +49,8 @@ class Content {
     private String imageId;
     private DateTimeFactory dateTimeFactory;
 
-    Builder() {}
+    Builder() {
+    }
 
     Builder(final DateTimeFactory dateTimeFactory) {
       this.dateTimeFactory = dateTimeFactory;

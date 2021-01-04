@@ -1,12 +1,14 @@
 package com.paoperez.avatarservice;
 
 import javax.validation.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @Builder
+@Document(collection = "Avatar")
 class Avatar {
   @Id private String id;
 

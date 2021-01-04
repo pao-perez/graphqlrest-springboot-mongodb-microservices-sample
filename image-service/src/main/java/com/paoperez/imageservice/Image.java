@@ -3,14 +3,17 @@ package com.paoperez.imageservice;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
 @Builder
+@Document(collection = "Image")
 class Image {
-  @Id private String id;
+  @Id
+  private String id;
 
   @NotBlank(message = "name must not be blank")
   private String name;
