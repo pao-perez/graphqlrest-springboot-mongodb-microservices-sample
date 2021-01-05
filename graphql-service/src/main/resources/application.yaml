@@ -1,12 +1,16 @@
 spring:
   application.name: graphql-service
   jmx.enabled: false
+  main.banner-mode: off
 server:
   port: 8080
 logging:
   file:
     name: /var/log/spring/graphql.log
     max-history: 14
+  level:
+    '[org.springframework]': ERROR
+    '[com.paoperez.graphqlservice]': INFO
 eureka:
   client:
     service-url:
@@ -39,6 +43,10 @@ spring:
 client:
   web:
     address: http://localhost:5000
+logging:
+  level:
+    '[org.springframework]': DEBUG
+    '[com.paoperez.graphqlservice]': TRACE
 ---
 spring:
   profiles: development

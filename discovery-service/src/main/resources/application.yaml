@@ -1,12 +1,16 @@
 spring:
   application.name: discovery-service
   jmx.enabled: false
+  main.banner-mode: off
 server:
   port: 8761
 logging:
   file:
     name: /var/log/spring/discovery.log
     max-history: 14
+  level:
+    '[org.springframework]': ERROR
+    '[com.paoperez.discoveryservice]': INFO
 eureka:
   client:
     register-with-eureka: false

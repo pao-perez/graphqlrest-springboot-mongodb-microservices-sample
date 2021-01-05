@@ -9,6 +9,16 @@ spring:
       username: ${MONGO_USERNAME:dummy_username}
       password: ${MONGO_PASSWORD:dummy_password}
   jmx.enabled: false
+  main.banner-mode: off
+server:
+  port: 8083
+logging:
+  file:
+    name: /var/log/spring/avatar.log
+    max-history: 14
+  level:
+    '[org.springframework]': ERROR
+    '[com.paoperez.avatarservice]': INFO
 management:
   endpoints:
     enabled-by-default: false
@@ -18,12 +28,6 @@ management:
   endpoint:
     health:
       enabled: true
-server:
-  port: 8083
-logging:
-  file:
-    name: /var/log/spring/avatar.log
-    max-history: 14
 eureka:
   client:
     service-url:
@@ -34,3 +38,7 @@ spring:
 eureka:
   client:
     enabled: false
+logging:
+  level:
+    '[org.springframework]': DEBUG
+    '[com.paoperez.avatarservice]': TRACE
