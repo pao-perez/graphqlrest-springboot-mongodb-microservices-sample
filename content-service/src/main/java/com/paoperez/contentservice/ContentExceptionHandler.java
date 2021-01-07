@@ -3,12 +3,14 @@ package com.paoperez.contentservice;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,7 +36,8 @@ final class ContentExceptionHandler extends ResponseEntityExceptionHandler {
   final ResponseEntity<ContentErrorResponse> handleConstraintViolation(
       final ConstraintViolationException ex, final WebRequest request) {
     Collection<String> message =
-        ex.getConstraintViolations().stream().map(x -> x.getMessage()).collect(Collectors.toList());
+        ex.getConstraintViolations().stream().map(
+            ConstraintViolation::getMessage).collect(Collectors.toList());
     log.error("Bad Request", ex);
     ContentErrorResponse responseBody = ContentErrorResponse.builder().message(message.toString())
         .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
@@ -47,7 +50,7 @@ final class ContentExceptionHandler extends ResponseEntityExceptionHandler {
       final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatus status,
       final WebRequest request) {
     Collection<String> message = ex.getBindingResult().getFieldErrors().stream()
-        .map(x -> x.getDefaultMessage()).collect(Collectors.toList());
+        .map(FieldError::getDefaultMessage).collect(Collectors.toList());
     log.error("Bad Request", ex);
     ContentErrorResponse responseBody = ContentErrorResponse.builder().message(message.toString())
         .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();

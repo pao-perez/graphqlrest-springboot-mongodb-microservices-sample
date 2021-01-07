@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-class Contents {
+public class ContentsDTO {
     @NotBlank(message = "data must not be blank")
-    private Collection<Content> data;
+    private Collection<ContentDTO> data;
 }

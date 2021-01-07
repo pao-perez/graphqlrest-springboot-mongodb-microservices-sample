@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -15,6 +15,7 @@
 
 	<properties>
 		<guava.version>28.0-jre</guava.version>
+		<org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
 		<spring-cloud.version>Hoxton.SR1</spring-cloud.version>
 	</properties>
 
@@ -49,9 +50,9 @@
 		<!-- Try to improve startup performance by creating a static list of candidates of component scan at compilation time. -->
 		<!-- To generate the index, add this dependency to each module that contains components that are targets for component scan directives. -->
 		<dependency>
-  	      <groupId>org.springframework</groupId>
-  	      <artifactId>spring-context-indexer</artifactId>
-  	      <optional>true</optional>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-indexer</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -66,6 +67,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -86,6 +92,35 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+					<!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
+					<showWarnings>true</showWarnings>
+					<compilerArgs>
+						<compilerArg>
+							-Amapstruct.suppressGeneratorTimestamp=true
+						</compilerArg>
+						<compilerArg>
+							-Amapstruct.suppressGeneratorVersionInfoComment=true
+						</compilerArg>
+						<compilerArg>
+							-Amapstruct.verbose=true
+						</compilerArg>
+					</compilerArgs>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

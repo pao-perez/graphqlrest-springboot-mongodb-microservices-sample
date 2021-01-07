@@ -6,11 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 final class ContentServiceImpl implements ContentService {
   private final ContentRepository repository;
-  private final Content.Builder builder;
 
-  ContentServiceImpl(final ContentRepository repository, final Content.Builder builder) {
+  ContentServiceImpl(final ContentRepository repository) {
     this.repository = repository;
-    this.builder = builder;
   }
 
   public Collection<Content> getAllContents() {
@@ -21,18 +19,22 @@ final class ContentServiceImpl implements ContentService {
     return repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
   }
 
-  public Content createContent(final Content content) {
-    return repository.save(builder.from(content).withCreated().build());
+  public String createContent(final Content content) {
+    return repository.save(content).getId();
   }
 
   public void updateContent(final String id, final Content content)
       throws ContentNotFoundException {
-    repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
-    repository.save(builder.from(content).id(id).withUpdated().build());
+    if (repository.findById(id).isEmpty()) {
+      throw new ContentNotFoundException(id);
+    }
+    repository.save(content);
   }
 
   public void deleteContent(final String id) throws ContentNotFoundException {
-    repository.findById(id).orElseThrow(() -> new ContentNotFoundException(id));
+    if (repository.findById(id).isEmpty()) {
+      throw new ContentNotFoundException(id);
+    }
     repository.deleteById(id);
   }
 }
