@@ -14,11 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,51 +37,76 @@ class ContentControllerTest {
         private ObjectMapper objectMapper;
 
         @MockBean
-        private ContentService service;
+        private ContentService contentService;
+
+        @MockBean
+        private ContentMapper contentMapper;
 
         @Test
         void getAllContents_shouldReturnOk() throws Exception {
-                final Content contentA = new Content.Builder().avatarId("avatarIdA")
-                                .categoryId("categoryIdA").imageId("imageIdA").title("Blog A")
-                                .body("Lorem ipsum dolor").rank(1).id("A")
-                                .created(LocalDateTime.now().toString()).build();
-                final Content contentB = new Content.Builder().avatarId("avatarIdB")
-                                .categoryId("categoryIdB").imageId("imageIdB").title("Blog B")
-                                .body("Ut enim ad minim veniam").rank(2).id("B")
-                                .created(LocalDateTime.now().toString()).build();
+                ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
-                final Collection<Content> data = ImmutableList.of(contentA, contentB);
-                final Contents contents = Contents.builder().data(data).build();
-                when(service.getAllContents()).thenReturn(data);
+                Content contentA = new Content();
+                contentA.setAvatarId("avatarIdA");
+                contentA.setCategoryId("categoryIdA");
+                contentA.setImageId("imageIdA");
+                contentA.setTitle("Blog A");
+                contentA.setBody("Lorem ipsum dolor");
+                contentA.setRank(1);
+                contentA.setId("A");
+                contentA.setCreated(now);
+                Content contentB = new Content();
+                contentB.setAvatarId("avatarIdB");
+                contentB.setCategoryId("categoryIdB");
+                contentB.setImageId("imageIdB");
+                contentB.setTitle("Blog B");
+                contentB.setBody("Ut enim ad minim veniam");
+                contentB.setRank(2);
+                contentB.setId("B");
+                contentB.setCreated(now);
+                Collection<Content> contents = ImmutableList.of(contentA, contentB);
+                when(contentService.getAllContents()).thenReturn(contents);
 
+                Collection<ContentDTO> contentDTOs = contentMapper.contentsToContentsDTO(contents);
+                ContentsDTO contentsDto = ContentsDTO.builder().data(contentDTOs).build();
                 this.mockMvc.perform(get("/contents").contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(status().isOk()).andExpect(content()
-                                                .string(objectMapper.writeValueAsString(contents)));
+                                .andExpect(status().isOk()).andExpect(content().string(
+                                                objectMapper.writeValueAsString(contentsDto)));
 
-                verify(service, times(1)).getAllContents();
+                verify(contentService, times(1)).getAllContents();
         }
 
         @Test
         void getContent_whenExistingId_shouldReturnOk() throws Exception {
-                final String existingId = "A";
-                final Content existingContent = new Content.Builder().avatarId("avatarIdA")
-                                .categoryId("categoryIdA").imageId("imageIdA").title("Blog A")
-                                .body("Lorem ipsum dolor").rank(1).id(existingId)
-                                .created(LocalDateTime.now().toString()).build();
-                when(service.getContent(existingId)).thenReturn(existingContent);
+                ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+                String existingId = "A";
+                Content existingContent = new Content();
+                existingContent.setAvatarId("avatarIdA");
+                existingContent.setCategoryId("categoryIdA");
+                existingContent.setImageId("imageIdA");
+                existingContent.setTitle("Blog A");
+                existingContent.setBody("Lorem ipsum dolor");
+                existingContent.setRank(1);
+                existingContent.setId(existingId);
+                existingContent.setCreated(now);
+                OngoingStubbing<Content> retrievedContent =
+                                when(contentService.getContent(existingId))
+                                                .thenReturn(existingContent);
 
+                ContentDTO contentDTO =
+                                contentMapper.contentToContentDto(retrievedContent.getMock());
                 this.mockMvc.perform(get("/contents/{id}", existingId)
                                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                                 .andExpect(content().string(
-                                                objectMapper.writeValueAsString(existingContent)));
+                                                objectMapper.writeValueAsString(contentDTO)));
 
-                verify(service, times(1)).getContent(existingId);
+                verify(contentService, times(1)).getContent(existingId);
         }
 
         @Test
         void getContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
-                final String nonExistingId = "Z";
-                when(service.getContent(nonExistingId))
+                String nonExistingId = "Z";
+                when(contentService.getContent(nonExistingId))
                                 .thenThrow(new ContentNotFoundException(nonExistingId));
 
                 this.mockMvc.perform(get("/contents/{id}", nonExistingId)
@@ -89,12 +116,12 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(service, times(1)).getContent(nonExistingId);
+                verify(contentService, times(1)).getContent(nonExistingId);
         }
 
         @Test
         void getContent_whenBlankId_shouldReturnBadRequest() throws Exception {
-                final String blankId = " ";
+                String blankId = " ";
 
                 this.mockMvc.perform(get("/contents/{id}", blankId)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -104,33 +131,35 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(service, times(0)).getContent(blankId);
+                verify(contentService, times(0)).getContent(blankId);
         }
 
         @Test
         void createContent_shouldReturnCreated() throws Exception {
-                final Content paramContent = new Content.Builder().avatarId("avatarIdA")
-                                .categoryId("categoryIdA").imageId("imageIdA").title("Blog A")
-                                .body("Lorem ipsum dolor").rank(1).build();
-                final String createdId = "A";
-                final Content createdContent = new Content.Builder().from(paramContent)
-                                .created(LocalDateTime.now().toString()).id(createdId).build();
-                when(service.createContent(paramContent)).thenReturn(createdContent);
+                ContentDTO paramContent = new ContentDTO();
+                paramContent.setAvatarId("avatarIdA");
+                paramContent.setCategoryId("categoryIdA");
+                paramContent.setImageId("imageIdA");
+                paramContent.setTitle("Blog A");
+                paramContent.setBody("Lorem ipsum dolor");
+                paramContent.setRank(1);
+                String createdId = "A";
+                Content createdContent = contentMapper.contentDtoToContent(paramContent);
+                when(contentService.createContent(createdContent)).thenReturn(createdId);
 
-                final String createdLocation = "http://localhost/contents/" + createdId;
+                String createdLocation = "http://localhost/contents/" + createdId;
                 this.mockMvc.perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(paramContent)))
                                 .andExpect(status().isCreated())
-                                .andExpect(content().string(
-                                                objectMapper.writeValueAsString(createdContent)))
+                                .andExpect(content().string(createdId))
                                 .andExpect(header().string(LOCATION, createdLocation));
 
-                verify(service, times(1)).createContent(paramContent);
+                verify(contentService, times(1)).createContent(createdContent);
         }
 
         @Test
         void createContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
-                final Content blankContent = new Content.Builder().build();
+                ContentDTO blankContent = new ContentDTO();
 
                 this.mockMvc.perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(blankContent)))
@@ -140,7 +169,7 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("imageId must not be blank")))
                                 .andExpect(jsonPath("$.message").value(
-                                                containsString("avatarId must not be blank")))
+                                                containsString("setAvatarId must not be blank")))
                                 .andExpect(jsonPath("$.message").value(
                                                 containsString("categoryId must not be blank")))
                                 .andExpect(jsonPath("$.message")
@@ -150,50 +179,37 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("rank must not be empty")));
 
-                verify(service, times(0)).createContent(blankContent);
-        }
-
-        @Test
-        void createContent_whenServiceThrowsIllegalStateException_shouldReturnInternalServerError()
-                        throws Exception {
-                final Content paramContent = new Content.Builder().avatarId("avatarIdA")
-                                .categoryId("categoryIdA").imageId("imageIdA").title("Blog A")
-                                .body("Lorem ipsum dolor").rank(1).build();
-                doThrow(new IllegalStateException(
-                                "Failed to create DateTime instance, DateTimeFactory in Builder is null."))
-                                                .when(service).createContent(paramContent);
-
-                this.mockMvc.perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(paramContent)))
-                                .andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$.status")
-                                                .value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
-                                .andExpect(jsonPath("$.message").value(
-                                                "There is an internal server error. We will look into it and update the site soon."));
-
-                verify(service, times(1)).createContent(paramContent);
+                Content content = contentMapper.contentDtoToContent(blankContent);
+                verify(contentService, times(0)).createContent(content);
         }
 
         @Test
         void updateContent_whenExistingId_shouldReturnNoContent() throws Exception {
-                final String existingId = "A";
-                final Content paramContent = new Content.Builder().id(existingId)
-                                .avatarId("avatarId").categoryId("categoryId").imageId("imageId")
-                                .title("Blog A").body("Lorem ipsum dolor").rank(1)
-                                .created(LocalDateTime.now().toString()).build();
+                String existingId = "A";
+                ContentDTO paramContent = new ContentDTO();
+                paramContent.setId(existingId);
+                paramContent.setAvatarId("setAvatarId");
+                paramContent.setCategoryId("categoryId");
+                paramContent.setImageId("imageId");
+                paramContent.setTitle("Blog A");
+                paramContent.setBody("Lorem ipsum dolor");
+                paramContent.setRank(1);
 
                 this.mockMvc.perform(put("/contents/{id}", existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(paramContent)))
                                 .andExpect(status().isNoContent());
 
-                verify(service, times(1)).updateContent(existingId, paramContent);
+                Content updatedContent = contentMapper.contentDtoToContent(paramContent);
+                verify(contentService, times(1)).updateContent(existingId, updatedContent);
         }
 
         @Test
         void updateContent_whenBlankFields_shouldReturnBadRequest() throws Exception {
-                final String currentId = "A";
-                final Content blankContent = new Content.Builder().id(currentId).rank(0).build();
+                String currentId = "A";
+                ContentDTO blankContent = new ContentDTO();
+                blankContent.setId(currentId);
+                blankContent.setRank(0);
 
                 this.mockMvc.perform(put("/contents/{id}", currentId)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -204,7 +220,7 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("imageId must not be blank")))
                                 .andExpect(jsonPath("$.message").value(
-                                                containsString("avatarId must not be blank")))
+                                                containsString("setAvatarId must not be blank")))
                                 .andExpect(jsonPath("$.message").value(
                                                 containsString("categoryId must not be blank")))
                                 .andExpect(jsonPath("$.message")
@@ -214,18 +230,24 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(
                                                 containsString("rank must be a positive number")));
 
-                verify(service, times(0)).updateContent(currentId, blankContent);
+                Content content = contentMapper.contentDtoToContent(blankContent);
+                verify(contentService, times(0)).updateContent(currentId, content);
         }
 
         @Test
         void updateContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
-                final String nonExistingId = "Z";
-                final Content paramContent = new Content.Builder().id(nonExistingId)
-                                .avatarId("avatarId").categoryId("categoryId").imageId("imageId")
-                                .title("Blog A").body("Lorem ipsum dolor").rank(1)
-                                .created(LocalDateTime.now().toString()).build();
-                doThrow(new ContentNotFoundException(nonExistingId)).when(service)
-                                .updateContent(nonExistingId, paramContent);
+                String nonExistingId = "Z";
+                ContentDTO paramContent = new ContentDTO();
+                paramContent.setId(nonExistingId);
+                paramContent.setAvatarId("setAvatarId");
+                paramContent.setCategoryId("categoryId");
+                paramContent.setImageId("imageId");
+                paramContent.setTitle("Blog A");
+                paramContent.setBody("Lorem ipsum dolor");
+                paramContent.setRank(1);
+                Content updatedContent = contentMapper.contentDtoToContent(paramContent);
+                doThrow(new ContentNotFoundException(nonExistingId)).when(contentService)
+                                .updateContent(nonExistingId, updatedContent);
 
                 this.mockMvc.perform(put("/contents/{id}", nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -235,32 +257,7 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(service, times(1)).updateContent(nonExistingId, paramContent);
-        }
-
-        @Test
-        void updateContent_whenServiceThrowsIllegalStateException_shouldReturnInternalServerError()
-                        throws Exception {
-                final String existingId = "Z";
-                final Content paramContent = new Content.Builder().id(existingId)
-                                .avatarId("avatarId").categoryId("categoryId").imageId("imageId")
-                                .title("Blog A").body("Lorem ipsum dolor").rank(1)
-                                .created(LocalDateTime.now().toString()).build();
-                doThrow(new IllegalStateException(
-                                "Failed to update DateTime instance, DateTimeFactory in Builder is null."))
-                                                .when(service)
-                                                .updateContent(existingId, paramContent);
-
-                this.mockMvc.perform(put("/contents/{id}", existingId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(paramContent)))
-                                .andExpect(status().isInternalServerError())
-                                .andExpect(jsonPath("$.status")
-                                                .value(HttpStatus.INTERNAL_SERVER_ERROR.name()))
-                                .andExpect(jsonPath("$.message").value(
-                                                "There is an internal server error. We will look into it and update the site soon."));
-
-                verify(service, times(1)).updateContent(existingId, paramContent);
+                verify(contentService, times(1)).updateContent(nonExistingId, updatedContent);
         }
 
         @Test
@@ -271,7 +268,7 @@ class ContentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isNoContent());
 
-                verify(service, times(1)).deleteContent(existingId);
+                verify(contentService, times(1)).deleteContent(existingId);
         }
 
         @Test
@@ -286,13 +283,13 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(service, times(0)).deleteContent(blankId);
+                verify(contentService, times(0)).deleteContent(blankId);
         }
 
         @Test
         void deleteContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
                 final String nonExistingId = "Z";
-                doThrow(new ContentNotFoundException(nonExistingId)).when(service)
+                doThrow(new ContentNotFoundException(nonExistingId)).when(contentService)
                                 .deleteContent(nonExistingId);
 
                 this.mockMvc.perform(delete("/contents/{id}", nonExistingId)
@@ -302,6 +299,6 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(service, times(1)).deleteContent(nonExistingId);
+                verify(contentService, times(1)).deleteContent(nonExistingId);
         }
 }
