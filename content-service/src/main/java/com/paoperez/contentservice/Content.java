@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "Content")
-class Content {
+public class Content {
   @Id
   private String id;
   private ZonedDateTime created;
