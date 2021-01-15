@@ -13,7 +13,7 @@ class ContentConfig {
   }
 
   @Bean
-  public ModelMapper modelMapper() {
+  ModelMapper modelMapper() {
     ModelMapper mapper = new ModelMapper();
     mapper.getConfiguration().setFieldMatchingEnabled(true)
         .setFieldAccessLevel(AccessLevel.PRIVATE);
