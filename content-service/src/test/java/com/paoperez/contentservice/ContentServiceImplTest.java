@@ -5,9 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import com.google.common.collect.ImmutableList;
@@ -31,7 +30,7 @@ class ContentServiceImplTest {
 
   @Test
   void getAllContents_shouldReturnContents() {
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     Content contentA = new Content();
     contentA.setAvatarId("avatarIdA");
     contentA.setCategoryId("categoryIdA");
@@ -61,7 +60,7 @@ class ContentServiceImplTest {
 
   @Test
   void getContent_whenExistingId_shouldReturnContent() throws ContentNotFoundException {
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     String existingId = "A";
     Content expected = new Content();
     expected.setAvatarId("avatarIdA");
@@ -104,7 +103,7 @@ class ContentServiceImplTest {
     paramContent.setBody("Lorem ipsum dolor");
     paramContent.setRank(1);
     Content expected = new Content();
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     expected.setAvatarId("avatarIdA");
     expected.setCategoryId("categoryIdA");
     expected.setImageId("imageIdA");
@@ -123,7 +122,7 @@ class ContentServiceImplTest {
 
   @Test
   void updateContent_whenExistingId_shouldNotThrowException() throws ContentNotFoundException {
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     String existingId = "A";
 
     Content existingContent = new Content();
@@ -147,7 +146,7 @@ class ContentServiceImplTest {
     paramContent.setId(existingId);
     paramContent.setCreated(created);
     Content expected = new Content();
-    ZonedDateTime updated = ZonedDateTime.now(ZoneOffset.UTC);
+    long updated = new Date().toInstant().toEpochMilli();
     expected.setAvatarId("avatarIdB");
     expected.setCategoryId("categoryIdB");
     expected.setImageId("imageIdB");
@@ -161,7 +160,7 @@ class ContentServiceImplTest {
     service.updateContent(existingId, paramContent);
 
     verify(repository, times(1)).findById(existingId);
-    verify(repository, times(1)).save(expected);
+    verify(repository, times(1)).save(paramContent);
   }
 
   @Test
@@ -170,7 +169,7 @@ class ContentServiceImplTest {
     Optional<Content> nonExistingContent = Optional.empty();
     when(repository.findById(nonExistingId)).thenReturn(nonExistingContent);
 
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     Content paramContent = new Content();
     paramContent.setAvatarId("avatarIdA");
     paramContent.setCategoryId("categoryIdA");
@@ -193,7 +192,7 @@ class ContentServiceImplTest {
   void deleteContent_whenExistingId_shouldNotThrowException() throws ContentNotFoundException {
     String existingId = "A";
 
-    ZonedDateTime created = ZonedDateTime.now(ZoneOffset.UTC);
+    long created = new Date().toInstant().toEpochMilli();
     Content existingContent = new Content();
     existingContent.setAvatarId("avatarIdA");
     existingContent.setCategoryId("categoryIdA");
