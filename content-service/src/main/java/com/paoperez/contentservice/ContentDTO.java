@@ -1,6 +1,5 @@
 package com.paoperez.contentservice;
 
-import java.time.ZonedDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -13,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContentDTO {
     private String id;
-    private ZonedDateTime created;
-    private ZonedDateTime updated;
+    private Long created;
+    private Long updated;
 
     @NotBlank(message = "title must not be blank")
     private String title;

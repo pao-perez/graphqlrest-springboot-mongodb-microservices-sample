@@ -1,6 +1,5 @@
 package com.paoperez.contentservice;
 
-import java.time.ZonedDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.AllArgsConstructor;
@@ -14,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class Content {
   @Id
   private String id;
-  private ZonedDateTime created;
-  private ZonedDateTime updated;
+  private Long created;
+  private Long updated;
   private String title;
   private String body;
   private Integer rank;
