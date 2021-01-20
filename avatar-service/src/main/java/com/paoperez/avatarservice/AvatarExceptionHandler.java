@@ -20,11 +20,8 @@ final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
   final ResponseEntity<AvatarErrorResponse> handleNotFoundException(
       final AvatarNotFoundException ex, final WebRequest request) {
     AvatarErrorResponse responseBody =
-        AvatarErrorResponse.builder()
-            .message(ex.getLocalizedMessage())
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.NOT_FOUND)
-            .build();
+        AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+            .timestamp(LocalDateTime.now()).status(HttpStatus.NOT_FOUND).build();
 
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }
@@ -33,11 +30,18 @@ final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
   final ResponseEntity<AvatarErrorResponse> handleAlreadyExistsException(
       final AvatarAlreadyExistsException ex, final WebRequest request) {
     AvatarErrorResponse responseBody =
-        AvatarErrorResponse.builder()
-            .message(ex.getLocalizedMessage())
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.CONFLICT)
-            .build();
+        AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+            .timestamp(LocalDateTime.now()).status(HttpStatus.CONFLICT).build();
+
+    return new ResponseEntity<>(responseBody, responseBody.getStatus());
+  }
+
+  @ExceptionHandler(AvatarMismatchException.class)
+  final ResponseEntity<AvatarErrorResponse> handleMismatchException(
+      final AvatarMismatchException ex, final WebRequest request) {
+    AvatarErrorResponse responseBody =
+        AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+            .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }
@@ -48,46 +52,31 @@ final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
     Collection<String> message =
         ex.getConstraintViolations().stream().map(x -> x.getMessage()).collect(Collectors.toList());
 
-    AvatarErrorResponse responseBody =
-        AvatarErrorResponse.builder()
-            .message(message.toString())
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST)
-            .build();
+    AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
+        .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
-      final MethodArgumentNotValidException ex,
-      final HttpHeaders headers,
-      final HttpStatus status,
+      final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatus status,
       final WebRequest request) {
-    Collection<String> message =
-        ex.getBindingResult().getFieldErrors().stream()
-            .map(x -> x.getDefaultMessage())
-            .collect(Collectors.toList());
+    Collection<String> message = ex.getBindingResult().getFieldErrors().stream()
+        .map(x -> x.getDefaultMessage()).collect(Collectors.toList());
 
-    AvatarErrorResponse responseBody =
-        AvatarErrorResponse.builder()
-            .message(message.toString())
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST)
-            .build();
+    AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
+        .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
 
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }
 
   @ExceptionHandler(Exception.class)
-  final ResponseEntity<AvatarErrorResponse> handleAllExceptions(
-      final Exception ex, final WebRequest request) {
+  final ResponseEntity<AvatarErrorResponse> handleAllExceptions(final Exception ex,
+      final WebRequest request) {
     AvatarErrorResponse responseBody =
-        AvatarErrorResponse.builder()
-            .message(ex.getLocalizedMessage())
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .build();
+        AvatarErrorResponse.builder().message(ex.getLocalizedMessage())
+            .timestamp(LocalDateTime.now()).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }

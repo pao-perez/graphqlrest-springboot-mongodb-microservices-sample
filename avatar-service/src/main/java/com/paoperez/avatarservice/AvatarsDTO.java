@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-class Avatars {
+public class AvatarsDTO {
     @NotBlank(message = "data must not be blank")
-    private Collection<Avatar> data;
+    private Collection<AvatarDTO> data;
 }

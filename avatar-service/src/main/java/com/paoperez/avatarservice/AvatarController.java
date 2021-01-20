@@ -1,6 +1,7 @@
 package com.paoperez.avatarservice;
 
 import java.net.URI;
+import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -20,47 +21,53 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Validated
 @RestController
 @RequestMapping("/avatars")
-class AvatarController {
+public class AvatarController {
   private final AvatarService avatarService;
+  private final AvatarMapper avatarMapper;
 
-  AvatarController(final AvatarService avatarService) {
+  public AvatarController(final AvatarService avatarService, AvatarMapper avatarMapper) {
     this.avatarService = avatarService;
+    this.avatarMapper = avatarMapper;
   }
 
   @GetMapping()
-  ResponseEntity<Avatars> getAllAvatars() {
-    Avatars avatars = Avatars.builder().data(avatarService.getAllAvatars()).build();
-    return new ResponseEntity<>(avatars, HttpStatus.OK);
+  public ResponseEntity<AvatarsDTO> getAllAvatars() {
+    Collection<AvatarDTO> avatars = avatarMapper.avatarsToAvatarsDTO(avatarService.getAllAvatars());
+    AvatarsDTO avatarsDTO = AvatarsDTO.builder().data(avatars).build();
+    return new ResponseEntity<>(avatarsDTO, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  ResponseEntity<Avatar> getAvatar(final @PathVariable @NotBlank String id)
+  public ResponseEntity<AvatarDTO> getAvatar(final @PathVariable @NotBlank String id)
       throws AvatarNotFoundException {
-    return new ResponseEntity<>(avatarService.getAvatar(id), HttpStatus.OK);
+    AvatarDTO avatarDTO = avatarMapper.avatarToAvatarDto(avatarService.getAvatar(id));
+    return new ResponseEntity<>(avatarDTO, HttpStatus.OK);
   }
 
   @PostMapping()
-  ResponseEntity<Avatar> createAvatar(final @RequestBody @Valid Avatar avatar)
+  public ResponseEntity<String> createAvatar(final @RequestBody @Valid AvatarDTO avatarRequest)
       throws AvatarAlreadyExistsException {
-    Avatar createdAvatar = avatarService.createAvatar(avatar);
-    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(createdAvatar.getId()).toUri();
+    Avatar avatar = avatarMapper.avatarDtoToAvatar(avatarRequest);
+    String id = avatarService.createAvatar(avatar);
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
-    return new ResponseEntity<>(createdAvatar, headers, HttpStatus.CREATED);
+    return new ResponseEntity<>(id, headers, HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id,
-      final @RequestBody @Valid Avatar avatar)
-      throws AvatarNotFoundException, AvatarAlreadyExistsException {
+  public ResponseEntity<Void> updateAvatar(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid AvatarDTO avatarRequest)
+      throws AvatarNotFoundException, AvatarAlreadyExistsException, AvatarMismatchException {
+    Avatar avatar = avatarMapper.avatarDtoToAvatar(avatarRequest);
     avatarService.updateAvatar(id, avatar);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id)
+  public ResponseEntity<Void> deleteAvatar(final @PathVariable @NotBlank String id)
       throws AvatarNotFoundException {
     avatarService.deleteAvatar(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

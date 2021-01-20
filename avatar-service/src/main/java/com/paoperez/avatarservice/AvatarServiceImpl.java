@@ -1,51 +1,57 @@
 package com.paoperez.avatarservice;
 
 import java.util.Collection;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
 final class AvatarServiceImpl implements AvatarService {
-  private final AvatarRepository avatarRepository;
+  private final AvatarRepository repository;
 
   AvatarServiceImpl(final AvatarRepository avatarRepository) {
-    this.avatarRepository = avatarRepository;
+    this.repository = avatarRepository;
   }
 
   public Collection<Avatar> getAllAvatars() {
-    return avatarRepository.findAll();
+    return repository.findAll();
   }
 
   public Avatar getAvatar(final String id) throws AvatarNotFoundException {
-    return avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
+    return repository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
   }
 
-  public Avatar createAvatar(final Avatar avatar) throws AvatarAlreadyExistsException {
-    final String userName = avatar.getUserName();
+  public String createAvatar(final Avatar avatar) throws AvatarAlreadyExistsException {
+    String userName = avatar.getUserName();
 
-    if (avatarRepository.findByUserName(userName) != null) {
+    if (repository.findByUserName(userName) != null) {
       throw new AvatarAlreadyExistsException(userName);
     }
 
-    return avatarRepository.save(avatar);
+    return repository.save(avatar).getId();
   }
 
   public void updateAvatar(final String id, final Avatar avatar)
-      throws AvatarNotFoundException, AvatarAlreadyExistsException {
-    avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
-
-    final String avatarUserName = avatar.getUserName();
-    final Avatar currentAvatar = avatarRepository.findByUserName(avatarUserName);
-    if (currentAvatar != null && !currentAvatar.getId().equals(id)) {
+      throws AvatarNotFoundException, AvatarAlreadyExistsException, AvatarMismatchException {
+    Optional<Avatar> retrievedAvatar = repository.findById(id);
+    if (retrievedAvatar.isEmpty()) {
+      throw new AvatarNotFoundException(id);
+    }
+    String avatarId = avatar.getId();
+    if (!id.equals(avatarId)) {
+      throw new AvatarMismatchException(id, avatarId);
+    }
+    String avatarUserName = avatar.getUserName();
+    Avatar avatarFromUserName = repository.findByUserName(avatarUserName);
+    if (avatarFromUserName != null && !avatarFromUserName.getId().equals(id)) {
       throw new AvatarAlreadyExistsException(avatarUserName);
     }
-
-    Avatar updateAvatar =
-        Avatar.builder().userName(avatarUserName).imageId(avatar.getImageId()).id(id).build();
-    avatarRepository.save(updateAvatar);
+    repository.save(avatar);
   }
 
   public void deleteAvatar(final String id) throws AvatarNotFoundException {
-    avatarRepository.findById(id).orElseThrow(() -> new AvatarNotFoundException(id));
-    avatarRepository.deleteById(id);
+    if (repository.findById(id).isEmpty()) {
+      throw new AvatarNotFoundException(id);
+    }
+    repository.deleteById(id);
   }
 }

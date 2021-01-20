@@ -20,7 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class AvatarServiceImplTest {
   private AvatarService service;
 
-  @MockBean private AvatarRepository repository;
+  @MockBean
+  private AvatarRepository repository;
 
   @BeforeEach
   void init() {
@@ -29,87 +30,119 @@ class AvatarServiceImplTest {
 
   @Test
   void getAllAvatars_shouldReturnAvatars() {
-    final Avatar AvatarA = Avatar.builder().id("A").userName("userA").imageId("imageIdA").build();
-    final Avatar AvatarB = Avatar.builder().id("B").userName("userB").build();
-    final List<Avatar> expected = ImmutableList.of(AvatarA, AvatarB);
+    Avatar avatarA = new Avatar();
+    avatarA.setUserName("userA");
+    avatarA.setImageId("imageIdA");
+    avatarA.setId("A");
+    Avatar avatarB = new Avatar();
+    avatarB.setUserName("userB");
+    avatarB.setImageId("imageIdB");
+    avatarB.setId("B");
+    List<Avatar> expected = ImmutableList.of(avatarA, avatarB);
     when(repository.findAll()).thenReturn(expected);
 
     Collection<Avatar> actual = service.getAllAvatars();
-
     assertEquals(expected, actual);
+
     verify(repository, times(1)).findAll();
   }
 
   @Test
   void getAvatar_whenExistingId_shouldReturnAvatar() throws Exception {
-    final String existingId = "A";
-    final Avatar expected =
-        Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build();
+    String existingId = "A";
+    Avatar expected = new Avatar();
+    expected.setUserName("userA");
+    expected.setImageId("imageIdA");
+    expected.setId("A");
     when(repository.findById(existingId)).thenReturn(Optional.ofNullable(expected));
 
     Avatar actual = service.getAvatar(existingId);
-
     assertEquals(expected, actual);
+
     verify(repository, times(1)).findById(existingId);
   }
 
   @Test
   void getAvatar_whenNonexistingId_shouldThrowNotFoundException() {
-    final String nonExistingId = "Z";
-    final Optional<Avatar> nonExistingAvatar = Optional.empty();
+    String nonExistingId = "Z";
+    Optional<Avatar> nonExistingAvatar = Optional.empty();
     when(repository.findById(nonExistingId)).thenReturn(nonExistingAvatar);
 
     Exception actual =
         assertThrows(AvatarNotFoundException.class, () -> service.getAvatar(nonExistingId));
-
     String expected = String.format("Avatar with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
+
     verify(repository, times(1)).findById(nonExistingId);
   }
 
   @Test
   void createAvatar_whenNonexistingUserName_shouldReturnCreatedAvatar() throws Exception {
-    final String nonExistingUserName = "userA";
+    String nonExistingUserName = "userA";
     when(repository.findByUserName(nonExistingUserName)).thenReturn(null);
-    final Avatar newAvatar = Avatar.builder().userName(nonExistingUserName).build();
-    final Avatar expected = Avatar.builder().id("A").userName(nonExistingUserName).build();
-    when(repository.save(newAvatar)).thenReturn(expected);
 
-    Avatar actual = service.createAvatar(newAvatar);
+    Avatar avatar = new Avatar();
+    avatar.setUserName(nonExistingUserName);
+    avatar.setImageId("imageIdA");
+    Avatar expected = new Avatar();
+    expected.setUserName(nonExistingUserName);
+    expected.setImageId("imageIdA");
+    expected.setId("A");
+    when(repository.save(avatar)).thenReturn(expected);
 
-    assertEquals(expected, actual);
+    String actual = service.createAvatar(avatar);
+    assertEquals(expected.getId(), actual);
+
     verify(repository, times(1)).findByUserName(nonExistingUserName);
-    verify(repository, times(1)).save(newAvatar);
+    verify(repository, times(1)).save(avatar);
   }
 
   @Test
   void createAvatar_whenExistingUserName_shouldThrowAlreadyExistsException() {
-    final String existingUserName = "userA";
-    final Avatar existingAvatar = Avatar.builder().id("A").userName(existingUserName).build();
+    String existingUserName = "someuser";
+
+    Avatar existingAvatar = new Avatar();
+    existingAvatar.setUserName(existingUserName);
+    existingAvatar.setImageId("imageIdA");
+    existingAvatar.setId("A");
     when(repository.findByUserName(existingUserName)).thenReturn(existingAvatar);
 
-    final Avatar newAvatar = Avatar.builder().userName(existingUserName).build();
+    Avatar avatar = new Avatar();
+    avatar.setUserName(existingUserName);
+    avatar.setImageId("imageIdB");
     Exception actual =
-        assertThrows(AvatarAlreadyExistsException.class, () -> service.createAvatar(newAvatar));
+        assertThrows(AvatarAlreadyExistsException.class, () -> service.createAvatar(avatar));
 
     String expected = String.format("Avatar with userName %s already exists.", existingUserName);
     assertEquals(expected, actual.getMessage());
+
     verify(repository, times(1)).findByUserName(existingUserName);
-    verify(repository, times(0)).save(newAvatar);
+    verify(repository, times(0)).save(avatar);
   }
 
   @Test
   void updateAvatar_whenExistingIdAndNonexistingUserName_shouldNotThrowException()
-      throws AvatarNotFoundException, AvatarAlreadyExistsException {
-    final String existingId = "A";
-    final Optional<Avatar> currentAvatar =
-        Optional.of(Avatar.builder().id(existingId).userName("Old").build());
-    when(repository.findById(existingId)).thenReturn(currentAvatar);
-    final String nonExistingUserName = "New";
+      throws AvatarNotFoundException, AvatarAlreadyExistsException, AvatarMismatchException {
+    String existingId = "A";
+
+    Avatar retrievedAvatar = new Avatar();
+    retrievedAvatar.setUserName("Old");
+    retrievedAvatar.setImageId("imageIdA");
+    retrievedAvatar.setId(existingId);
+    when(repository.findById(existingId)).thenReturn(Optional.ofNullable(retrievedAvatar));
+
+    String nonExistingUserName = "New";
+    Avatar updateAvatar = new Avatar();
+    updateAvatar.setUserName(nonExistingUserName);
+    updateAvatar.setImageId("imageIdB");
+    updateAvatar.setId(existingId);
     when(repository.findByUserName(nonExistingUserName)).thenReturn(null);
 
-    final Avatar updateAvatar =
-        Avatar.builder().id(existingId).userName(nonExistingUserName).imageId("imageIdA").build();
+    Avatar expected = new Avatar();
+    expected.setUserName(nonExistingUserName);
+    expected.setImageId("imageIdB");
+    expected.setId(existingId);
+    when(repository.save(updateAvatar)).thenReturn(expected);
     service.updateAvatar(existingId, updateAvatar);
 
     verify(repository, times(1)).findById(existingId);
@@ -119,55 +152,89 @@ class AvatarServiceImplTest {
 
   @Test
   void updateAvatar_whenNonexistingId_shouldThrowNotFoundException() {
-    final String nonExistingId = "A";
-    final Optional<Avatar> nonExistingAvatar = Optional.empty();
+    String nonExistingId = "A";
+    Optional<Avatar> nonExistingAvatar = Optional.empty();
     when(repository.findById(nonExistingId)).thenReturn(nonExistingAvatar);
 
-    final String updateUserName = "New";
-    final Avatar updateAvatar =
-        Avatar.builder().id(nonExistingId).userName(updateUserName).imageId("imageIdA").build();
-    Exception actual =
-        assertThrows(
-            AvatarNotFoundException.class, () -> service.updateAvatar(nonExistingId, updateAvatar));
-
+    Avatar updateAvatar = new Avatar();
+    updateAvatar.setUserName("userA");
+    updateAvatar.setImageId("imageIdA");
+    updateAvatar.setId(nonExistingId);
+    Exception actual = assertThrows(AvatarNotFoundException.class,
+        () -> service.updateAvatar(nonExistingId, updateAvatar));
     String expected = String.format("Avatar with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
+
     verify(repository, times(1)).findById(nonExistingId);
-    verify(repository, times(0)).findByUserName(updateUserName);
-    verify(repository, times(0)).save(updateAvatar);
+    verify(repository, times(0)).findByUserName(null);
+    verify(repository, times(0)).save(null);
   }
 
   @Test
   void updateAvatar_whenExistingUserName_shouldThrowAlreadyExistsException() {
-    final String existingId = "A";
-    final Optional<Avatar> currentAvatar =
-        Optional.of(Avatar.builder().id(existingId).userName("Old").build());
-    when(repository.findById(existingId)).thenReturn(currentAvatar);
-    final String existingUserName = "New";
-    final Avatar existingAvatar =
-        Avatar.builder().id("B").userName(existingUserName).imageId("imageIdB").build();
-    when(repository.findByUserName(existingUserName)).thenReturn(existingAvatar);
+    String existingId = "A";
 
-    final Avatar updateAvatar =
-        Avatar.builder().id(existingId).userName(existingUserName).imageId("imageIdA").build();
-    Exception actual =
-        assertThrows(
-            AvatarAlreadyExistsException.class,
-            () -> service.updateAvatar(existingId, updateAvatar));
+    Avatar retrievedAvatar = new Avatar();
+    retrievedAvatar.setUserName("Old");
+    retrievedAvatar.setImageId("imageIdA");
+    retrievedAvatar.setId(existingId);
+    when(repository.findById(existingId)).thenReturn(Optional.ofNullable(retrievedAvatar));
 
-    String expected = String.format("Avatar with userName %s already exists.", existingUserName);
+    String existingUsername = "New";
+    Avatar differentAvatar = new Avatar();
+    differentAvatar.setUserName(existingUsername);
+    differentAvatar.setImageId("imageIdB");
+    differentAvatar.setId("differentId");
+    when(repository.findByUserName(existingUsername)).thenReturn(differentAvatar);
+
+    Avatar updateAvatar = new Avatar();
+    updateAvatar.setUserName(existingUsername);
+    updateAvatar.setImageId("imageIdA");
+    updateAvatar.setId(existingId);
+    Exception actual = assertThrows(AvatarAlreadyExistsException.class,
+        () -> service.updateAvatar(existingId, updateAvatar));
+    String expected = String.format("Avatar with userName %s already exists.", existingUsername);
     assertEquals(expected, actual.getMessage());
+
     verify(repository, times(1)).findById(existingId);
-    verify(repository, times(1)).findByUserName(existingUserName);
-    verify(repository, times(0)).save(updateAvatar);
+    verify(repository, times(1)).findByUserName(existingUsername);
+    verify(repository, times(0)).save(null);
+  }
+
+  @Test
+  void updateAvatar_whenMismatchId_shouldThrowMismatchException() {
+    String id = "A";
+
+    Avatar retrievedAvatar = new Avatar();
+    retrievedAvatar.setUserName("userA");
+    retrievedAvatar.setImageId("imageIdA");
+    retrievedAvatar.setId(id);
+    when(repository.findById(id)).thenReturn(Optional.ofNullable(retrievedAvatar));
+
+    String differentId = "B";
+    Avatar differentAvatar = new Avatar();
+    differentAvatar.setUserName("userB");
+    differentAvatar.setImageId("imageIdB");
+    differentAvatar.setId(differentId);
+    Exception actual = assertThrows(AvatarMismatchException.class,
+        () -> service.updateAvatar(id, differentAvatar));
+    String expected =
+        String.format("Avatar with id %s does not match avatar argument %s.", id, differentId);
+    assertEquals(expected, actual.getMessage());
+
+    verify(repository, times(1)).findById(id);
+    verify(repository, times(0)).findByUserName(null);
+    verify(repository, times(0)).save(null);
   }
 
   @Test
   void deleteAvatar_whenExistingId_shouldNotThrowException() throws Exception {
-    final String existingId = "A";
-    final Optional<Avatar> existingAvatar =
-        Optional.of(Avatar.builder().id(existingId).userName("userA").imageId("imageIdA").build());
-    when(repository.findById(existingId)).thenReturn(existingAvatar);
+    String existingId = "A";
+    Avatar existingAvatar = new Avatar();
+    existingAvatar.setUserName("userA");
+    existingAvatar.setImageId("imageIdA");
+    existingAvatar.setId(existingId);
+    when(repository.findById(existingId)).thenReturn(Optional.ofNullable(existingAvatar));
 
     service.deleteAvatar(existingId);
 
@@ -177,15 +244,15 @@ class AvatarServiceImplTest {
 
   @Test
   void deleteAvatar_whenNonexistingId_shouldThrowNotFoundException() {
-    final String nonExistingId = "Z";
-    final Optional<Avatar> nonExistingAvatar = Optional.empty();
+    String nonExistingId = "Z";
+    Optional<Avatar> nonExistingAvatar = Optional.empty();
     when(repository.findById(nonExistingId)).thenReturn(nonExistingAvatar);
 
     Exception actual =
         assertThrows(AvatarNotFoundException.class, () -> service.deleteAvatar(nonExistingId));
-
     String expected = String.format("Avatar with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
+
     verify(repository, times(1)).findById(nonExistingId);
     verify(repository, times(0)).deleteById(nonExistingId);
   }
