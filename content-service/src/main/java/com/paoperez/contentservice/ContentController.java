@@ -59,7 +59,8 @@ public class ContentController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Void> updateContent(final @PathVariable @NotBlank String id,
-      final @RequestBody @Valid ContentDTO contentRequest) throws ContentNotFoundException {
+      final @RequestBody @Valid ContentDTO contentRequest)
+      throws ContentNotFoundException, ContentMismatchException {
     Content content = contentMapper.contentDtoToContent(contentRequest);
     contentService.updateContent(id, content);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

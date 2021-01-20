@@ -35,7 +35,7 @@ class ContentControllerTest {
         private ObjectMapper objectMapper;
 
         @MockBean
-        private ContentService contentService;
+        private ContentService service;
 
         @MockBean
         private ContentMapper contentMapper;
@@ -63,7 +63,7 @@ class ContentControllerTest {
                 contentB.setId("B");
                 contentB.setCreated(created);
                 Collection<Content> contents = ImmutableList.of(contentA, contentB);
-                when(contentService.getAllContents()).thenReturn(contents);
+                when(service.getAllContents()).thenReturn(contents);
 
                 ContentDTO contentDtoA = new ContentDTO();
                 contentDtoA.setAvatarId("avatarIdA");
@@ -91,7 +91,7 @@ class ContentControllerTest {
                                 .andExpect(status().isOk()).andExpect(content().string(
                                                 objectMapper.writeValueAsString(contentsDto)));
 
-                verify(contentService, times(1)).getAllContents();
+                verify(service, times(1)).getAllContents();
                 verify(contentMapper, times(1)).contentsToContentsDTO(contents);
         }
 
@@ -109,7 +109,7 @@ class ContentControllerTest {
                 existingContent.setRank(1);
                 existingContent.setId(existingId);
                 existingContent.setCreated(created);
-                when(contentService.getContent(existingId)).thenReturn(existingContent);
+                when(service.getContent(existingId)).thenReturn(existingContent);
 
                 ContentDTO existingContentDto = new ContentDTO();
                 existingContentDto.setAvatarId("avatarIdA");
@@ -128,14 +128,14 @@ class ContentControllerTest {
                                 .andExpect(content().string(objectMapper
                                                 .writeValueAsString(existingContentDto)));
 
-                verify(contentService, times(1)).getContent(existingId);
+                verify(service, times(1)).getContent(existingId);
                 verify(contentMapper, times(1)).contentToContentDto(existingContent);
         }
 
         @Test
         void getContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
                 String nonExistingId = "Z";
-                when(contentService.getContent(nonExistingId))
+                when(service.getContent(nonExistingId))
                                 .thenThrow(new ContentNotFoundException(nonExistingId));
 
                 this.mockMvc.perform(get("/contents/{id}", nonExistingId)
@@ -145,7 +145,7 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(contentService, times(1)).getContent(nonExistingId);
+                verify(service, times(1)).getContent(nonExistingId);
                 verify(contentMapper, times(0)).contentToContentDto(null);
         }
 
@@ -161,19 +161,19 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(contentService, times(0)).getContent(blankId);
+                verify(service, times(0)).getContent(blankId);
                 verify(contentMapper, times(0)).contentToContentDto(null);
         }
 
         @Test
         void createContent_shouldReturnCreated() throws Exception {
-                ContentDTO paramContent = new ContentDTO();
-                paramContent.setAvatarId("avatarIdA");
-                paramContent.setCategoryId("categoryIdA");
-                paramContent.setImageId("imageIdA");
-                paramContent.setTitle("Blog A");
-                paramContent.setBody("Lorem ipsum dolor");
-                paramContent.setRank(1);
+                ContentDTO contentDto = new ContentDTO();
+                contentDto.setAvatarId("avatarIdA");
+                contentDto.setCategoryId("categoryIdA");
+                contentDto.setImageId("imageIdA");
+                contentDto.setTitle("Blog A");
+                contentDto.setBody("Lorem ipsum dolor");
+                contentDto.setRank(1);
                 Content content = new Content();
                 content.setAvatarId("avatarIdA");
                 content.setCategoryId("categoryIdA");
@@ -181,20 +181,20 @@ class ContentControllerTest {
                 content.setTitle("Blog A");
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
-                when(contentMapper.contentDtoToContent(paramContent)).thenReturn(content);
+                when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
 
                 String createdId = "A";
-                when(contentService.createContent(content)).thenReturn(createdId);
+                when(service.createContent(content)).thenReturn(createdId);
 
                 String createdLocation = "http://localhost/contents/" + createdId;
                 this.mockMvc.perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(paramContent)))
+                                .content(objectMapper.writeValueAsString(contentDto)))
                                 .andExpect(status().isCreated())
                                 .andExpect(content().string(createdId))
                                 .andExpect(header().string(LOCATION, createdLocation));
 
-                verify(contentMapper, times(1)).contentDtoToContent(paramContent);
-                verify(contentService, times(1)).createContent(content);
+                verify(contentMapper, times(1)).contentDtoToContent(contentDto);
+                verify(service, times(1)).createContent(content);
         }
 
         @Test
@@ -220,7 +220,7 @@ class ContentControllerTest {
                                                 .value(containsString("rank must not be empty")));
 
                 verify(contentMapper, times(0)).contentDtoToContent(null);
-                verify(contentService, times(0)).createContent(null);
+                verify(service, times(0)).createContent(null);
         }
 
         @Test
@@ -228,15 +228,15 @@ class ContentControllerTest {
                 String existingId = "A";
                 long created = new Date().toInstant().toEpochMilli();
 
-                ContentDTO paramContent = new ContentDTO();
-                paramContent.setId(existingId);
-                paramContent.setCreated(created);
-                paramContent.setAvatarId("avatarIdA");
-                paramContent.setCategoryId("categoryIdA");
-                paramContent.setImageId("imageIdA");
-                paramContent.setTitle("Blog A");
-                paramContent.setBody("Lorem ipsum dolor");
-                paramContent.setRank(1);
+                ContentDTO contentDto = new ContentDTO();
+                contentDto.setId(existingId);
+                contentDto.setCreated(created);
+                contentDto.setAvatarId("avatarIdA");
+                contentDto.setCategoryId("categoryIdA");
+                contentDto.setImageId("imageIdA");
+                contentDto.setTitle("Blog A");
+                contentDto.setBody("Lorem ipsum dolor");
+                contentDto.setRank(1);
                 Content content = new Content();
                 content.setId(existingId);
                 content.setCreated(created);
@@ -246,15 +246,15 @@ class ContentControllerTest {
                 content.setTitle("Blog A");
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
-                when(contentMapper.contentDtoToContent(paramContent)).thenReturn(content);
+                when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
 
                 this.mockMvc.perform(put("/contents/{id}", existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(paramContent)))
+                                .content(objectMapper.writeValueAsString(contentDto)))
                                 .andExpect(status().isNoContent());
 
-                verify(contentMapper, times(1)).contentDtoToContent(paramContent);
-                verify(contentService, times(1)).updateContent(existingId, content);
+                verify(contentMapper, times(1)).contentDtoToContent(contentDto);
+                verify(service, times(1)).updateContent(existingId, content);
         }
 
         @Test
@@ -284,7 +284,50 @@ class ContentControllerTest {
                                                 containsString("rank must be a positive number")));
 
                 verify(contentMapper, times(0)).contentDtoToContent(null);
-                verify(contentService, times(0)).updateContent(currentId, null);
+                verify(service, times(0)).updateContent(null, null);
+        }
+
+        @Test
+        void updateContent_whenMismatchId_shouldReturnBadRequest() throws Exception {
+                long created = new Date().toInstant().toEpochMilli();
+                String differentId = "differentId";
+                ContentDTO contentDto = new ContentDTO();
+                contentDto.setId(differentId);
+                contentDto.setCreated(created);
+                contentDto.setAvatarId("avatarId");
+                contentDto.setCategoryId("categoryId");
+                contentDto.setImageId("imageId");
+                contentDto.setTitle("Blog A");
+                contentDto.setBody("Lorem ipsum dolor");
+                contentDto.setRank(1);
+                Content content = new Content();
+                content.setId(differentId);
+                content.setCreated(created);
+                content.setAvatarId("avatarIdA");
+                content.setCategoryId("categoryIdA");
+                content.setImageId("imageIdA");
+                content.setTitle("Blog A");
+                content.setBody("Lorem ipsum dolor");
+                content.setRank(1);
+                when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
+
+                String id = "A";
+                doThrow(new ContentMismatchException(id, differentId)).when(service)
+                                .updateContent(id, content);
+
+                this.mockMvc.perform(
+                                put("/contents/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper
+                                                                .writeValueAsString(contentDto)))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status")
+                                                .value(HttpStatus.BAD_REQUEST.name()))
+                                .andExpect(jsonPath("$.message").value(String.format(
+                                                "Content with id %s does not match content argument %s.",
+                                                id, differentId)));
+
+                verify(contentMapper, times(1)).contentDtoToContent(contentDto);
+                verify(service, times(1)).updateContent(id, content);
         }
 
         @Test
@@ -292,15 +335,15 @@ class ContentControllerTest {
                 String nonExistingId = "Z";
                 long created = new Date().toInstant().toEpochMilli();
 
-                ContentDTO paramContent = new ContentDTO();
-                paramContent.setId(nonExistingId);
-                paramContent.setCreated(created);
-                paramContent.setAvatarId("avatarId");
-                paramContent.setCategoryId("categoryId");
-                paramContent.setImageId("imageId");
-                paramContent.setTitle("Blog A");
-                paramContent.setBody("Lorem ipsum dolor");
-                paramContent.setRank(1);
+                ContentDTO contentDto = new ContentDTO();
+                contentDto.setId(nonExistingId);
+                contentDto.setCreated(created);
+                contentDto.setAvatarId("avatarId");
+                contentDto.setCategoryId("categoryId");
+                contentDto.setImageId("imageId");
+                contentDto.setTitle("Blog A");
+                contentDto.setBody("Lorem ipsum dolor");
+                contentDto.setRank(1);
                 Content content = new Content();
                 content.setId(nonExistingId);
                 content.setCreated(created);
@@ -310,37 +353,37 @@ class ContentControllerTest {
                 content.setTitle("Blog A");
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
-                when(contentMapper.contentDtoToContent(paramContent)).thenReturn(content);
+                when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
 
-                doThrow(new ContentNotFoundException(nonExistingId)).when(contentService)
+                doThrow(new ContentNotFoundException(nonExistingId)).when(service)
                                 .updateContent(nonExistingId, content);
 
                 this.mockMvc.perform(put("/contents/{id}", nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(paramContent)))
+                                .content(objectMapper.writeValueAsString(contentDto)))
                                 .andExpect(status().isNotFound())
                                 .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.name()))
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(contentMapper, times(1)).contentDtoToContent(paramContent);
-                verify(contentService, times(1)).updateContent(nonExistingId, content);
+                verify(contentMapper, times(1)).contentDtoToContent(contentDto);
+                verify(service, times(1)).updateContent(nonExistingId, content);
         }
 
         @Test
         void deleteContent_whenExistingId_shouldReturnNoContent() throws Exception {
-                final String existingId = "A";
+                String existingId = "A";
 
                 this.mockMvc.perform(delete("/contents/{id}", existingId)
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isNoContent());
 
-                verify(contentService, times(1)).deleteContent(existingId);
+                verify(service, times(1)).deleteContent(existingId);
         }
 
         @Test
         void deleteContent_whenBlankId_shouldReturnBadRequest() throws Exception {
-                final String blankId = " ";
+                String blankId = " ";
 
                 this.mockMvc.perform(delete("/contents/{id}", blankId)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -350,13 +393,13 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(contentService, times(0)).deleteContent(blankId);
+                verify(service, times(0)).deleteContent(blankId);
         }
 
         @Test
         void deleteContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
-                final String nonExistingId = "Z";
-                doThrow(new ContentNotFoundException(nonExistingId)).when(contentService)
+                String nonExistingId = "Z";
+                doThrow(new ContentNotFoundException(nonExistingId)).when(service)
                                 .deleteContent(nonExistingId);
 
                 this.mockMvc.perform(delete("/contents/{id}", nonExistingId)
@@ -366,6 +409,6 @@ class ContentControllerTest {
                                 .andExpect(jsonPath("$.message").value(String.format(
                                                 "Content with id %s not found.", nonExistingId)));
 
-                verify(contentService, times(1)).deleteContent(nonExistingId);
+                verify(service, times(1)).deleteContent(nonExistingId);
         }
 }

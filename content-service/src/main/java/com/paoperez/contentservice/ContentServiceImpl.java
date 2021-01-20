@@ -1,6 +1,7 @@
 package com.paoperez.contentservice;
 
 import java.util.Collection;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,9 +25,14 @@ final class ContentServiceImpl implements ContentService {
   }
 
   public void updateContent(final String id, final Content content)
-      throws ContentNotFoundException {
-    if (repository.findById(id).isEmpty()) {
+      throws ContentNotFoundException, ContentMismatchException {
+    Optional<Content> retrievedContent = repository.findById(id);
+    if (retrievedContent.isEmpty()) {
       throw new ContentNotFoundException(id);
+    }
+    String contentId = content.getId();
+    if (!id.equals(contentId)) {
+      throw new ContentMismatchException(id, contentId);
     }
     repository.save(content);
   }

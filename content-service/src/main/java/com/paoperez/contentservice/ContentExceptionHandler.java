@@ -32,12 +32,21 @@ final class ContentExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(responseBody, responseBody.getStatus());
   }
 
+  @ExceptionHandler(ContentMismatchException.class)
+  final ResponseEntity<ContentErrorResponse> handleMismatchException(
+      final ContentMismatchException ex, final WebRequest request) {
+    ContentErrorResponse responseBody =
+        ContentErrorResponse.builder().message(ex.getLocalizedMessage())
+            .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
+
+    return new ResponseEntity<>(responseBody, responseBody.getStatus());
+  }
+
   @ExceptionHandler(ConstraintViolationException.class)
   final ResponseEntity<ContentErrorResponse> handleConstraintViolation(
       final ConstraintViolationException ex, final WebRequest request) {
-    Collection<String> message =
-        ex.getConstraintViolations().stream().map(
-            ConstraintViolation::getMessage).collect(Collectors.toList());
+    Collection<String> message = ex.getConstraintViolations().stream()
+        .map(ConstraintViolation::getMessage).collect(Collectors.toList());
     log.error("Bad Request", ex);
     ContentErrorResponse responseBody = ContentErrorResponse.builder().message(message.toString())
         .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();

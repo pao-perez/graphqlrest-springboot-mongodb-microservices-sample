@@ -23,10 +23,10 @@ final class ContentMapperImpl implements ContentMapper {
 
     @Override
     public Collection<ContentDTO> contentsToContentsDTO(Collection<Content> contents) {
-        return mapList(contents, ContentDTO.class);
+        return mapCollection(contents, ContentDTO.class);
     }
 
-    private <S, T> Collection<T> mapList(Collection<S> source, Class<T> targetClass) {
+    private <S, T> Collection<T> mapCollection(Collection<S> source, Class<T> targetClass) {
         return source.stream().map(element -> mapper.map(element, targetClass))
                 .collect(Collectors.toList());
     }
