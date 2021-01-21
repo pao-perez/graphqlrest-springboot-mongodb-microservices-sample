@@ -7,5 +7,5 @@ interface AvatarMapper {
 
     AvatarDTO avatarToAvatarDto(Avatar avatar);
 
-    Collection<AvatarDTO> avatarsToAvatarsDTO(Collection<Avatar> avatars);
+    Collection<AvatarDTO> avatarsToAvatarDTOs(Collection<Avatar> avatars);
 }

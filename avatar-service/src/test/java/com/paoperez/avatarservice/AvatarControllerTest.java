@@ -61,7 +61,7 @@ class AvatarControllerTest {
                 avatarDtoB.setImageId("imageIdB");
                 avatarDtoB.setId("B");
                 Collection<AvatarDTO> avatarDTOs = ImmutableList.of(avatarDtoA, avatarDtoB);
-                when(avatarMapper.avatarsToAvatarsDTO(avatars)).thenReturn(avatarDTOs);
+                when(avatarMapper.avatarsToAvatarDTOs(avatars)).thenReturn(avatarDTOs);
 
                 AvatarsDTO avatarsDto = AvatarsDTO.builder().data(avatarDTOs).build();
                 this.mockMvc.perform(get("/avatars").contentType(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ class AvatarControllerTest {
                                                 objectMapper.writeValueAsString(avatarsDto)));
 
                 verify(service, times(1)).getAllAvatars();
-                verify(avatarMapper, times(1)).avatarsToAvatarsDTO(avatars);
+                verify(avatarMapper, times(1)).avatarsToAvatarDTOs(avatars);
         }
 
         @Test

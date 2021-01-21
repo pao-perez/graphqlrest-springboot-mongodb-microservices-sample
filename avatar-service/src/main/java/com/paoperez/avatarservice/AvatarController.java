@@ -32,7 +32,7 @@ public class AvatarController {
 
   @GetMapping()
   public ResponseEntity<AvatarsDTO> getAllAvatars() {
-    Collection<AvatarDTO> avatars = avatarMapper.avatarsToAvatarsDTO(avatarService.getAllAvatars());
+    Collection<AvatarDTO> avatars = avatarMapper.avatarsToAvatarDTOs(avatarService.getAllAvatars());
     AvatarsDTO avatarsDTO = AvatarsDTO.builder().data(avatars).build();
     return new ResponseEntity<>(avatarsDTO, HttpStatus.OK);
   }

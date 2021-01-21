@@ -22,7 +22,7 @@ final class AvatarMapperImpl implements AvatarMapper {
     }
 
     @Override
-    public Collection<AvatarDTO> avatarsToAvatarsDTO(Collection<Avatar> avatars) {
+    public Collection<AvatarDTO> avatarsToAvatarDTOs(Collection<Avatar> avatars) {
         return mapCollection(avatars, AvatarDTO.class);
     }
 

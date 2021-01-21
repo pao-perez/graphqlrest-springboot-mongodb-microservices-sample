@@ -5,6 +5,7 @@ import java.util.Collection;
 interface AvatarService {
 
   /**
+   * 
    * @return Collection<Avatar> - a collection of all avatars.
    */
   Collection<Avatar> getAllAvatars();
@@ -20,7 +21,7 @@ interface AvatarService {
 
   /**
    * 
-   * @param Avatar - The avatar to be created.
+   * @param avatar - The avatar to be created.
    * @return String - The ID of the created avatar.
    * @throws AvatarAlreadyExistsException - Thrown when the username of the avatar in the argument
    *                                      already exists.
@@ -36,7 +37,7 @@ interface AvatarService {
    * @throws AvatarAlreadyExistsException - Thrown when the username of the avatar in the argument
    *                                      already exists.
    * @throws AvatarMismatchException      - Thrown when the id in the argument did not match the id
-   *                                      in the content argument.
+   *                                      in the avatar argument.
    */
   void updateAvatar(String id, Avatar avatar)
       throws AvatarNotFoundException, AvatarAlreadyExistsException, AvatarMismatchException;

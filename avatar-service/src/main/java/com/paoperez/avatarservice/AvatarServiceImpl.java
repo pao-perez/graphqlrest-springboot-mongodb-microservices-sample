@@ -36,15 +36,18 @@ final class AvatarServiceImpl implements AvatarService {
     if (retrievedAvatar.isEmpty()) {
       throw new AvatarNotFoundException(id);
     }
+
     String avatarId = avatar.getId();
     if (!id.equals(avatarId)) {
       throw new AvatarMismatchException(id, avatarId);
     }
+
     String avatarUserName = avatar.getUserName();
     Avatar avatarFromUserName = repository.findByUserName(avatarUserName);
     if (avatarFromUserName != null && !avatarFromUserName.getId().equals(id)) {
       throw new AvatarAlreadyExistsException(avatarUserName);
     }
+
     repository.save(avatar);
   }
 
@@ -52,6 +55,7 @@ final class AvatarServiceImpl implements AvatarService {
     if (repository.findById(id).isEmpty()) {
       throw new AvatarNotFoundException(id);
     }
+
     repository.deleteById(id);
   }
 }

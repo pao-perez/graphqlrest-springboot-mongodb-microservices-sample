@@ -3,10 +3,12 @@ package com.paoperez.avatarservice;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -49,8 +51,8 @@ final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   final ResponseEntity<AvatarErrorResponse> handleConstraintViolation(
       final ConstraintViolationException ex, final WebRequest request) {
-    Collection<String> message =
-        ex.getConstraintViolations().stream().map(x -> x.getMessage()).collect(Collectors.toList());
+    Collection<String> message = ex.getConstraintViolations().stream()
+        .map(ConstraintViolation::getMessage).collect(Collectors.toList());
 
     AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
         .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
@@ -63,7 +65,7 @@ final class AvatarExceptionHandler extends ResponseEntityExceptionHandler {
       final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatus status,
       final WebRequest request) {
     Collection<String> message = ex.getBindingResult().getFieldErrors().stream()
-        .map(x -> x.getDefaultMessage()).collect(Collectors.toList());
+        .map(FieldError::getDefaultMessage).collect(Collectors.toList());
 
     AvatarErrorResponse responseBody = AvatarErrorResponse.builder().message(message.toString())
         .timestamp(LocalDateTime.now()).status(HttpStatus.BAD_REQUEST).build();
