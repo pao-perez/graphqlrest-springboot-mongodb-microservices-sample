@@ -84,7 +84,7 @@ class ContentControllerTest {
                 contentDtoB.setId("B");
                 contentDtoB.setCreated(created);
                 Collection<ContentDTO> contentDTOs = ImmutableList.of(contentDtoA, contentDtoB);
-                when(contentMapper.contentsToContentsDTO(contents)).thenReturn(contentDTOs);
+                when(contentMapper.contentsToContentDTOs(contents)).thenReturn(contentDTOs);
 
                 ContentsDTO contentsDto = ContentsDTO.builder().data(contentDTOs).build();
                 this.mockMvc.perform(get("/contents").contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ class ContentControllerTest {
                                                 objectMapper.writeValueAsString(contentsDto)));
 
                 verify(service, times(1)).getAllContents();
-                verify(contentMapper, times(1)).contentsToContentsDTO(contents);
+                verify(contentMapper, times(1)).contentsToContentDTOs(contents);
         }
 
         @Test

@@ -30,10 +30,12 @@ final class ContentServiceImpl implements ContentService {
     if (retrievedContent.isEmpty()) {
       throw new ContentNotFoundException(id);
     }
+    
     String contentId = content.getId();
     if (!id.equals(contentId)) {
       throw new ContentMismatchException(id, contentId);
     }
+
     repository.save(content);
   }
 
@@ -41,6 +43,7 @@ final class ContentServiceImpl implements ContentService {
     if (repository.findById(id).isEmpty()) {
       throw new ContentNotFoundException(id);
     }
+
     repository.deleteById(id);
   }
 }

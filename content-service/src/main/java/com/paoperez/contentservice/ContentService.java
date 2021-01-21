@@ -19,7 +19,7 @@ interface ContentService {
   Content getContent(String id) throws ContentNotFoundException;
 
   /**
-   * @param Content - The content to be created.
+   * @param content - The content to be created.
    * @return String - The ID of the created content.
    */
   String createContent(Content content);

@@ -7,5 +7,5 @@ interface ContentMapper {
 
     ContentDTO contentToContentDto(Content content);
 
-    Collection<ContentDTO> contentsToContentsDTO(Collection<Content> contents);
+    Collection<ContentDTO> contentsToContentDTOs(Collection<Content> contents);
 }

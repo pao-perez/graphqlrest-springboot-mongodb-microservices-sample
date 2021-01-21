@@ -22,7 +22,7 @@ final class ContentMapperImpl implements ContentMapper {
     }
 
     @Override
-    public Collection<ContentDTO> contentsToContentsDTO(Collection<Content> contents) {
+    public Collection<ContentDTO> contentsToContentDTOs(Collection<Content> contents) {
         return mapCollection(contents, ContentDTO.class);
     }
 

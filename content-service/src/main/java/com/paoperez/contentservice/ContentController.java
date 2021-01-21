@@ -33,7 +33,7 @@ public class ContentController {
   @GetMapping()
   public ResponseEntity<ContentsDTO> getAllContents() {
     Collection<ContentDTO> contents =
-        contentMapper.contentsToContentsDTO(contentService.getAllContents());
+        contentMapper.contentsToContentDTOs(contentService.getAllContents());
     ContentsDTO contentsDTO = ContentsDTO.builder().data(contents).build();
     return new ResponseEntity<>(contentsDTO, HttpStatus.OK);
   }
