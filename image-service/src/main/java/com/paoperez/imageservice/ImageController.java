@@ -1,6 +1,7 @@
 package com.paoperez.imageservice;
 
 import java.net.URI;
+import java.util.Collection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.http.HttpHeaders;
@@ -20,47 +21,53 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Validated
 @RestController
 @RequestMapping("/images")
-class ImageController {
+public class ImageController {
   private final ImageService imageService;
+  private final ImageMapper imageMapper;
 
-  ImageController(final ImageService imageService) {
+  public ImageController(final ImageService imageService, ImageMapper imageMapper) {
     this.imageService = imageService;
+    this.imageMapper = imageMapper;
   }
 
   @GetMapping()
-  ResponseEntity<Images> getAllImages() {
-    Images images = Images.builder().data(imageService.getAllImages()).build();
-    return new ResponseEntity<>(images, HttpStatus.OK);
+  public ResponseEntity<ImagesDTO> getAllImages() {
+    Collection<ImageDTO> images = imageMapper.imagesToImageDTOs(imageService.getAllImages());
+    ImagesDTO imagesDTO = ImagesDTO.builder().data(images).build();
+    return new ResponseEntity<>(imagesDTO, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  ResponseEntity<Image> getImage(final @PathVariable @NotBlank String id)
+  public ResponseEntity<ImageDTO> getImage(final @PathVariable @NotBlank String id)
       throws ImageNotFoundException {
-    return new ResponseEntity<>(imageService.getImage(id), HttpStatus.OK);
+    ImageDTO imageDTO = imageMapper.imageToImageDto(imageService.getImage(id));
+    return new ResponseEntity<>(imageDTO, HttpStatus.OK);
   }
 
   @PostMapping()
-  ResponseEntity<Image> createImage(final @RequestBody @Valid Image image)
+  public ResponseEntity<String> createImage(final @RequestBody @Valid ImageDTO imageRequest)
       throws ImageAlreadyExistsException {
-    Image createdImage = imageService.createImage(image);
-    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(createdImage.getId()).toUri();
+    Image image = imageMapper.imageDtoToImage(imageRequest);
+    String id = imageService.createImage(image);
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(location);
 
-    return new ResponseEntity<>(createdImage, headers, HttpStatus.CREATED);
+    return new ResponseEntity<>(id, headers, HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id,
-      final @RequestBody @Valid Image image)
-      throws ImageNotFoundException, ImageAlreadyExistsException {
+  public ResponseEntity<Void> updateImage(final @PathVariable @NotBlank String id,
+      final @RequestBody @Valid ImageDTO imageRequest)
+      throws ImageNotFoundException, ImageAlreadyExistsException, ImageMismatchException {
+    Image image = imageMapper.imageDtoToImage(imageRequest);
     imageService.updateImage(id, image);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> deleteImage(final @PathVariable @NotBlank String id)
+  public ResponseEntity<Void> deleteImage(final @PathVariable @NotBlank String id)
       throws ImageNotFoundException {
     imageService.deleteImage(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
