@@ -43,7 +43,6 @@ class ContentControllerTest {
         @Test
         void getAllContents_shouldReturnOk() throws Exception {
                 long created = new Date().toInstant().toEpochMilli();
-
                 Content contentA = new Content();
                 contentA.setAvatarId("avatarIdA");
                 contentA.setCategoryId("categoryIdA");
@@ -64,7 +63,6 @@ class ContentControllerTest {
                 contentB.setCreated(created);
                 Collection<Content> contents = ImmutableList.of(contentA, contentB);
                 when(service.getAllContents()).thenReturn(contents);
-
                 ContentDTO contentDtoA = new ContentDTO();
                 contentDtoA.setAvatarId("avatarIdA");
                 contentDtoA.setCategoryId("categoryIdA");
@@ -85,8 +83,8 @@ class ContentControllerTest {
                 contentDtoB.setCreated(created);
                 Collection<ContentDTO> contentDTOs = ImmutableList.of(contentDtoA, contentDtoB);
                 when(contentMapper.contentsToContentDTOs(contents)).thenReturn(contentDTOs);
-
                 ContentsDTO contentsDto = ContentsDTO.builder().data(contentDTOs).build();
+
                 this.mockMvc.perform(get("/contents").contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk()).andExpect(content().string(
                                                 objectMapper.writeValueAsString(contentsDto)));
@@ -99,7 +97,6 @@ class ContentControllerTest {
         void getContent_whenExistingId_shouldReturnOk() throws Exception {
                 long created = new Date().toInstant().toEpochMilli();
                 String existingId = "A";
-
                 Content existingContent = new Content();
                 existingContent.setAvatarId("avatarIdA");
                 existingContent.setCategoryId("categoryIdA");
@@ -110,7 +107,6 @@ class ContentControllerTest {
                 existingContent.setId(existingId);
                 existingContent.setCreated(created);
                 when(service.getContent(existingId)).thenReturn(existingContent);
-
                 ContentDTO existingContentDto = new ContentDTO();
                 existingContentDto.setAvatarId("avatarIdA");
                 existingContentDto.setCategoryId("categoryIdA");
@@ -182,11 +178,10 @@ class ContentControllerTest {
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
                 when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
-
                 String createdId = "A";
                 when(service.createContent(content)).thenReturn(createdId);
-
                 String createdLocation = "http://localhost/contents/" + createdId;
+
                 this.mockMvc.perform(post("/contents").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(contentDto)))
                                 .andExpect(status().isCreated())
@@ -227,7 +222,6 @@ class ContentControllerTest {
         void updateContent_whenExistingId_shouldReturnNoContent() throws Exception {
                 String existingId = "A";
                 long created = new Date().toInstant().toEpochMilli();
-
                 ContentDTO contentDto = new ContentDTO();
                 contentDto.setId(existingId);
                 contentDto.setCreated(created);
@@ -310,7 +304,6 @@ class ContentControllerTest {
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
                 when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
-
                 String id = "A";
                 doThrow(new ContentMismatchException(id, differentId)).when(service)
                                 .updateContent(id, content);
@@ -334,7 +327,6 @@ class ContentControllerTest {
         void updateContent_whenNonexistingId_shouldReturnNotFound() throws Exception {
                 String nonExistingId = "Z";
                 long created = new Date().toInstant().toEpochMilli();
-
                 ContentDTO contentDto = new ContentDTO();
                 contentDto.setId(nonExistingId);
                 contentDto.setCreated(created);
@@ -354,7 +346,6 @@ class ContentControllerTest {
                 content.setBody("Lorem ipsum dolor");
                 content.setRank(1);
                 when(contentMapper.contentDtoToContent(contentDto)).thenReturn(content);
-
                 doThrow(new ContentNotFoundException(nonExistingId)).when(service)
                                 .updateContent(nonExistingId, content);
 

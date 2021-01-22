@@ -53,8 +53,8 @@ class ContentServiceImplTest {
     when(repository.findAll()).thenReturn(expected);
 
     Collection<Content> actual = service.getAllContents();
-    assertEquals(expected, actual);
 
+    assertEquals(expected, actual);
     verify(repository, times(1)).findAll();
   }
 
@@ -74,8 +74,8 @@ class ContentServiceImplTest {
     when(repository.findById(existingId)).thenReturn(Optional.of(expected));
 
     Content actual = service.getContent(existingId);
-    assertEquals(expected, actual);
 
+    assertEquals(expected, actual);
     verify(repository, times(1)).findById(existingId);
   }
 
@@ -87,9 +87,9 @@ class ContentServiceImplTest {
 
     Exception actual =
         assertThrows(ContentNotFoundException.class, () -> service.getContent(nonExistingId));
+
     String expected = String.format("Content with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
-
     verify(repository, times(1)).findById(nonExistingId);
   }
 
@@ -115,8 +115,8 @@ class ContentServiceImplTest {
     when(repository.save(content)).thenReturn(expected);
 
     String actual = service.createContent(content);
-    assertEquals(expected.getId(), actual);
 
+    assertEquals(expected.getId(), actual);
     verify(repository, times(1)).save(content);
   }
 
@@ -125,7 +125,6 @@ class ContentServiceImplTest {
       throws ContentNotFoundException, ContentMismatchException {
     long created = new Date().toInstant().toEpochMilli();
     String existingId = "A";
-
     Content retrievedContent = new Content();
     retrievedContent.setAvatarId("avatarIdA");
     retrievedContent.setCategoryId("categoryIdA");
@@ -136,7 +135,6 @@ class ContentServiceImplTest {
     retrievedContent.setId(existingId);
     retrievedContent.setCreated(created);
     when(repository.findById(existingId)).thenReturn(Optional.of(retrievedContent));
-
     Content updateContent = new Content();
     updateContent.setAvatarId("avatarIdB");
     updateContent.setCategoryId("categoryIdB");
@@ -158,6 +156,7 @@ class ContentServiceImplTest {
     expected.setCreated(created);
     expected.setUpdated(updated);
     when(repository.save(updateContent)).thenReturn(expected);
+
     service.updateContent(existingId, updateContent);
 
     verify(repository, times(1)).findById(existingId);
@@ -178,7 +177,6 @@ class ContentServiceImplTest {
     retrievedContent.setId(id);
     retrievedContent.setCreated(new Date().toInstant().toEpochMilli());
     when(repository.findById(id)).thenReturn(Optional.of(retrievedContent));
-
     String differentId = "B";
     Content differentContent = new Content();
     differentContent.setAvatarId("avatarIdB");
@@ -189,12 +187,13 @@ class ContentServiceImplTest {
     differentContent.setRank(2);
     differentContent.setId(differentId);
     differentContent.setCreated(new Date().toInstant().toEpochMilli());
+
     Exception actual = assertThrows(ContentMismatchException.class,
         () -> service.updateContent(id, differentContent));
+
     String expected =
         String.format("Content with id %s does not match content argument %s.", id, differentId);
     assertEquals(expected, actual.getMessage());
-
     verify(repository, times(1)).findById(id);
     verify(repository, times(0)).save(null);
   }
@@ -204,7 +203,6 @@ class ContentServiceImplTest {
     String nonExistingId = "A";
     Optional<Content> nonExistingContent = Optional.empty();
     when(repository.findById(nonExistingId)).thenReturn(nonExistingContent);
-
     long created = new Date().toInstant().toEpochMilli();
     Content updateContent = new Content();
     updateContent.setAvatarId("avatarIdA");
@@ -215,11 +213,12 @@ class ContentServiceImplTest {
     updateContent.setRank(1);
     updateContent.setId(nonExistingId);
     updateContent.setCreated(created);
+
     Exception actual = assertThrows(ContentNotFoundException.class,
         () -> service.updateContent(nonExistingId, updateContent));
+
     String expected = String.format("Content with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
-
     verify(repository, times(1)).findById(nonExistingId);
     verify(repository, times(0)).save(null);
   }
@@ -227,7 +226,6 @@ class ContentServiceImplTest {
   @Test
   void deleteContent_whenExistingId_shouldNotThrowException() throws ContentNotFoundException {
     String existingId = "A";
-
     long created = new Date().toInstant().toEpochMilli();
     Content existingContent = new Content();
     existingContent.setAvatarId("avatarIdA");
@@ -254,9 +252,9 @@ class ContentServiceImplTest {
 
     Exception actual =
         assertThrows(ContentNotFoundException.class, () -> service.deleteContent(nonExistingId));
+
     String expected = String.format("Content with id %s not found.", nonExistingId);
     assertEquals(expected, actual.getMessage());
-
     verify(repository, times(1)).findById(nonExistingId);
     verify(repository, times(0)).deleteById(nonExistingId);
   }
