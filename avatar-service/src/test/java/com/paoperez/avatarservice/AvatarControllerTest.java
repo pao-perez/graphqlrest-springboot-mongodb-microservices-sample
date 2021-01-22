@@ -51,7 +51,6 @@ class AvatarControllerTest {
                 avatarB.setId("B");
                 Collection<Avatar> avatars = ImmutableList.of(avatarA, avatarB);
                 when(service.getAllAvatars()).thenReturn(avatars);
-
                 AvatarDTO avatarDtoA = new AvatarDTO();
                 avatarDtoA.setUserName("userA");
                 avatarDtoA.setImageId("imageIdA");
@@ -62,8 +61,8 @@ class AvatarControllerTest {
                 avatarDtoB.setId("B");
                 Collection<AvatarDTO> avatarDTOs = ImmutableList.of(avatarDtoA, avatarDtoB);
                 when(avatarMapper.avatarsToAvatarDTOs(avatars)).thenReturn(avatarDTOs);
-
                 AvatarsDTO avatarsDto = AvatarsDTO.builder().data(avatarDTOs).build();
+
                 this.mockMvc.perform(get("/avatars").contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk()).andExpect(content().string(
                                                 objectMapper.writeValueAsString(avatarsDto)));
@@ -75,13 +74,11 @@ class AvatarControllerTest {
         @Test
         void getAvatar_whenExistingId_shouldReturnOk() throws Exception {
                 String existingId = "A";
-
                 Avatar existingAvatar = new Avatar();
                 existingAvatar.setId(existingId);
                 existingAvatar.setUserName("userA");
                 existingAvatar.setImageId("imageIdA");
                 when(service.getAvatar(existingId)).thenReturn(existingAvatar);
-
                 AvatarDTO existingAvatarDto = new AvatarDTO();
                 existingAvatarDto.setId(existingId);
                 existingAvatarDto.setUserName("userA");
@@ -126,14 +123,13 @@ class AvatarControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(service, times(0)).getAvatar(blankId);
+                verify(service, times(0)).getAvatar(null);
                 verify(avatarMapper, times(0)).avatarToAvatarDto(null);
         }
 
         @Test
         void createAvatar_whenNonexistingUserName_shouldReturnCreated() throws Exception {
                 String nonExistingUserName = "A";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName(nonExistingUserName);
                 avatarDto.setImageId("imageIdA");
@@ -141,7 +137,6 @@ class AvatarControllerTest {
                 avatar.setUserName(nonExistingUserName);
                 avatar.setImageId("imageIdA");
                 when(avatarMapper.avatarDtoToAvatar(avatarDto)).thenReturn(avatar);
-
                 String createdId = "A";
                 String createdLocation = "http://localhost/avatars/" + createdId;
                 when(service.createAvatar(avatar)).thenReturn(createdId);
@@ -159,7 +154,6 @@ class AvatarControllerTest {
         @Test
         void createAvatar_whenExistingUserName_shouldReturnConflict() throws Exception {
                 String existingUserName = "userA";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName(existingUserName);
                 avatarDto.setImageId("imageIdA");
@@ -167,7 +161,6 @@ class AvatarControllerTest {
                 avatar.setUserName(existingUserName);
                 avatar.setImageId("imageIdA");
                 when(avatarMapper.avatarDtoToAvatar(avatarDto)).thenReturn(avatar);
-
                 when(service.createAvatar(avatar))
                                 .thenThrow(new AvatarAlreadyExistsException(existingUserName));
 
@@ -204,7 +197,6 @@ class AvatarControllerTest {
         @Test
         void updateAvatar_whenExistingId_shouldReturnNoContent() throws Exception {
                 String existingId = "A";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName("userA");
                 avatarDto.setImageId("imageIdA");
@@ -228,7 +220,6 @@ class AvatarControllerTest {
         void updateAvatar_whenExistingUserName_shouldReturnConflict() throws Exception {
                 String id = "A";
                 String existingUserName = "userA";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName(existingUserName);
                 avatarDto.setImageId("imageIdA");
@@ -238,7 +229,6 @@ class AvatarControllerTest {
                 avatar.setImageId("imageIdA");
                 avatar.setId(id);
                 when(avatarMapper.avatarDtoToAvatar(avatarDto)).thenReturn(avatar);
-
                 doThrow(new AvatarAlreadyExistsException(existingUserName)).when(service)
                                 .updateAvatar(id, avatar);
 
@@ -281,7 +271,6 @@ class AvatarControllerTest {
         @Test
         void updateAvatar_whenMismatchId_shouldReturnBadRequest() throws Exception {
                 String differentId = "differentId";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName("userA");
                 avatarDto.setImageId("imageIdA");
@@ -291,7 +280,6 @@ class AvatarControllerTest {
                 avatar.setImageId("imageIdA");
                 avatar.setId(differentId);
                 when(avatarMapper.avatarDtoToAvatar(avatarDto)).thenReturn(avatar);
-
                 String id = "A";
                 doThrow(new AvatarMismatchException(id, differentId)).when(service).updateAvatar(id,
                                 avatar);
@@ -314,7 +302,6 @@ class AvatarControllerTest {
         @Test
         void updateAvatar_whenNonexistingId_shouldReturnNotFound() throws Exception {
                 String nonExistingId = "Z";
-
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName("userA");
                 avatarDto.setImageId("imageIdA");
@@ -324,7 +311,6 @@ class AvatarControllerTest {
                 avatar.setImageId("imageIdA");
                 avatar.setId(nonExistingId);
                 when(avatarMapper.avatarDtoToAvatar(avatarDto)).thenReturn(avatar);
-
                 doThrow(new AvatarNotFoundException(nonExistingId)).when(service)
                                 .updateAvatar(nonExistingId, avatar);
 
@@ -363,7 +349,7 @@ class AvatarControllerTest {
                                 .andExpect(jsonPath("$.message")
                                                 .value(containsString("must not be blank")));
 
-                verify(service, times(0)).deleteAvatar(blankId);
+                verify(service, times(0)).deleteAvatar(null);
         }
 
         @Test
