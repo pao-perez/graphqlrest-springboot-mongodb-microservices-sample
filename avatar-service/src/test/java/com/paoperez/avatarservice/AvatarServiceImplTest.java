@@ -177,7 +177,7 @@ class AvatarServiceImplTest {
     Avatar differentAvatar = new Avatar();
     differentAvatar.setUserName(existingUsername);
     differentAvatar.setImageId("imageIdB");
-    differentAvatar.setId("differentId");
+    differentAvatar.setId("B");
     when(repository.findByUserName(existingUsername)).thenReturn(differentAvatar);
     Avatar updateAvatar = new Avatar();
     updateAvatar.setUserName(existingUsername);

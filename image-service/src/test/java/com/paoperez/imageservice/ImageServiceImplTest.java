@@ -209,7 +209,7 @@ class ImageServiceImplTest {
     differentImage.setAlt("image B");
     differentImage.setWidth(100);
     differentImage.setHeight(100);
-    differentImage.setId("differentId");
+    differentImage.setId("B");
     when(repository.findByUrl(existingUrl)).thenReturn(differentImage);
     Image updateImage = new Image();
     updateImage.setName("imageA");
@@ -240,7 +240,7 @@ class ImageServiceImplTest {
     retrievedImage.setHeight(150);
     retrievedImage.setId(id);
     when(repository.findById(id)).thenReturn(Optional.of(retrievedImage));
-    String differentId = "differentId";
+    String differentId = "B";
     Image differentImage = new Image();
     differentImage.setName("imageB");
     differentImage.setUrl("/path/to/B");

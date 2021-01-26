@@ -284,7 +284,7 @@ class ContentControllerTest {
         @Test
         void updateContent_whenMismatchId_shouldReturnBadRequest() throws Exception {
                 long created = new Date().toInstant().toEpochMilli();
-                String differentId = "differentId";
+                String differentId = "B";
                 ContentDTO contentDto = new ContentDTO();
                 contentDto.setId(differentId);
                 contentDto.setCreated(created);
