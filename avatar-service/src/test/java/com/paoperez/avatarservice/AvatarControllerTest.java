@@ -129,7 +129,7 @@ class AvatarControllerTest {
 
         @Test
         void createAvatar_whenNonexistingUserName_shouldReturnCreated() throws Exception {
-                String nonExistingUserName = "A";
+                String nonExistingUserName = "userA";
                 AvatarDTO avatarDto = new AvatarDTO();
                 avatarDto.setUserName(nonExistingUserName);
                 avatarDto.setImageId("imageIdA");
