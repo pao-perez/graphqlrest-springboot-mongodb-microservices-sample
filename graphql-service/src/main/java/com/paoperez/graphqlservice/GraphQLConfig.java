@@ -1,6 +1,5 @@
 package com.paoperez.graphqlservice;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
@@ -11,7 +10,7 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.schema.idl.TypeRuntimeWiring;
 import java.io.IOException;
 import java.net.URL;
-
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ class GraphQLConfig {
 
   @Bean
   WebMvcConfigurer corsConfigurer(@Value("${client.web.address}") String clientWebAddress) {
-    logger.info("Allowing cross-origin requests for /graphql from origin: " + clientWebAddress);
+    logger.info("Allowing cross-origin requests for /graphql from origin: {}", clientWebAddress);
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
@@ -40,7 +39,7 @@ class GraphQLConfig {
   @LoadBalanced
   @Bean
   RestTemplate restTemplate() {
-      return new RestTemplate();
+    return new RestTemplate();
   }
 
   @Bean
@@ -49,10 +48,10 @@ class GraphQLConfig {
   }
 
   @Bean
-  GraphQLSchema schema(
-      final SchemaGenerator generator, final SchemaParser parser, final RuntimeWiring wiring) throws IOException {
+  GraphQLSchema schema(final SchemaGenerator generator, final SchemaParser parser,
+      final RuntimeWiring wiring) throws IOException {
     URL url = Resources.getResource("schema.graphqls");
-    String sdl = Resources.toString(url, Charsets.UTF_8);
+    String sdl = Resources.toString(url, StandardCharsets.UTF_8);
     TypeDefinitionRegistry typeRegistry = parser.parse(sdl);
     return generator.makeExecutableSchema(typeRegistry, wiring);
   }
@@ -60,20 +59,16 @@ class GraphQLConfig {
   @Bean
   RuntimeWiring runtimeWiring(final GraphQLDataFetchers dataFetchers) {
     return RuntimeWiring.newRuntimeWiring()
-        .type(
-            TypeRuntimeWiring.newTypeWiring("Query")
-                .dataFetcher("contents", dataFetchers.getContentsDataFetcher()))
-        .type(
-            TypeRuntimeWiring.newTypeWiring("Query")
-                .dataFetcher("content", dataFetchers.getContentDataFetcher()))
-        .type(
-            TypeRuntimeWiring.newTypeWiring("Content")
-                .dataFetcher("image", dataFetchers.getContentImageDataFetcher())
-                .dataFetcher("category", dataFetchers.getCategoryDataFetcher())
-                .dataFetcher("avatar", dataFetchers.getAvatarDataFetcher()))
-        .type(
-            TypeRuntimeWiring.newTypeWiring("Avatar")
-                .dataFetcher("image", dataFetchers.getAvatarImageDataFetcher()))
+        .type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("contents",
+            dataFetchers.getContentsDataFetcher()))
+        .type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("content",
+            dataFetchers.getContentDataFetcher()))
+        .type(TypeRuntimeWiring.newTypeWiring("Content")
+            .dataFetcher("image", dataFetchers.getContentImageDataFetcher())
+            .dataFetcher("category", dataFetchers.getCategoryDataFetcher())
+            .dataFetcher("avatar", dataFetchers.getAvatarDataFetcher()))
+        .type(TypeRuntimeWiring.newTypeWiring("Avatar").dataFetcher("image",
+            dataFetchers.getAvatarImageDataFetcher()))
         .build();
   }
 
