@@ -33,7 +33,7 @@ final class ImageServiceImpl implements ImageService {
   public void updateImage(final String id, final Image image)
       throws ImageNotFoundException, ImageAlreadyExistsException, ImageMismatchException {
     Optional<Image> retrievedImage = repository.findById(id);
-    if (retrievedImage.isEmpty()) {
+    if (!retrievedImage.isPresent()) {
       throw new ImageNotFoundException(id);
     }
 
@@ -52,7 +52,7 @@ final class ImageServiceImpl implements ImageService {
   }
 
   public void deleteImage(final String id) throws ImageNotFoundException {
-    if (repository.findById(id).isEmpty()) {
+    if (!repository.findById(id).isPresent()) {
       throw new ImageNotFoundException(id);
     }
 
