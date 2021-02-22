@@ -6,6 +6,7 @@ set -e
 DEPLOYMENT_ENV=
 TARGET_SPECIFIED=false
 APP_DIR=$PWD
+DEBUG_ENABLED=false
 
 usage() {
 cat << EOF
@@ -15,8 +16,9 @@ cat << EOF
 
   Options:
     -t set target environment [ required ]
+    -d enable debug mode
 
-  Example: $0 -t development
+  Example: $0 -t development -d
 EOF
 }
 
@@ -24,7 +26,7 @@ setup_service() {
   local service=$1
   local buildkit_enabled=0
   
-  if [[ $DEPLOYMENT_ENV == "local" ]]; then
+  if [[ $DEPLOYMENT_ENV == "local" && $DEBUG_ENABLED == false ]]; then
     buildkit_enabled=1
   fi
 
@@ -37,7 +39,7 @@ setup_service() {
   cd $APP_DIR
 }
 
-while getopts "t:" opt; do
+while getopts "t:d" opt; do
   case $opt in
     t)
       if [[ ! $OPTARG =~ ^[a-zA-Z]+$ ]]; then
@@ -51,6 +53,10 @@ while getopts "t:" opt; do
         echo "Error: Client services aren't registered for discovery on 'standalone' environment, please specify a different environment."
         exit
       fi
+      ;;
+    d)
+      echo "Debug enabled, disabling Buildkit.."
+      DEBUG_ENABLED=true
       ;;
     ?)
       usage
