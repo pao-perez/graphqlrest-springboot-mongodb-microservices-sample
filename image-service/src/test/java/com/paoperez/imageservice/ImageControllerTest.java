@@ -320,7 +320,7 @@ class ImageControllerTest {
 
         @Test
         void updateImage_whenMismatchId_shouldReturnBadRequest() throws Exception {
-                String differentId = "differentId";
+                String differentId = "B";
                 ImageDTO imageDto = new ImageDTO();
                 imageDto.setName("imageA");
                 imageDto.setUrl("/path/to/image");

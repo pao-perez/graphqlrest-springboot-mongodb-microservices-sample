@@ -1,6 +1,7 @@
 package com.paoperez.categoryservice;
 
 import java.util.Collection;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,32 +20,41 @@ final class CategoryServiceImpl implements CategoryService {
     return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
   }
 
-  public Category createCategory(final Category category) throws CategoryAlreadyExistsException {
+  public String createCategory(final Category category) throws CategoryAlreadyExistsException {
     final String categoryName = category.getName();
 
     if (categoryRepository.findByName(categoryName) != null) {
       throw new CategoryAlreadyExistsException(categoryName);
     }
 
-    return categoryRepository.save(category);
+    return categoryRepository.save(category).getId();
   }
 
   public void updateCategory(final String id, final Category category)
-      throws CategoryNotFoundException, CategoryAlreadyExistsException {
-    categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+      throws CategoryNotFoundException, CategoryAlreadyExistsException, CategoryMismatchException {
+    Optional<Category> retrievedCategory = categoryRepository.findById(id);
+    if (!retrievedCategory.isPresent()) {
+      throw new CategoryNotFoundException(id);
+    }
+
+    String categoryId = category.getId();
+    if (!id.equals(categoryId)) {
+      throw new CategoryMismatchException(id, categoryId);
+    }
 
     final String categoryName = category.getName();
-    final Category retrievedCategory = categoryRepository.findByName(categoryName);
-    if (retrievedCategory != null && !retrievedCategory.getId().equals(id)) {
+    final Category categoryFromName = categoryRepository.findByName(categoryName);
+    if (categoryFromName != null && !categoryFromName.getId().equals(id)) {
       throw new CategoryAlreadyExistsException(categoryName);
     }
 
-    Category updateCategory = Category.builder().name(categoryName).id(id).build();
-    categoryRepository.save(updateCategory);
+    categoryRepository.save(category);
   }
 
   public void deleteCategory(final String id) throws CategoryNotFoundException {
-    categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+    if (!categoryRepository.findById(id).isPresent()) {
+      throw new CategoryNotFoundException(id);
+    }
     categoryRepository.deleteById(id);
   }
 }

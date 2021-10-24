@@ -33,7 +33,7 @@ final class AvatarServiceImpl implements AvatarService {
   public void updateAvatar(final String id, final Avatar avatar)
       throws AvatarNotFoundException, AvatarAlreadyExistsException, AvatarMismatchException {
     Optional<Avatar> retrievedAvatar = repository.findById(id);
-    if (retrievedAvatar.isEmpty()) {
+    if (!retrievedAvatar.isPresent()) {
       throw new AvatarNotFoundException(id);
     }
 
@@ -52,7 +52,7 @@ final class AvatarServiceImpl implements AvatarService {
   }
 
   public void deleteAvatar(final String id) throws AvatarNotFoundException {
-    if (repository.findById(id).isEmpty()) {
+    if (!repository.findById(id).isPresent()) {
       throw new AvatarNotFoundException(id);
     }
 

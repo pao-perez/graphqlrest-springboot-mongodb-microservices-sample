@@ -1,0 +1,29 @@
+{
+    "properties": [
+        {
+            "name": "client.web.address",
+            "type": "java.lang.String",
+            "description": "A description for 'client.web.address'"
+        },
+        {
+            "name": "api.content.url",
+            "type": "java.lang.String",
+            "description": "A description for 'api.content.url'"
+        },
+        {
+            "name": "api.category.url",
+            "type": "java.lang.String",
+            "description": "A description for 'api.category.url'"
+        },
+        {
+            "name": "api.avatar.url",
+            "type": "java.lang.String",
+            "description": "A description for 'api.avatar.url'"
+        },
+        {
+            "name": "api.image.url",
+            "type": "java.lang.String",
+            "description": "A description for 'api.image.url'"
+        }
+    ]
+}

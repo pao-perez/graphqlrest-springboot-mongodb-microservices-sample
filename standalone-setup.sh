@@ -6,6 +6,7 @@ set -e
 SERVICE=
 DEPLOYMENT_ENV=standalone
 TARGET_SPECIFIED=false
+DEBUG_ENABLED=false
 
 usage() {
 cat << EOF
@@ -15,12 +16,13 @@ cat << EOF
 
   Options:
     -s set target service [ required ]
+    -d enable debug mode
 
-  Example: $0 -s avatar
+  Example: $0 -s avatar -d
 EOF
 }
 
-while getopts "s:" opt; do
+while getopts "s:d" opt; do
   case $opt in
     s)
       if [[ $OPTARG != "discovery" ]] && [[ $OPTARG != "graphql" ]] && [[ $OPTARG != "avatar" ]] && [[ $OPTARG != "category" ]] && [[ $OPTARG != "content" ]] && [[ $OPTARG != "image" ]]; then
@@ -30,6 +32,10 @@ while getopts "s:" opt; do
       fi
       SERVICE=$OPTARG
       TARGET_SPECIFIED=true
+      ;;
+    d)
+      echo "Debug enabled, disabling Buildkit.."
+      DEBUG_ENABLED=true
       ;;
     ?)
       usage
@@ -45,7 +51,11 @@ if [[ $TARGET_SPECIFIED = false ]]; then
 fi
 
 # Build service container image
-cd ${SERVICE}-service && DOCKER_BUILDKIT=1 docker build -t ${SERVICE}-service:0.0.1 .
+DOCKER_BUILDKIT=0
+if [[ $DEBUG_ENABLED == false ]]; then
+  DOCKER_BUILDKIT=1
+fi
+cd ${SERVICE}-service && DOCKER_BUILDKIT=$DOCKER_BUILDKIT docker build -t ${SERVICE}-service:0.0.1 .
 if [[ $SERVICE != "discovery" ]] && [[ $SERVICE != "graphql" ]]; then
   # Build db container image
   cd db/ && docker build -t ${SERVICE}-db:0.0.1 . && cd -

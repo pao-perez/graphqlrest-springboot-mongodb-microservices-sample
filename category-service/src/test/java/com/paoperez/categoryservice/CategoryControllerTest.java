@@ -36,38 +36,61 @@ class CategoryControllerTest {
   @MockBean
   private CategoryService service;
 
+  @MockBean
+  private CategoryMapper categoryMapper;
+
   @Test
   void getAllCategories_shouldReturnOk() throws Exception {
-    final Category categoryA = Category.builder().id("A").name("Blog").build();
-    final Category categoryB = Category.builder().id("B").name("Tutorial").build();
-    final Collection<Category> data = ImmutableList.of(categoryA, categoryB);
-    final Categories categories = Categories.builder().data(data).build();
-    when(service.getAllCategories()).thenReturn(data);
+    Category categoryA = new Category();
+    categoryA.setId("A");
+    categoryA.setName("Blog");
+    Category categoryB = new Category();
+    categoryA.setId("B");
+    categoryA.setName("Tutorial");
+    Collection<Category> categories = ImmutableList.of(categoryA, categoryB);
+    when(service.getAllCategories()).thenReturn(categories);
+    CategoryDTO categoryDtoA = new CategoryDTO();
+    categoryDtoA.setId("A");
+    categoryDtoA.setName("Blog");
+    CategoryDTO categoryDtoB = new CategoryDTO();
+    categoryDtoB.setId("B");
+    categoryDtoB.setName("Tutorial");
+    Collection<CategoryDTO> categoryDTOs = ImmutableList.of(categoryDtoA, categoryDtoB);
+    when(categoryMapper.categoriesToCategoryDTOs(categories)).thenReturn(categoryDTOs);
+    CategoriesDTO categoriesDto = CategoriesDTO.builder().data(categoryDTOs).build();
 
     this.mockMvc.perform(get("/categories").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(objectMapper.writeValueAsString(categories)));
+        .andExpect(content().string(objectMapper.writeValueAsString(categoriesDto)));
 
     verify(service, times(1)).getAllCategories();
+    verify(categoryMapper, times(1)).categoriesToCategoryDTOs(categories);
   }
 
   @Test
   void getCategory_whenExistingId_shouldReturnOk() throws Exception {
-    final String existingId = "A";
-    final Category existingCategory = Category.builder().id(existingId).name("Blog").build();
+    String existingId = "A";
+    Category existingCategory = new Category();
+    existingCategory.setId("A");
+    existingCategory.setName("Blog");
     when(service.getCategory(existingId)).thenReturn(existingCategory);
+    CategoryDTO existingCategoryDto = new CategoryDTO();
+    existingCategoryDto.setId("A");
+    existingCategoryDto.setName("Blog");
+    when(categoryMapper.categoryToCategoryDto(existingCategory)).thenReturn(existingCategoryDto);
 
     this.mockMvc
         .perform(get("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(objectMapper.writeValueAsString(existingCategory)));
+        .andExpect(content().string(objectMapper.writeValueAsString(existingCategoryDto)));
 
     verify(service, times(1)).getCategory(existingId);
+    verify(categoryMapper, times(1)).categoryToCategoryDto(existingCategory);
   }
 
   @Test
   void getCategory_whenNonexistingId_shouldReturnNotFound() throws Exception {
-    final String nonExistingId = "Z";
+    String nonExistingId = "Z";
     when(service.getCategory(nonExistingId))
         .thenThrow(new CategoryNotFoundException(nonExistingId));
 
@@ -79,60 +102,70 @@ class CategoryControllerTest {
             .value(String.format("Category with id %s not found.", nonExistingId)));
 
     verify(service, times(1)).getCategory(nonExistingId);
+    verify(categoryMapper, times(0)).categoryToCategoryDto(null);
   }
 
   @Test
   void getCategory_whenBlankId_shouldReturnBadRequest() throws Exception {
-    final String blankId = " ";
+    String blankId = " ";
 
     this.mockMvc.perform(get("/categories/{id}", blankId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
         .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
 
-    verify(service, times(0)).getCategory(blankId);
+    verify(service, times(0)).getCategory(null);
+    verify(categoryMapper, times(0)).categoryToCategoryDto(null);
   }
 
   @Test
   void createCategory_whenNonexistingName_shouldReturnCreated() throws Exception {
-    final String nonExistingName = "Blog";
-    final Category newCategory = Category.builder().name(nonExistingName).build();
-    final String createdId = "A";
-    final Category createdCategory = Category.builder().id(createdId).name(nonExistingName).build();
-    final String createdLocation = "http://localhost/categories/" + createdId;
-    when(service.createCategory(newCategory)).thenReturn(createdCategory);
+    String nonExistingName = "Blog";
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setName(nonExistingName);
+    Category category = new Category();
+    category.setName(nonExistingName);
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
+    String createdId = "A";
+    String createdLocation = "http://localhost/categories/" + createdId;
+    when(service.createCategory(category)).thenReturn(createdId);
 
     this.mockMvc
         .perform(post("/categories").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(newCategory)))
-        .andExpect(status().isCreated())
-        .andExpect(content().string(objectMapper.writeValueAsString(createdCategory)))
+            .content(objectMapper.writeValueAsString(categoryDto)))
+        .andExpect(status().isCreated()).andExpect(content().string(createdId))
         .andExpect(header().string(LOCATION, createdLocation));
 
-    verify(service, times(1)).createCategory(newCategory);
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).createCategory(category);
   }
 
   @Test
   void createCategory_whenExistingName_shouldReturnConflict() throws Exception {
     final String existingName = "Blog";
-    final Category newCategory = Category.builder().name(existingName).build();
-    when(service.createCategory(newCategory))
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setName(existingName);
+    Category category = new Category();
+    category.setName(existingName);
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
+    when(service.createCategory(category))
         .thenThrow(new CategoryAlreadyExistsException(existingName));
 
     this.mockMvc
         .perform(post("/categories").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(newCategory)))
+            .content(objectMapper.writeValueAsString(categoryDto)))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
         .andExpect(jsonPath("$.message")
             .value(String.format("Category with name %s already exists.", existingName)));
 
-    verify(service, times(1)).createCategory(newCategory);
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).createCategory(category);
   }
 
   @Test
   void createCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
-    final Category blankCategory = Category.builder().build();
+    CategoryDTO blankCategory = new CategoryDTO();
 
     this.mockMvc
         .perform(post("/categories").contentType(MediaType.APPLICATION_JSON)
@@ -141,45 +174,60 @@ class CategoryControllerTest {
         .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
         .andExpect(jsonPath("$.message").value(containsString("name must not be blank")));
 
-    verify(service, times(0)).createCategory(blankCategory);
+    verify(categoryMapper, times(0)).categoryDtoToCategory(null);
+    verify(service, times(0)).createCategory(null);
   }
 
   @Test
   void updateCategory_whenExistingId_shouldReturnNoContent() throws Exception {
-    final String existingId = "A";
-    final Category updateCategory = Category.builder().id(existingId).name("Blog").build();
+    String existingId = "A";
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setId(existingId);
+    categoryDto.setName("Blog");
+    Category category = new Category();
+    category.setId(existingId);
+    category.setName("Blog");
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
 
     this.mockMvc
         .perform(put("/categories/{id}", existingId).contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateCategory)))
+            .content(objectMapper.writeValueAsString(categoryDto)))
         .andExpect(status().isNoContent());
 
-    verify(service, times(1)).updateCategory(existingId, updateCategory);
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).updateCategory(existingId, category);
   }
 
   @Test
   void updateCategory_whenExistingName_shouldReturnConflict() throws Exception {
-    final String currentId = "A";
-    final String existingName = "Blog";
-    final Category currentCategory = Category.builder().id(currentId).name(existingName).build();
-    doThrow(new CategoryAlreadyExistsException(existingName)).when(service)
-        .updateCategory(currentId, currentCategory);
+    String existingName = "Blog";
+    String id = "A";
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setId(id);
+    categoryDto.setName(existingName);
+    Category category = new Category();
+    category.setId(id);
+    category.setName(existingName);
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
+    doThrow(new CategoryAlreadyExistsException(existingName)).when(service).updateCategory(id,
+        category);
 
     this.mockMvc
-        .perform(put("/categories/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(currentCategory)))
+        .perform(put("/categories/{id}", id).contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(categoryDto)))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
         .andExpect(jsonPath("$.message")
             .value(String.format("Category with name %s already exists.", existingName)));
 
-    verify(service, times(1)).updateCategory(currentId, currentCategory);
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).updateCategory(id, category);
   }
 
   @Test
   void updateCategory_whenBlankName_shouldReturnBadRequest() throws Exception {
-    final String currentId = "A";
-    final Category blankCategory = Category.builder().id(currentId).build();
+    String currentId = "A";
+    CategoryDTO blankCategory = new CategoryDTO();
 
     this.mockMvc
         .perform(put("/categories/{id}", currentId).contentType(MediaType.APPLICATION_JSON)
@@ -188,25 +236,59 @@ class CategoryControllerTest {
         .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
         .andExpect(jsonPath("$.message").value(containsString("name must not be blank")));
 
-    verify(service, times(0)).updateCategory(currentId, blankCategory);
+    verify(categoryMapper, times(0)).categoryDtoToCategory(null);
+    verify(service, times(0)).updateCategory(null, null);
+  }
+
+  @Test
+  void updateCategory_whenMismatchId_shouldReturnBadRequest() throws Exception {
+    String differentId = "B";
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setId(differentId);
+    categoryDto.setName("Blog");
+    Category category = new Category();
+    category.setId(differentId);
+    category.setName("Blog");
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
+    String id = "A";
+    doThrow(new CategoryMismatchException(id, differentId)).when(service).updateCategory(id,
+        category);
+
+    this.mockMvc
+        .perform(put("/categories/{id}", id).contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(categoryDto)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.name()))
+        .andExpect(jsonPath("$.message").value(String
+            .format("Category with id %s does not match category argument %s.", id, differentId)));
+
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).updateCategory(id, category);
   }
 
   @Test
   void updateCategory_whenNonexistingId_shouldReturnNotFound() throws Exception {
-    final String nonExistingId = "Z";
-    final Category nonExistingCategory = Category.builder().id(nonExistingId).name("Blog").build();
+    String nonExistingId = "Z";
+    CategoryDTO categoryDto = new CategoryDTO();
+    categoryDto.setId(nonExistingId);
+    categoryDto.setName("Blog");
+    Category category = new Category();
+    category.setId(nonExistingId);
+    category.setName("Blog");
+    when(categoryMapper.categoryDtoToCategory(categoryDto)).thenReturn(category);
     doThrow(new CategoryNotFoundException(nonExistingId)).when(service)
-        .updateCategory(nonExistingId, nonExistingCategory);
+        .updateCategory(nonExistingId, category);
 
     this.mockMvc
         .perform(put("/categories/{id}", nonExistingId).contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(nonExistingCategory)))
+            .content(objectMapper.writeValueAsString(categoryDto)))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.name()))
         .andExpect(jsonPath("$.message")
             .value(String.format("Category with id %s not found.", nonExistingId)));
 
-    verify(service, times(1)).updateCategory(nonExistingId, nonExistingCategory);
+    verify(categoryMapper, times(1)).categoryDtoToCategory(categoryDto);
+    verify(service, times(1)).updateCategory(nonExistingId, category);
   }
 
   @Test

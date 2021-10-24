@@ -27,7 +27,7 @@ final class ContentServiceImpl implements ContentService {
   public void updateContent(final String id, final Content content)
       throws ContentNotFoundException, ContentMismatchException {
     Optional<Content> retrievedContent = repository.findById(id);
-    if (retrievedContent.isEmpty()) {
+    if (!retrievedContent.isPresent()) {
       throw new ContentNotFoundException(id);
     }
     
@@ -40,7 +40,7 @@ final class ContentServiceImpl implements ContentService {
   }
 
   public void deleteContent(final String id) throws ContentNotFoundException {
-    if (repository.findById(id).isEmpty()) {
+    if (!repository.findById(id).isPresent()) {
       throw new ContentNotFoundException(id);
     }
 

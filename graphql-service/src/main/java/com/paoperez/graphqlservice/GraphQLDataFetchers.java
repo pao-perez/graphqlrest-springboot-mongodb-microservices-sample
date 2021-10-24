@@ -28,9 +28,7 @@ class GraphQLDataFetchers {
   }
 
   DataFetcher<Contents> getContentsDataFetcher() {
-    return dataFetchingEnvironment -> {
-      return this.contentService.getContents();
-    };
+    return dataFetchingEnvironment -> this.contentService.getContents();
   }
 
   DataFetcher<Content> getContentDataFetcher() {
